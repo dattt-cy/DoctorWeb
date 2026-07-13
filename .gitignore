@@ -1,0 +1,23 @@
+# Node / Frontend
+DoctorFrontend/node_modules/
+DoctorFrontend/.next/
+DoctorFrontend/out/
+DoctorFrontend/.env*.local
+
+# Backend (Java/Maven)
+DoctorBackend/target/
+DoctorBackend/.mvn/wrapper/maven-wrapper.jar
+DoctorBackend/*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml

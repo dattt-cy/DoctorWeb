@@ -1,0 +1,117 @@
+@import "../styles/tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.7;
+  min-height: 100dvh;
+}
+
+/* ── Typography base ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+p {
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── Layout utility ── */
+.container {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-padding);
+}
+
+/* ── Scroll reveal animation ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform var(--duration-slow) var(--ease-out);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Navbar scroll transitions (CSS-driven, no React re-render) ── */
+
+/* ── Navbar base styles ── */
+/* Logo bar — chiều cao cố định, KHÔNG thay đổi khi scroll (tránh giật content) */
+.nav-logobar {
+  height: 68px;
+  background-color: var(--color-white);
+}
+.nav-logo-badge { width: 40px; height: 40px; font-size: 13px; }
+.nav-booking-btn { font-size: 13px; padding: 9px 20px; }
+
+/* Transitions — chỉ bật SAU khi paint lần đầu (tránh flicker initial) */
+header[data-loaded="true"] .nav-logobar {
+  transition: background-color 250ms ease, box-shadow 250ms ease,
+              backdrop-filter 250ms ease;
+}
+
+/* Scroll state — chỉ đổi màu nền/shadow logobar */
+header[data-scrolled="true"] .nav-logobar {
+  background-color: rgba(250, 250, 247, 0.97) !important;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* ── Focus visible ── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+}

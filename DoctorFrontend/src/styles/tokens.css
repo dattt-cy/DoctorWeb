@@ -1,0 +1,62 @@
+:root {
+  /* ── Colors ── */
+  --color-bg: #f4f1eb;           /* warm cream — dễ nhìn, không chói */
+  --color-surface: #ede9e0;      /* warm sage surface */
+  --color-surface-alt: #ede6d8;  /* warm sand alt */
+  --color-primary: #e8702a;
+  --color-primary-hover: #cf5f1f;
+  --color-primary-light: #fdeadd;
+  --color-accent: #f6a623;
+  --color-accent-hover: #db8f12;
+  --color-text: #1a1a18;
+  --color-text-secondary: #5c6370;
+  --color-text-muted: #8e96a3;
+  --color-border: #ddd8ce;
+  --color-white: #fdfcf8;        /* warm white — không harsh */
+
+  /* ── Typography ── */
+  --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-body: var(--font-inter), "Inter", -apple-system, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: clamp(1rem, 0.92rem + 0.2vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.3vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1rem + 0.6vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.2rem + 0.8vw, 2rem);
+  --text-3xl: clamp(2rem, 1.5rem + 1.5vw, 2.75rem);
+  --text-hero: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+
+  /* ── Spacing ── */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-section: clamp(4rem, 2.5rem + 4vw, 7rem);
+  --space-gap: clamp(1.5rem, 1rem + 2vw, 3rem);
+
+  /* ── Border Radius ── */
+  --radius-sm: 6px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-xl: 40px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 8px rgba(28, 28, 30, 0.06);
+  --shadow-card: 0 4px 24px rgba(28, 28, 30, 0.08);
+  --shadow-hover: 0 10px 48px rgba(28, 28, 30, 0.14);
+  --shadow-accent: 0 8px 32px rgba(232, 112, 42, 0.25);
+
+  /* ── Motion ── */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Layout ── */
+  --container-max: 1200px;
+  --container-padding: clamp(1.25rem, 4vw, 4rem);
+}
