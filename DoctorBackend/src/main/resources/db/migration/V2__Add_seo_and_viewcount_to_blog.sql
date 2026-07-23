@@ -1,0 +1,5 @@
+ALTER TABLE blog_post 
+ADD COLUMN seo_title VARCHAR(255),
+ADD COLUMN seo_description VARCHAR(500),
+ADD COLUMN tags VARCHAR(500),
+ADD COLUMN view_count BIGINT DEFAULT 0;

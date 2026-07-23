@@ -1,5 +1,6 @@
 export interface DoctorProfile {
   name: string;
+  clinicName?: string;
   title: string;
   specialty: string;
   tagline: string;

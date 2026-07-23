@@ -2,6 +2,7 @@ import type { DoctorProfile } from "@/types/doctor";
 
 export const DOCTOR_INFO: DoctorProfile = {
   name: "ThS.BS. Nguyễn Thị Phương Thảo",
+  clinicName: "Phòng Khám Nhi VITA",
   title: "Thạc sĩ · Bác sĩ Nhi khoa",
   specialty: "Bác sĩ Nhi khoa",
   tagline: "Thạc sĩ Bác sĩ Nhi khoa — Phòng khám tại 522 Phạm Hùng, Đà Nẵng",

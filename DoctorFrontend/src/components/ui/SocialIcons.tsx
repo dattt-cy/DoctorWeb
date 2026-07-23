@@ -53,7 +53,7 @@ const ICON_MAP = {
 } as const;
 
 export function SocialIcons({ links, size = "md", theme = "light" }: SocialIconsProps) {
-  const btnSize = size === "sm" ? "w-8 h-8 text-base" : "w-9 h-9 text-lg";
+  const btnSize = size === "sm" ? "w-9 h-9 text-lg" : "w-11 h-11 text-xl";
 
   const darkStyle = {
     backgroundColor: "rgba(255,255,255,0.15)",

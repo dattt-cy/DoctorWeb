@@ -20,16 +20,16 @@ export function BlogListing({ posts }: BlogListingProps) {
   return (
     <div className="flex flex-col gap-10">
       {/* Category filter */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         {POST_CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className="px-4 py-2 rounded-[var(--radius-full)] text-sm font-medium transition-all duration-[var(--duration-fast)]"
+            className="px-5 py-2 rounded-full text-sm font-bold transition-all duration-300"
             style={{
-              backgroundColor: activeCategory === cat ? "var(--color-primary)" : "var(--color-surface)",
-              color: activeCategory === cat ? "white" : "var(--color-text-secondary)",
-              border: `1px solid ${activeCategory === cat ? "var(--color-primary)" : "var(--color-border)"}`,
+              backgroundColor: activeCategory === cat ? "#17a2b8" : "transparent",
+              color: activeCategory === cat ? "white" : "#6c757d",
+              border: `1px solid ${activeCategory === cat ? "#17a2b8" : "#dee2e6"}`,
             }}
           >
             {cat}
@@ -39,11 +39,11 @@ export function BlogListing({ posts }: BlogListingProps) {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <p className="text-center py-16" style={{ color: "var(--color-text-muted)" }}>
+        <p className="text-center py-16 text-gray-500">
           Chưa có bài viết trong danh mục này.
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {filtered.map((post) => (
             <BlogCard key={post.slug} post={post} />
           ))}

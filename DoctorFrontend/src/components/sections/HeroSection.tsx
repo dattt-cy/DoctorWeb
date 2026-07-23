@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Hospital, Check } from "lucide-react";
 import { DOCTOR_INFO } from "@/constants/doctor";
@@ -19,6 +19,29 @@ interface AppointmentForm {
   symptoms: string;
 }
 
+
+
+// Khung giờ 8:00–17:00, mỗi tiếng 1 suất, tối đa 6 ca/giờ
+interface TimeSlot {
+  time: string;
+  total: number;
+  booked: number;
+}
+
+// Mock data: mỗi giờ có 6 suất, số đã đặt là mock
+const TIME_SLOTS: TimeSlot[] = [
+  { time: "08:00", total: 6, booked: 4 },
+  { time: "09:00", total: 6, booked: 2 },
+  { time: "10:00", total: 6, booked: 6 },
+  { time: "11:00", total: 6, booked: 1 },
+  { time: "12:00", total: 6, booked: 5 },
+  { time: "13:00", total: 6, booked: 0 },
+  { time: "14:00", total: 6, booked: 3 },
+  { time: "15:00", total: 6, booked: 6 },
+  { time: "16:00", total: 6, booked: 2 },
+  { time: "17:00", total: 6, booked: 4 },
+];
+
 const INITIAL_FORM: AppointmentForm = {
   name: "",
   phone: "",
@@ -30,6 +53,20 @@ const INITIAL_FORM: AppointmentForm = {
 export function HeroSection() {
   const [form, setForm] = useState<AppointmentForm>(INITIAL_FORM);
   const [submitted, setSubmitted] = useState(false);
+  const [timeOpen, setTimeOpen] = useState(false);
+  const timeRef = useRef<HTMLDivElement>(null);
+
+  // Click-away đóng dropdown
+  useEffect(() => {
+    if (!timeOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (timeRef.current && !timeRef.current.contains(e.target as Node)) {
+        setTimeOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [timeOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,9 +92,9 @@ export function HeroSection() {
     (e.target.style.borderColor = "#d1d5db");
 
   return (
-    <section className="relative w-full overflow-hidden" style={{ minHeight: "calc(100vh - 120px)" }}>
+    <section className="relative w-full" style={{ minHeight: "calc(100vh - 120px)" }}>
       {/* Background banner */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=85&auto=format&fit=crop"
           alt="Phòng khám Nhi Vita"
@@ -150,7 +187,7 @@ export function HeroSection() {
           style={{ minHeight: "100%" }}
         >
           <div
-            className="flex flex-col h-full overflow-y-auto"
+            className="flex flex-col h-full"
             style={{
               backgroundColor: "rgba(255,255,255,0.97)",
               backdropFilter: "blur(12px)",
@@ -249,20 +286,120 @@ export function HeroSection() {
                         onBlur={blurBorder}
                       />
                     </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label htmlFor="ap-time" className={labelClass} style={labelStyle}>
+                    {/* Giờ khám — dropdown absolute, không bị clip */}
+                    <div className="flex flex-col gap-1.5" ref={timeRef} style={{ position: "relative" }}>
+                      <label className={labelClass} style={labelStyle}>
                         Giờ khám <span style={{ color: "var(--color-primary)" }}>*</span>
                       </label>
-                      <input
-                        id="ap-time"
-                        type="time"
-                        required
-                        value={form.time}
-                        onChange={set("time")}
-                        className={inputClass}
-                        style={inputStyle}
-                        onFocus={focusBorder}
-                        onBlur={blurBorder}
+
+                      {/* Trigger */}
+                      <button
+                        type="button"
+                        onClick={() => setTimeOpen((v) => !v)}
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "9px 12px",
+                          borderRadius: "var(--radius-sm)",
+                          border: timeOpen
+                            ? "1px solid var(--color-primary)"
+                            : "1px solid #d1d5db",
+                          backgroundColor: "#fff",
+                          cursor: "pointer",
+                          fontSize: "0.9rem",
+                          color: form.time ? "var(--color-text)" : "#9ca3af",
+                          fontWeight: form.time ? 600 : 400,
+                          transition: "border-color 150ms",
+                          textAlign: "left",
+                        }}
+                      >
+                        <span>{form.time || "-- Chọn giờ --"}</span>
+                        <svg
+                          width="14" height="14" viewBox="0 0 24 24" fill="none"
+                          style={{ flexShrink: 0, transform: timeOpen ? "rotate(180deg)" : "none", transition: "transform 200ms" }}
+                        >
+                          <path d="M6 9l6 6 6-6" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </button>
+
+                      {/* Dropdown panel — absolute, overlay lên nội dung bên dưới */}
+                      {timeOpen && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "calc(100% + 4px)",
+                            left: 0,
+                            right: 0,
+                            zIndex: 200,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "4px",
+                            padding: "10px",
+                            border: "1px solid #e5e7eb",
+                            borderRadius: 10,
+                            backgroundColor: "#fff",
+                            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                            maxHeight: "280px",
+                            overflowY: "auto",
+                          }}
+                        >
+                          {/* Header */}
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.62rem", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.08em", paddingBottom: "6px", borderBottom: "1px solid #f3f4f6", marginBottom: "2px" }}>
+                            <span>Giờ khám</span>
+                            <span>Còn chỗ</span>
+                          </div>
+                          {TIME_SLOTS.map((slot) => {
+                            const available = slot.total - slot.booked;
+                            const isFull = available === 0;
+                            const sel = form.time === slot.time;
+                            const pct = ((slot.total - available) / slot.total) * 100;
+                            return (
+                              <button
+                                key={slot.time}
+                                type="button"
+                                disabled={isFull}
+                                onClick={() => { if (!isFull) { setForm((p) => ({ ...p, time: slot.time })); setTimeOpen(false); } }}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  padding: "8px 10px",
+                                  borderRadius: 7,
+                                  fontSize: "0.78rem",
+                                  fontWeight: sel ? 700 : 500,
+                                  border: sel ? "1.5px solid var(--color-primary)" : "1.5px solid transparent",
+                                  backgroundColor: sel ? "var(--color-primary)" : isFull ? "#fafafa" : "#f9f9f9",
+                                  color: sel ? "#fff" : isFull ? "#c0bebe" : "#374151",
+                                  cursor: isFull ? "not-allowed" : "pointer",
+                                  transition: "all 120ms ease",
+                                  gap: "8px",
+                                }}
+                                onMouseEnter={(e) => { if (!sel && !isFull) e.currentTarget.style.backgroundColor = "#fdeadd"; }}
+                                onMouseLeave={(e) => { if (!sel && !isFull) e.currentTarget.style.backgroundColor = "#f9f9f9"; }}
+                              >
+                                {/* Time label */}
+                                <span style={{ fontVariantNumeric: "tabular-nums", minWidth: 38 }}>{slot.time}</span>
+
+                                {/* Progress bar */}
+                                <div style={{ flex: 1, height: 4, borderRadius: 99, backgroundColor: sel ? "rgba(255,255,255,0.3)" : "#e5e7eb", overflow: "hidden" }}>
+                                  <div style={{ height: "100%", width: `${pct}%`, borderRadius: 99, backgroundColor: sel ? "#fff" : isFull ? "#ef4444" : pct >= 67 ? "#f59e0b" : "var(--color-primary)", transition: "width 300ms" }} />
+                                </div>
+
+                                {/* Slot count */}
+                                <span style={{ fontSize: "0.7rem", fontWeight: 600, minWidth: 40, textAlign: "right", color: sel ? "#fff" : isFull ? "#ef4444" : available <= 2 ? "#f59e0b" : "var(--color-primary)" }}>
+                                  {isFull ? "Hết chỗ" : `${available}/6 chỗ`}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <input type="text" required readOnly value={form.time}
+                        style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 1, height: 1 }}
+                        tabIndex={-1}
                       />
                     </div>
                   </div>

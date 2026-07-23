@@ -115,3 +115,8 @@ header[data-scrolled="true"] .nav-logobar {
     font-family: var(--font-display);
   }
 }
+
+/* ── TinyMCE overrides ── */
+.tox-notifications-container {
+  display: none !important;
+}

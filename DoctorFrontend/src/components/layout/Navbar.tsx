@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Phone, MessageCircle, MapPin, Search } from "lucide-react";
 import { SocialIcons } from "@/components/ui/SocialIcons";
 import { DOCTOR_INFO } from "@/constants/doctor";
+import { VitaLogo } from "@/components/ui/VitaLogo";
 
 function smoothScrollToId(id: string) {
   const el = document.getElementById(id);
@@ -168,7 +169,12 @@ export function Navbar() {
         </div>
       </div>
 
-      <header ref={headerRef} data-scrolled="false" className="sticky top-0 inset-x-0 z-50 w-full">
+      <header
+        ref={headerRef}
+        data-scrolled="false"
+        className="sticky top-0 inset-x-0 z-50 w-full"
+        style={{ willChange: "transform", transform: "translateZ(0)" }}
+      >
 
       {/* ── Tầng 2: Logo + search + booking ── */}
       <div
@@ -182,22 +188,7 @@ export function Navbar() {
           <div className="flex items-center justify-between h-full gap-4">
 
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group shrink-0">
-              <div
-                className="nav-logo-badge rounded-[var(--radius-md)] flex items-center justify-center text-white font-bold shrink-0"
-                style={{ backgroundColor: "var(--color-primary)" }}
-              >
-                BS
-              </div>
-              <div className="hidden sm:block overflow-hidden">
-                <p className="font-display font-bold leading-tight truncate text-sm" style={{ color: "var(--color-text)" }}>
-                  {DOCTOR_INFO.name}
-                </p>
-                <p className="nav-logo-sub text-xs truncate" style={{ color: "var(--color-text-secondary)" }}>
-                  {DOCTOR_INFO.specialty}
-                </p>
-              </div>
-            </Link>
+            <VitaLogo theme="light" size="sm" href="/" />
 
             {/* Search bar */}
             <div className="hidden md:flex flex-1 max-w-md items-center relative">
@@ -270,37 +261,55 @@ export function Navbar() {
           <nav className="flex items-center" style={{ height: "44px" }}>
             {NAV_LINKS.map((link) => {
               const active = isActive(link);
+              const navItemCls = "relative h-full flex items-center px-5 text-xs font-semibold tracking-wide cursor-pointer select-none";
+              const navItemStyle = {
+                color: active ? "var(--color-accent)" : "rgba(255,255,255,0.88)" as string,
+                borderBottom: `2px solid ${active ? "var(--color-accent)" : "transparent"}`,
+                transition: "color 150ms ease, border-color 150ms ease",
+              };
+              const hoverHandlers = {
+                onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
+                  if (!active) {
+                    (e.currentTarget as HTMLElement).style.color = "#fff";
+                    (e.currentTarget as HTMLElement).style.borderBottomColor = "rgba(255,255,255,0.35)";
+                  }
+                },
+                onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
+                  if (!active) {
+                    (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)";
+                    (e.currentTarget as HTMLElement).style.borderBottomColor = "transparent";
+                  }
+                },
+              };
+              // Dùng Next.js Link cho routes thực (/blog, /)
+              // Dùng <a> cho anchor links (#section)
+              if (link.sectionId) {
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    onClick={(e) => handleNavClick(e, link)}
+                    className={navItemCls}
+                    style={navItemStyle}
+                    {...hoverHandlers}
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
               return (
-                <a
+                <Link
                   key={link.label}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link)}
-                  className="relative h-full flex items-center px-5 text-xs font-semibold tracking-wide cursor-pointer select-none group"
-                  style={{
-                    color: active ? "var(--color-accent)" : "rgba(255,255,255,0.88)",
-                    borderBottom: `2px solid ${active ? "var(--color-accent)" : "transparent"}`,
-                    transition: "color 150ms ease, border-color 150ms ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!active) {
-                      const el = e.currentTarget as HTMLElement;
-                      el.style.color = "#fff";
-                      el.style.borderBottomColor = "rgba(255,255,255,0.35)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!active) {
-                      const el = e.currentTarget as HTMLElement;
-                      el.style.color = "rgba(255,255,255,0.88)";
-                      el.style.borderBottomColor = "transparent";
-                    }
-                  }}
+                  className={navItemCls}
+                  style={navItemStyle}
+                  {...hoverHandlers}
                 >
                   {link.label}
-                </a>
+                </Link>
               );
             })}
-
           </nav>
         </div>
       </div>
@@ -320,19 +329,34 @@ export function Navbar() {
         <nav className="container flex flex-col py-3 gap-0.5">
           {NAV_LINKS.map((link) => {
             const active = isActive(link);
+            const mobileCls = "px-4 py-3 rounded-[var(--radius-md)] text-sm font-medium cursor-pointer transition-colors";
+            const mobileStyle = {
+              color: active ? "var(--color-primary)" : "var(--color-text-secondary)" as string,
+              backgroundColor: active ? "var(--color-primary-light)" : "transparent" as string,
+            };
+            if (link.sectionId) {
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className={mobileCls}
+                  style={mobileStyle}
+                  onClick={(e) => handleNavClick(e, link)}
+                >
+                  {link.label}
+                </a>
+              );
+            }
             return (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
-                className="px-4 py-3 rounded-[var(--radius-md)] text-sm font-medium cursor-pointer transition-colors"
-                style={{
-                  color: active ? "var(--color-primary)" : "var(--color-text-secondary)",
-                  backgroundColor: active ? "var(--color-primary-light)" : "transparent",
-                }}
+                className={mobileCls}
+                style={mobileStyle}
                 onClick={(e) => handleNavClick(e, link)}
               >
                 {link.label}
-              </a>
+              </Link>
             );
           })}
           <div
