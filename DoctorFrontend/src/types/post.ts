@@ -8,4 +8,9 @@ export interface BlogPost {
   publishedAt: string;
   readingTime: number;
   featured?: boolean;
+  tags?: string;
+  viewCount?: number;
+  updatedAt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 }

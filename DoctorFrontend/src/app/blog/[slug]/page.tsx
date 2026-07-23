@@ -1,38 +1,37 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
+import { Footer } from "@/components/layout/Footer";
 import { DOCTOR_INFO } from "@/constants/doctor";
+import { API_BASE_URL } from "@/lib/blog-api";
 import { SITE, absoluteUrl } from "@/lib/site";
+import type { BlogPost } from "@/types/post";
+import { ArrowLeft, ArrowRight, BadgeCheck, CalendarDays, Clock3, Eye, Stethoscope } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: { slug: string };
 }
 
-async function getPost(slug: string) {
+async function getPost(slug: string): Promise<BlogPost | null> {
   try {
-    const res = await fetch(`http://localhost:8080/api/public/blogs/${slug}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (error) {
-    console.error("Failed to fetch post:", error);
+    const response = await fetch(`${API_BASE_URL}/api/public/blogs/${slug}`, { cache: "no-store" });
+    if (!response.ok) return null;
+    return response.json();
+  } catch {
     return null;
   }
 }
 
-async function getRelatedPosts(excludeSlug: string) {
+async function getRelatedPosts(excludeSlug: string): Promise<BlogPost[]> {
   try {
-    const res = await fetch("http://localhost:8080/api/public/blogs", { cache: "no-store" });
-    if (!res.ok) return [];
-    const data = await res.json();
-    const posts = data.content || [];
-    return posts.filter((p: any) => p.slug !== excludeSlug).slice(0, 3); // Tăng lên 3 bài
-  } catch (error) {
+    const response = await fetch(`${API_BASE_URL}/api/public/blogs?size=6&sort=publishedAt,desc`, { cache: "no-store" });
+    if (!response.ok) return [];
+    const data = await response.json();
+    return (data.content || []).filter((post: BlogPost) => post.slug !== excludeSlug).slice(0, 3);
+  } catch {
     return [];
   }
 }
@@ -54,21 +53,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       authors: [SITE.doctor],
       images: post.coverImage ? [{ url: post.coverImage, alt: post.title }] : [],
     },
-    twitter: {
-      card: "summary_large_image",
-      title: post.seoTitle || post.title,
-      description: post.seoDescription || post.excerpt,
-      images: post.coverImage ? [post.coverImage] : [],
-    },
   };
 }
 
 export default async function BlogDetailPage({ params }: PageProps) {
   const post = await getPost(params.slug);
   if (!post) notFound();
-
   const related = await getRelatedPosts(post.slug);
-  
+  const date = post.publishedAt
+    ? new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(post.publishedAt))
+    : "Mới cập nhật";
+
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -83,144 +78,106 @@ export default async function BlogDetailPage({ params }: PageProps) {
     publisher: { "@type": "Organization", name: SITE.name },
   };
 
-  const date = post.publishedAt 
-    ? new Date(post.publishedAt).toLocaleDateString("vi-VN", {
-        day: "2-digit",
-        month: "numeric",
-        year: "numeric",
-      }).replace(/\//g, '.')
-    : "";
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
-      />
-      <main className="bg-white min-h-screen">
-        
-        {/* Breadcrumb & Article Header */}
-        <section className="pt-12 pb-6 max-w-[1000px] mx-auto px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-8 text-sm text-gray-500">
-            <Link href="/" className="hover:text-[#17a2b8] transition-colors font-medium">
-              Trang chủ
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
+      <main className="min-h-screen bg-white">
+        <section className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-b from-cyan-50/80 to-white">
+          <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-cyan-200/30 blur-3xl" />
+          <div className="relative mx-auto max-w-5xl px-5 pb-10 pt-6 sm:px-6 lg:px-8 lg:pb-14">
+            <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-cyan-800">
+              <ArrowLeft size={17} /> Tất cả bài viết
             </Link>
-            <span>/</span>
-            <Link href="/blog" className="hover:text-[#17a2b8] transition-colors font-medium">
-              Blog Kiến thức Y khoa
-            </Link>
-            <span>/</span>
-            <span className="text-gray-400 truncate max-w-[200px] md:max-w-[400px]">{post.title}</span>
-          </div>
 
-          <div className="flex flex-col gap-6">
-            <div className="flex items-center gap-4 text-sm font-medium">
-              <span className="text-gray-400">{date}</span>
-              <span className="px-3 py-0.5 border border-[#17a2b8] text-[#17a2b8] rounded-sm">
-                {post.category}
-              </span>
-            </div>
+            <div className="mt-10 text-center">
+              <span className="inline-flex rounded-full bg-cyan-100 px-3 py-1.5 text-xs font-bold text-cyan-800">{post.category}</span>
+              <h1 className="mx-auto mt-5 max-w-4xl text-3xl font-bold leading-tight tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
+                {post.title}
+              </h1>
+              {post.excerpt && <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">{post.excerpt}</p>}
 
-            <h1 className="text-3xl md:text-[2.5rem] font-bold text-gray-900 leading-[1.3]">
-              {post.title}
-            </h1>
-
-            {/* Gradient Line */}
-            <div className="h-1 w-24 rounded-full bg-gradient-to-r from-purple-400 to-[#17a2b8] my-2"></div>
-
-            {/* Author Info */}
-            <div className="flex items-center gap-4 py-4 mt-2">
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 text-gray-600 font-bold text-lg">
-                BS
-              </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-gray-900">{DOCTOR_INFO.name}</span>
-                <span className="text-sm text-gray-500">
-                  {post.readingTime || 5} phút đọc · {post.viewCount || 0} lượt xem
-                </span>
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-slate-500">
+                <span className="flex items-center gap-2"><CalendarDays size={16} /> {date}</span>
+                <span className="flex items-center gap-2"><Clock3 size={16} /> {post.readingTime || 1} phút đọc</span>
+                <span className="flex items-center gap-2"><Eye size={16} /> {(post.viewCount || 0).toLocaleString("vi-VN")} lượt xem</span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Cover image (optional for this minimal style, but we'll show it if exists) */}
-        {post.coverImage && (
-          <section className="max-w-[1000px] mx-auto px-6 lg:px-8 mb-12">
-            <div
-              className="w-full bg-cover bg-center rounded-xl overflow-hidden shadow-sm border border-gray-100"
-              style={{
-                height: "400px",
-                backgroundImage: `url(${post.coverImage})`,
-              }}
-            />
-          </section>
-        )}
-
-        {/* Article content */}
-        <section className="pb-16 max-w-[1000px] mx-auto px-6 lg:px-8">
-          {post.excerpt && (
-            <p className="text-lg leading-relaxed mb-10 text-gray-600 font-medium">
-              {post.excerpt}
-            </p>
-          )}
-
-          <article
-            className="prose prose-lg max-w-none 
-              prose-headings:font-bold prose-headings:text-gray-900 
-              prose-p:text-gray-700 prose-p:leading-[1.7] prose-p:mb-4
-              prose-a:text-[#17a2b8] prose-a:no-underline hover:prose-a:underline
-              prose-img:rounded-xl prose-img:shadow-sm prose-img:border prose-img:border-gray-100 prose-img:my-8
-              prose-ul:my-4 prose-li:text-gray-700 prose-li:my-1
-              /* Raccoon Tech Blog Styles */
-              prose-h2:bg-[#17a2b8] prose-h2:text-white prose-h2:px-5 prose-h2:py-3 prose-h2:mt-10 prose-h2:mb-5 prose-h2:rounded-sm prose-h2:text-2xl
-              prose-h3:border-l-4 prose-h3:border-[#17a2b8] prose-h3:pl-4 prose-h3:py-1 prose-h3:mt-8 prose-h3:mb-4 prose-h3:text-xl
-              prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:bg-gray-50 prose-blockquote:px-5 prose-blockquote:py-3 prose-blockquote:not-italic prose-blockquote:text-gray-600
-            "
-            dangerouslySetInnerHTML={{ __html: post.content || "" }}
-          />
-
-          {/* Tags */}
-          {post.tags && (
-            <div className="mt-16 flex items-center flex-wrap gap-2 pt-6 border-t border-gray-100">
-              <span className="font-semibold text-gray-900 mr-2">Tags:</span>
-              {post.tags.split(",").map((tag: string, idx: number) => (
-                <span key={idx} className="bg-gray-100 text-gray-600 px-3 py-1 rounded-sm text-sm hover:bg-gray-200 transition-colors cursor-pointer">
-                  {tag.trim()}
-                </span>
-              ))}
+        <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
+          {post.coverImage && (
+            <div className="relative -mt-1 aspect-[16/8] overflow-hidden rounded-2xl bg-slate-100 shadow-xl shadow-slate-200/60 sm:rounded-3xl">
+              <Image src={post.coverImage} alt={post.title} fill priority className="object-cover" sizes="(max-width: 1280px) 100vw, 1152px" />
             </div>
           )}
 
-          {/* CTA */}
-          <div className="mt-12 bg-gray-50 border border-gray-100 rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <p className="font-bold text-xl text-gray-900">
-                Cần tư vấn thêm cho bé?
-              </p>
-              <p className="text-gray-600 mt-2">
-                Hãy đặt lịch khám trực tiếp với ThS.BS Phương Thảo để được chẩn đoán và tư vấn phác đồ điều trị hiệu quả nhất.
-              </p>
+          <div className="mx-auto grid max-w-5xl gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_240px] lg:py-16">
+            <div className="min-w-0">
+              <article
+                className="prose prose-lg prose-slate max-w-none
+                  prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-950
+                  prose-h2:mt-12 prose-h2:border-l-4 prose-h2:border-cyan-600 prose-h2:pl-4 prose-h2:text-2xl
+                  prose-h3:mt-9 prose-h3:text-xl
+                  prose-p:leading-8 prose-p:text-slate-700
+                  prose-a:font-semibold prose-a:text-cyan-700 prose-a:no-underline hover:prose-a:underline
+                  prose-strong:text-slate-900
+                  prose-li:my-1.5 prose-li:text-slate-700
+                  prose-img:rounded-2xl prose-img:border prose-img:border-slate-100 prose-img:shadow-lg
+                  prose-blockquote:rounded-r-xl prose-blockquote:border-cyan-500 prose-blockquote:bg-cyan-50 prose-blockquote:px-6 prose-blockquote:py-3 prose-blockquote:not-italic prose-blockquote:text-slate-700
+                  prose-table:overflow-hidden prose-table:rounded-xl prose-table:border prose-table:border-slate-200
+                  prose-th:bg-slate-50 prose-th:px-4 prose-th:py-3 prose-td:px-4 prose-td:py-3"
+                dangerouslySetInnerHTML={{ __html: post.content || "" }}
+              />
+
+              {post.tags && (
+                <div className="mt-12 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-7">
+                  {post.tags.split(",").filter(Boolean).map((tag) => (
+                    <span key={tag} className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600">#{tag.trim().replace(/^#/, "")}</span>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-12 overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-700 to-blue-800 p-7 text-white shadow-xl shadow-cyan-900/15 sm:p-9">
+                <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-cyan-100">Cần tư vấn riêng cho bé?</p>
+                    <h2 className="mt-2 text-2xl font-bold">Đặt lịch trao đổi cùng bác sĩ</h2>
+                    <p className="mt-2 max-w-xl text-sm leading-6 text-cyan-50/80">Mỗi trẻ có thể trạng khác nhau. Bác sĩ sẽ thăm khám và đưa ra hướng chăm sóc phù hợp.</p>
+                  </div>
+                  <Link href="/lien-he" className="inline-flex flex-none items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-cyan-800 transition hover:bg-cyan-50">
+                    Đặt lịch ngay <ArrowRight size={17} />
+                  </Link>
+                </div>
+              </div>
             </div>
-            <Link
-              href="/#dat-lich"
-              className="shrink-0 bg-[#17a2b8] hover:bg-[#138496] text-white px-8 py-3.5 rounded-lg font-bold transition-all shadow-sm flex items-center gap-2"
-            >
-              Đặt lịch ngay <ArrowRight size={18} />
-            </Link>
+
+            <aside className="hidden lg:block">
+              <div className="sticky top-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-100 text-cyan-800"><Stethoscope size={22} /></div>
+                <p className="mt-4 text-xs font-bold uppercase tracking-wider text-cyan-700">Người biên soạn</p>
+                <p className="mt-2 font-bold leading-6 text-slate-900">{DOCTOR_INFO.name}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-500">Bác sĩ Nhi khoa</p>
+                <div className="mt-4 flex items-center gap-2 border-t border-slate-200 pt-4 text-xs font-semibold text-slate-500">
+                  <BadgeCheck size={16} className="text-cyan-700" /> Nội dung chuyên môn
+                </div>
+              </div>
+            </aside>
           </div>
-        </section>
+        </div>
 
-        {/* Related posts */}
         {related.length > 0 && (
-          <section className="py-20 bg-gray-50 border-t border-gray-100">
-            <div className="container max-w-7xl px-6 lg:px-8">
-              <h2 className="text-2xl font-bold mb-10 text-center text-gray-900">
-                Bài viết liên quan
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {related.map((p: any) => (
-                  <BlogCard key={p.slug} post={p} />
-                ))}
+          <section className="border-t border-slate-200 bg-slate-50 py-16">
+            <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-sm font-bold uppercase tracking-wider text-cyan-700">Đọc thêm</p>
+                  <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Bài viết liên quan</h2>
+                </div>
+                <Link href="/blog" className="hidden items-center gap-2 text-sm font-bold text-cyan-700 hover:text-cyan-900 sm:flex">Xem tất cả <ArrowRight size={16} /></Link>
+              </div>
+              <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {related.map((item) => <BlogCard key={item.slug} post={item} />)}
               </div>
             </div>
           </section>

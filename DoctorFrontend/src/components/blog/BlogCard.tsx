@@ -1,6 +1,7 @@
+import type { BlogPost } from "@/types/post";
+import { ArrowUpRight, CalendarDays, Clock3 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { BlogPost } from "@/types/post";
 
 interface BlogCardProps {
   post: BlogPost;
@@ -8,65 +9,69 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ post, featured = false }: BlogCardProps) {
-  const date = new Date(post.publishedAt).toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "numeric",
-    year: "numeric",
-  }).replace(/\//g, '.'); // Format as YYYY.MM.DD or DD.MM.YYYY
+  const date = post.publishedAt
+    ? new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(post.publishedAt))
+    : "Mới cập nhật";
+
+  if (featured) {
+    return (
+      <Link
+        href={`/blog/${post.slug}`}
+        className="group grid overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/70 lg:grid-cols-[1.08fr_.92fr]"
+      >
+        <Cover post={post} className="aspect-[16/10] lg:aspect-auto lg:min-h-[390px]" sizes="(max-width: 1024px) 100vw, 55vw" />
+        <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-11">
+          <div className="flex items-center gap-3">
+            <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-800">{post.category}</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Nổi bật</span>
+          </div>
+          <h3 className="mt-5 text-2xl font-bold leading-snug tracking-tight text-slate-950 transition group-hover:text-cyan-800 sm:text-3xl">
+            {post.title}
+          </h3>
+          <p className="mt-4 line-clamp-3 text-base leading-7 text-slate-600">{post.excerpt}</p>
+          <CardMeta date={date} readingTime={post.readingTime} />
+          <span className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-cyan-700">
+            Đọc bài viết <ArrowUpRight size={17} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </span>
+        </div>
+      </Link>
+    );
+  }
 
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-cyan-200 hover:shadow-xl hover:shadow-slate-200/70"
     >
-      {/* Cover image */}
-      <div
-        className="relative overflow-hidden w-full bg-gray-50"
-        style={{ height: featured ? "240px" : "190px" }}
-      >
-        {post.coverImage ? (
-          <Image
-            src={post.coverImage}
-            alt={post.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes={featured ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300">
-            <span className="font-bold text-2xl opacity-20">{post.title.substring(0, 2).toUpperCase()}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-col p-6 flex-1">
-        <h3
-          className="font-bold text-gray-900 leading-snug transition-colors duration-200 group-hover:text-[#17a2b8] mb-3"
-          style={{ fontSize: featured ? "1.25rem" : "1.125rem" }}
-        >
-          {post.title}
-        </h3>
-        
-        <p
-          className="text-sm leading-relaxed line-clamp-3 text-gray-500 mb-6"
-        >
-          {post.excerpt}
-        </p>
-
-        {/* Footer info */}
-        <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
-          <span className="font-medium tracking-wide">
-            {date}
-          </span>
-          <div className="flex gap-2 items-center flex-wrap">
-             <span className="border border-[#17a2b8] text-[#17a2b8] px-2.5 py-0.5 rounded-sm font-medium">
-                {post.category}
-             </span>
-             {/* If we want to show tags on the card, we could split and map them here, but category is enough to match Raccoon style */}
-          </div>
-        </div>
+      <Cover post={post} className="aspect-[16/10]" sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" />
+      <div className="flex flex-1 flex-col p-6">
+        <span className="w-fit rounded-full bg-cyan-50 px-3 py-1 text-xs font-bold text-cyan-800">{post.category}</span>
+        <h3 className="mt-4 line-clamp-2 text-xl font-bold leading-snug text-slate-950 transition group-hover:text-cyan-800">{post.title}</h3>
+        <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-500">{post.excerpt}</p>
+        <CardMeta date={date} readingTime={post.readingTime} />
       </div>
     </Link>
+  );
+}
+
+function Cover({ post, className, sizes }: { post: BlogPost; className: string; sizes: string }) {
+  return (
+    <div className={`relative overflow-hidden bg-gradient-to-br from-cyan-50 to-blue-100 ${className}`}>
+      {post.coverImage ? (
+        <Image src={post.coverImage} alt={post.title} fill className="object-cover transition duration-700 group-hover:scale-105" sizes={sizes} />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center text-5xl font-black text-cyan-700/15">{post.title.slice(0, 2).toUpperCase()}</div>
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/10 to-transparent" />
+    </div>
+  );
+}
+
+function CardMeta({ date, readingTime }: { date: string; readingTime: number }) {
+  return (
+    <div className="mt-auto flex items-center gap-4 border-t border-slate-100 pt-5 text-xs font-medium text-slate-400">
+      <span className="flex items-center gap-1.5"><CalendarDays size={14} /> {date}</span>
+      <span className="flex items-center gap-1.5"><Clock3 size={14} /> {readingTime || 1} phút đọc</span>
+    </div>
   );
 }

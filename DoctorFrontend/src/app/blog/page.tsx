@@ -1,24 +1,27 @@
-import { Footer } from "@/components/layout/Footer";
 import { BlogListing } from "@/components/blog/BlogListing";
 import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
+import { Footer } from "@/components/layout/Footer";
+import { API_BASE_URL } from "@/lib/blog-api";
+import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export const metadata = {
   title: "Kiến thức chăm sóc trẻ — Bác sĩ Nhi Đà Nẵng",
   description:
-    "Bài viết về dinh dưỡng, tiêm chủng, hô hấp và chăm sóc sức khỏe trẻ em từ ThS.BS. Nguyễn Thị Phương Thảo — Bác sĩ Nhi khoa tại Đà Nẵng.",
+    "Bài viết về dinh dưỡng, tiêm chủng, hô hấp và chăm sóc sức khỏe trẻ em được biên soạn bởi bác sĩ Nhi khoa.",
   alternates: { canonical: "/blog" },
 };
 
 async function getPosts() {
   try {
-    const res = await fetch("http://localhost:8080/api/public/blogs", { cache: "no-store" });
-    if (!res.ok) return [];
-    const data = await res.json();
+    const response = await fetch(`${API_BASE_URL}/api/public/blogs?size=30&sort=publishedAt,desc`, {
+      cache: "no-store",
+    });
+    if (!response.ok) return [];
+    const data = await response.json();
     return data.content || [];
-  } catch (error) {
-    console.error("Failed to fetch blogs:", error);
+  } catch {
     return [];
   }
 }
@@ -28,73 +31,77 @@ export default async function BlogPage() {
 
   return (
     <>
-      <main className="bg-gray-50 min-h-screen">
-        {/* Raccoon Tech Blog Style Hero */}
-        <section className="bg-[#17a2b8] pt-8 pb-0 overflow-hidden relative font-sans">
-          
-          {/* Nút trở về trang chủ */}
-          <Link 
-            href="/" 
-            className="absolute top-4 left-6 md:left-10 text-white/80 hover:text-white flex items-center gap-2 text-sm font-semibold z-30 transition-colors"
-          >
-            <span className="text-lg leading-none mb-1">&larr;</span> Trở về Trang chủ
-          </Link>
+      <main className="min-h-screen bg-slate-50">
+        <section className="relative overflow-hidden border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-blue-50">
+          <div className="pointer-events-none absolute -left-32 top-24 h-80 w-80 rounded-full bg-cyan-200/30 blur-3xl" />
+          <div className="pointer-events-none absolute right-0 top-0 h-96 w-96 rounded-full bg-blue-200/30 blur-3xl" />
 
-          <div className="container max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between mt-6">
-            {/* Left Content */}
-            <div className="md:w-1/2 py-6 md:py-8 z-10">
-              <h1 className="text-white font-black text-5xl md:text-6xl tracking-tighter mb-4 uppercase leading-[1.05] drop-shadow-sm">
-                Kiến thức<br />Y Khoa
-              </h1>
-              <p className="text-white text-lg md:text-lg opacity-95 max-w-lg mb-6 leading-relaxed font-medium drop-shadow-sm">
-                Những thông tin y khoa chính xác, dễ hiểu — được đội ngũ Bác sĩ biên soạn nhằm giúp cha mẹ đồng hành tốt hơn cùng con.
-              </p>
-              {/* Optional CTA Banner area similar to Raccoon */}
-              <div className="inline-flex flex-col bg-white/15 hover:bg-white/25 transition-colors border border-white/30 rounded-md px-6 py-3 cursor-pointer backdrop-blur-sm shadow-sm">
-                <span className="text-white text-xs opacity-90 font-bold tracking-wider uppercase mb-1">Cần tư vấn trực tiếp?</span>
-                <span className="text-white text-base font-bold">Đặt lịch khám ngay &gt;</span>
+          <div className="mx-auto max-w-7xl px-5 pb-14 pt-6 sm:px-6 lg:px-8 lg:pb-20">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition-colors hover:text-cyan-700"
+            >
+              <ArrowLeft size={17} /> Về trang chủ
+            </Link>
+
+            <div className="mt-10 grid items-center gap-10 lg:grid-cols-[1.08fr_.92fr] lg:gap-16">
+              <div className="relative z-10">
+                <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-200 bg-white/80 px-3 py-1.5 text-sm font-semibold text-cyan-800 shadow-sm backdrop-blur">
+                  <BadgeCheck size={16} /> Kiến thức được bác sĩ biên soạn
+                </div>
+                <h1 className="max-w-3xl text-4xl font-bold leading-[1.12] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+                  Kiến thức y khoa
+                  <span className="mt-2 block text-cyan-700">dễ hiểu cho cha mẹ</span>
+                </h1>
+                <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
+                  Thông tin chăm sóc trẻ chính xác, thực tế và dễ áp dụng, giúp cha mẹ tự tin đồng hành cùng con mỗi ngày.
+                </p>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <a
+                    href="#bai-viet"
+                    className="inline-flex items-center gap-2 rounded-xl bg-cyan-700 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-cyan-700/20 transition hover:-translate-y-0.5 hover:bg-cyan-800"
+                  >
+                    Khám phá bài viết <ArrowRight size={17} />
+                  </a>
+                  <Link
+                    href="/lien-he"
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-cyan-300 hover:text-cyan-800"
+                  >
+                    Đặt lịch tư vấn
+                  </Link>
+                </div>
+
+                <div className="mt-9 grid max-w-xl grid-cols-2 gap-3 sm:grid-cols-3">
+                  <TrustItem icon={<ShieldCheck size={18} />} text="Thông tin tin cậy" />
+                  <TrustItem icon={<BookOpen size={18} />} text={`${posts.length} bài hữu ích`} />
+                  <div className="hidden sm:block">
+                    <TrustItem icon={<BadgeCheck size={18} />} text="Dễ áp dụng" />
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            {/* Right Illustration */}
-            <div className="md:w-1/2 flex justify-end relative h-[250px] md:h-[320px] w-full mt-4 md:mt-0 opacity-95">
-              <Image 
-                src="/hero-illustration.png" 
-                alt="Medical Illustration" 
-                fill
-                className="object-contain object-right-bottom drop-shadow-xl"
-                priority
-              />
-            </div>
-          </div>
-          
-          {/* Black Sub-Nav Bar (Visual matching Raccoon) */}
-          <div className="bg-[#222222] py-4 text-white w-full border-t border-white/10 relative z-20">
-            <div className="container max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between text-sm font-medium">
-               <div className="flex gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
-                 <span className="cursor-pointer text-[#17a2b8] font-bold">Tất cả bài viết</span>
-                 <span className="cursor-pointer hover:text-[#17a2b8] text-gray-300 transition-colors">Dinh dưỡng</span>
-                 <span className="cursor-pointer hover:text-[#17a2b8] text-gray-300 transition-colors">Tiêm chủng</span>
-                 <span className="cursor-pointer hover:text-[#17a2b8] text-gray-300 transition-colors">Hô hấp</span>
-                 <span className="cursor-pointer hover:text-[#17a2b8] text-gray-300 transition-colors flex items-center gap-1">
-                   <span className="text-xs">⛶</span> Danh mục khác
-                 </span>
-               </div>
-               <div className="hidden md:flex relative ml-8 shrink-0">
-                 <input 
-                    type="text" 
-                    placeholder="Tìm kiếm..."
-                    className="rounded-full bg-[#333333] px-4 py-1.5 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-1 focus:ring-[#17a2b8] w-56 border-none" 
-                 />
-                 <span className="absolute right-3 top-1.5 text-gray-400 text-sm">🔍</span>
-               </div>
+
+              <div className="relative mx-auto w-full max-w-xl">
+                <div className="absolute inset-8 rounded-[2.5rem] bg-cyan-200/50 blur-2xl" />
+                <div className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/70 p-4 shadow-2xl shadow-cyan-900/10 backdrop-blur">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] bg-cyan-100">
+                    <Image
+                      src="/hero-illustration.png"
+                      alt="Bác sĩ tư vấn chăm sóc sức khỏe cho trẻ"
+                      fill
+                      priority
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 90vw, 42vw"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Listing */}
-        <section className="py-16">
-          <div className="container max-w-7xl">
+        <section id="bai-viet" className="scroll-mt-8 py-14 sm:py-20">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <BlogListing posts={posts} />
           </div>
         </section>
@@ -102,5 +109,14 @@ export default async function BlogPage() {
       <Footer />
       <ChatbotButton />
     </>
+  );
+}
+
+function TrustItem({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <div className="flex items-center gap-2 rounded-xl border border-white bg-white/70 px-3 py-2.5 text-xs font-semibold text-slate-600 shadow-sm">
+      <span className="text-cyan-700">{icon}</span>
+      {text}
+    </div>
   );
 }
