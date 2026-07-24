@@ -1,11 +1,13 @@
 "use client";
 
-import { FileText, Home, LayoutDashboard, LogOut, Stethoscope } from "lucide-react";
+import { CalendarDays, FileText, Home, LayoutDashboard, LogOut, Stethoscope, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { apiRequest } from "@/lib/blog-api";
 
 const navigation = [
+  { href: "/admin/appointments", label: "Lịch hẹn", icon: CalendarDays },
+  { href: "/admin/patients", label: "Bệnh nhân", icon: Users },
   { href: "/admin", label: "Tổng quan", icon: LayoutDashboard },
   { href: "/admin/blog", label: "Bài viết", icon: FileText },
 ];

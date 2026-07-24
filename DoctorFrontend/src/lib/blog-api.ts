@@ -36,6 +36,14 @@ export type BlogPage = {
   totalPages: number;
 };
 
+export type BlogRevision = {
+  id: number;
+  title: string;
+  excerpt: string;
+  content: string;
+  createdAt: string;
+};
+
 async function parseError(response: Response) {
   try {
     const body = await response.json();

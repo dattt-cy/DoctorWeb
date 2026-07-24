@@ -61,6 +61,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
   const post = await getPost(params.slug);
   if (!post) notFound();
   const related = await getRelatedPosts(post.slug);
+  const { html: articleContent, headings } = buildTableOfContents(post.content || "");
   const date = post.publishedAt
     ? new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "long", year: "numeric" }).format(new Date(post.publishedAt))
     : "Mới cập nhật";
@@ -124,6 +125,18 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
           <div className="mx-auto grid max-w-5xl gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_240px] lg:py-16">
             <div className="min-w-0">
+              {headings.length >= 2 && (
+                <nav aria-label="Mục lục bài viết" className="mb-10 rounded-2xl border border-cyan-100 bg-cyan-50/60 p-5 sm:p-6">
+                  <p className="font-bold text-slate-900">Nội dung bài viết</p>
+                  <ol className="mt-3 space-y-2 text-sm">
+                    {headings.map((heading) => (
+                      <li key={heading.id} className={heading.level === 3 ? "ml-5" : ""}>
+                        <a href={`#${heading.id}`} className="text-cyan-800 hover:underline">{heading.text}</a>
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              )}
               <article
                 className="prose prose-lg prose-slate max-w-none
                   prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-950
@@ -137,7 +150,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                   prose-blockquote:rounded-r-xl prose-blockquote:border-cyan-500 prose-blockquote:bg-cyan-50 prose-blockquote:px-6 prose-blockquote:py-3 prose-blockquote:not-italic prose-blockquote:text-slate-700
                   prose-table:overflow-hidden prose-table:rounded-xl prose-table:border prose-table:border-slate-200
                   prose-th:bg-slate-50 prose-th:px-4 prose-th:py-3 prose-td:px-4 prose-td:py-3"
-                dangerouslySetInnerHTML={{ __html: post.content || "" }}
+                dangerouslySetInnerHTML={{ __html: articleContent }}
               />
 
               {post.tags && (
@@ -197,4 +210,21 @@ export default async function BlogDetailPage({ params }: PageProps) {
       <ChatbotButton />
     </>
   );
+}
+
+function buildTableOfContents(content: string) {
+  const headings: { id: string; text: string; level: number }[] = [];
+  const used = new Map<string, number>();
+  const html = content.replace(/<h([23])([^>]*)>(.*?)<\/h\1>/gi, (_match, level, attributes, innerHtml) => {
+    const text = innerHtml.replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").trim();
+    let base = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+      .replace(/đ/g, "d").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "noi-dung";
+    const count = used.get(base) || 0;
+    used.set(base, count + 1);
+    if (count) base = `${base}-${count + 1}`;
+    headings.push({ id: base, text, level: Number(level) });
+    const cleanAttributes = String(attributes).replace(/\s+id=(["']).*?\1/i, "");
+    return `<h${level}${cleanAttributes} id="${base}">${innerHtml}</h${level}>`;
+  });
+  return { html, headings };
 }

@@ -2,6 +2,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
+import { AppointmentForm } from "@/components/appointment/AppointmentForm";
 
 export const metadata = {
   title: "Liên hệ & Đặt lịch — ThS.BS. Nguyễn Thị Phương Thảo",
@@ -36,6 +37,7 @@ export default function LienHePage() {
             </div>
           </div>
         </section>
+        <AppointmentForm />
         <ContactSection />
       </main>
       <Footer />

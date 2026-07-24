@@ -21,15 +21,15 @@ public class AppConfig {
             @Value("${app.admin.username}") String username,
             @Value("${app.admin.password}") String password,
             PasswordEncoder passwordEncoder) {
-        var admin = User.withUsername(username)
-                .password(passwordEncoder.encode(password))
-                .roles("ADMIN")
-                .build();
+        var encodedPassword = passwordEncoder.encode(password);
         return requestedUsername -> {
-            if (!admin.getUsername().equals(requestedUsername)) {
+            if (!username.equals(requestedUsername)) {
                 throw new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found");
             }
-            return admin;
+            return User.withUsername(username)
+                    .password(encodedPassword)
+                    .roles("ADMIN")
+                    .build();
         };
     }
 }

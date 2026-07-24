@@ -1,6 +1,7 @@
 # Node / Frontend
 DoctorFrontend/node_modules/
 DoctorFrontend/.next/
+DoctorFrontend/.next-build-check/
 DoctorFrontend/out/
 DoctorFrontend/.env*.local
 

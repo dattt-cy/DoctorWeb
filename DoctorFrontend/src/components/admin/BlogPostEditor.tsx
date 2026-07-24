@@ -17,6 +17,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import RichTextEditor from "./RichTextEditor";
 import {
   AdminBlogPost,
+  BlogRevision,
   apiRequest,
   BlogPostPayload,
   BlogStatus,
@@ -54,6 +55,8 @@ export default function BlogPostEditor({ postId }: { postId?: string }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [showPublish, setShowPublish] = useState(false);
+  const [revisions, setRevisions] = useState<BlogRevision[]>([]);
+  const [loadingRevisions, setLoadingRevisions] = useState(false);
   const initialized = useRef(false);
 
   const update = <K extends keyof BlogPostPayload>(key: K, value: BlogPostPayload[K]) => {
@@ -106,6 +109,39 @@ export default function BlogPostEditor({ postId }: { postId?: string }) {
     }, 1200);
     return () => window.clearTimeout(timer);
   }, [post, saveState, storageKey]);
+
+  useEffect(() => {
+    if (!postId || !initialized.current) return;
+    const timer = window.setTimeout(async () => {
+      try {
+        await apiRequest(`/api/admin/blogs/${postId}/autosave`, {
+          method: "PUT",
+          body: JSON.stringify(post),
+        });
+        setLastSavedAt(new Date());
+        setSaveState("saved");
+      } catch {
+        setSaveState("error");
+      }
+    }, 30000);
+    return () => window.clearTimeout(timer);
+  }, [post, postId]);
+
+  const loadRevisions = async () => {
+    if (!postId) return;
+    setLoadingRevisions(true);
+    try {
+      setRevisions(await apiRequest<BlogRevision[]>(`/api/admin/blogs/${postId}/revisions`));
+    } finally {
+      setLoadingRevisions(false);
+    }
+  };
+
+  const restoreRevision = async (revisionId: number) => {
+    if (!postId || !window.confirm("Khôi phục phiên bản này? Nội dung hiện tại vẫn được lưu vào lịch sử.")) return;
+    await apiRequest(`/api/admin/blogs/${postId}/revisions/${revisionId}/restore`, { method: "POST" });
+    window.location.reload();
+  };
 
   useEffect(() => {
     const guard = (event: BeforeUnloadEvent) => {
@@ -282,6 +318,13 @@ export default function BlogPostEditor({ postId }: { postId?: string }) {
               />
               <div className="mt-2 text-right text-xs text-slate-400">{post.excerpt.length}/500</div>
             </div>
+            <ContentTools
+              hasContent={Boolean(plainText)}
+              onInsert={(html) => update("content", `${post.content}${html}`)}
+              onTemplate={(html) => {
+                if (!plainText || window.confirm("Thay nội dung hiện tại bằng mẫu đã chọn?")) update("content", html);
+              }}
+            />
             <RichTextEditor content={post.content} onChange={(value) => update("content", value)} />
             <div className="flex gap-4 border-t border-slate-100 px-6 py-3 text-xs text-slate-500">
               <span>{wordCount.toLocaleString("vi-VN")} từ</span>
@@ -342,6 +385,23 @@ export default function BlogPostEditor({ postId }: { postId?: string }) {
               <p className="mt-1 line-clamp-2 text-sm leading-5 text-slate-600">{autoSeoDescription || "Mô tả bài viết sẽ xuất hiện tại đây."}</p>
             </div>
           </Panel>
+          {postId && (
+            <Panel title="Lịch sử phiên bản">
+              <button type="button" onClick={loadRevisions} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                {loadingRevisions ? "Đang tải…" : "Xem các phiên bản đã lưu"}
+              </button>
+              {revisions.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {revisions.map((revision) => (
+                    <div key={revision.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 p-3 text-xs">
+                      <div className="min-w-0"><p className="truncate font-semibold text-slate-700">{revision.title}</p><p className="text-slate-400">{new Date(revision.createdAt).toLocaleString("vi-VN")}</p></div>
+                      <button type="button" onClick={() => restoreRevision(revision.id)} className="font-semibold text-blue-600">Khôi phục</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Panel>
+          )}
         </aside>
       </main>
 
@@ -428,6 +488,35 @@ function CoverPositionEditor({
         <button onPointerDown={(event) => event.stopPropagation()} onClick={onRemove} className="absolute right-2 top-2 rounded-lg bg-white/95 p-2 text-red-600 shadow hover:bg-white" aria-label="Xóa ảnh"><Trash2 size={16} /></button>
       </div>
       <button type="button" onClick={() => onChange(50, 50)} className="mt-2 text-xs font-medium text-slate-500 hover:text-blue-600">Đưa ảnh về chính giữa</button>
+    </div>
+  );
+}
+
+const BLOG_TEMPLATES = {
+  "Bệnh thường gặp": `<h2>Tổng quan</h2><p></p><h2>Nguyên nhân</h2><p></p><h2>Dấu hiệu thường gặp</h2><p></p><h2>Cách chăm sóc tại nhà</h2><p></p><h2>Khi nào cần đưa trẻ đi khám?</h2><p></p><h2>Cách phòng ngừa</h2><p></p>`,
+  "Dinh dưỡng": `<h2>Vì sao vấn đề này quan trọng?</h2><p></p><h2>Nhu cầu theo độ tuổi</h2><p></p><h2>Thực phẩm nên lựa chọn</h2><p></p><h2>Thực phẩm cần hạn chế</h2><p></p><h2>Gợi ý thực đơn</h2><p></p><h2>Lưu ý từ bác sĩ</h2><p></p>`,
+  "Khi nào cần đi khám": `<h2>Dấu hiệu có thể theo dõi tại nhà</h2><p></p><h2>Dấu hiệu cần đặt lịch khám</h2><p></p><h2>Dấu hiệu nguy hiểm cần cấp cứu</h2><p></p><h2>Cha mẹ cần chuẩn bị gì?</h2><p></p>`,
+};
+
+function ContentTools({ hasContent, onInsert, onTemplate }: { hasContent: boolean; onInsert: (html: string) => void; onTemplate: (html: string) => void }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 bg-slate-50 px-5 py-3">
+      <select
+        defaultValue=""
+        onChange={(event) => {
+          const html = BLOG_TEMPLATES[event.target.value as keyof typeof BLOG_TEMPLATES];
+          if (html) onTemplate(html);
+          event.target.value = "";
+        }}
+        className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+      >
+        <option value="">Chọn mẫu bài viết…</option>
+        {Object.keys(BLOG_TEMPLATES).map((name) => <option key={name}>{name}</option>)}
+      </select>
+      <span className="hidden text-xs text-slate-400 sm:inline">{hasContent ? "Chèn thêm khối:" : "Chọn mẫu để bắt đầu nhanh"}</span>
+      <button type="button" onClick={() => onInsert(`<div class="medical-note"><h3>Lưu ý từ bác sĩ</h3><p></p></div>`)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold">Lưu ý</button>
+      <button type="button" onClick={() => onInsert(`<div class="medical-warning"><h3>Khi nào cần đi khám?</h3><p></p></div>`)} className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">Khi nào đi khám</button>
+      <button type="button" onClick={() => onInsert(`<h2>Câu hỏi thường gặp</h2><h3>Câu hỏi</h3><p>Trả lời: </p>`)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold">FAQ</button>
     </div>
   );
 }

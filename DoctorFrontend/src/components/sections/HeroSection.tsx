@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Hospital, Check, BadgeCheck, ShieldCheck, Clock3 } from "lucide-react";
 import { DOCTOR_INFO } from "@/constants/doctor";
+import { createAppointment, getAvailability, Slot } from "@/lib/appointment-api";
 
 const stats = [
   { value: "10+", label: "Năm kinh nghiệm" },
@@ -21,25 +22,11 @@ interface AppointmentForm {
 
 
 // Khung giờ 8:00–17:00, mỗi tiếng 1 suất, tối đa 6 ca/giờ
-interface TimeSlot {
-  time: string;
-  total: number;
-  booked: number;
-}
-
-// Mock data: mỗi giờ có 6 suất, số đã đặt là mock
-const TIME_SLOTS: TimeSlot[] = [
-  { time: "08:00", total: 6, booked: 4 },
-  { time: "09:00", total: 6, booked: 2 },
-  { time: "10:00", total: 6, booked: 6 },
-  { time: "11:00", total: 6, booked: 1 },
-  { time: "12:00", total: 6, booked: 5 },
-  { time: "13:00", total: 6, booked: 0 },
-  { time: "14:00", total: 6, booked: 3 },
-  { time: "15:00", total: 6, booked: 6 },
-  { time: "16:00", total: 6, booked: 2 },
-  { time: "17:00", total: 6, booked: 4 },
-];
+const today = () => {
+  const date = new Date();
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().slice(0, 10);
+};
 
 const INITIAL_FORM: AppointmentForm = {
   name: "",
@@ -53,6 +40,10 @@ export function HeroSection() {
   const [form, setForm] = useState<AppointmentForm>(INITIAL_FORM);
   const [submitted, setSubmitted] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
+  const [timeSlots, setTimeSlots] = useState<Slot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
   const timeRef = useRef<HTMLDivElement>(null);
 
   // Click-away đóng dropdown
@@ -67,9 +58,49 @@ export function HeroSection() {
     return () => document.removeEventListener("mousedown", handler);
   }, [timeOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!form.date) {
+      setTimeSlots([]);
+      return;
+    }
+    let active = true;
+    setLoadingSlots(true);
+    setForm((previous) => ({ ...previous, time: "" }));
+    getAvailability(form.date)
+      .then((slots) => active && setTimeSlots(slots))
+      .catch((error) => active && setFormError(error.message))
+      .finally(() => active && setLoadingSlots(false));
+    return () => { active = false; };
+  }, [form.date]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setFormError("");
+    let phone = form.phone.replace(/[^\d+]/g, "");
+    if (phone.startsWith("+84")) phone = `0${phone.slice(3)}`;
+    else if (phone.startsWith("84") && phone.length === 11) phone = `0${phone.slice(2)}`;
+    if (!/^0[35789]\d{8}$/.test(phone)) {
+      return setFormError("Số điện thoại phải là số di động Việt Nam gồm 10 chữ số.");
+    }
+    if (!form.date || !form.time || new Date(`${form.date}T${form.time}`).getTime() <= Date.now()) {
+      return setFormError("Ngày và giờ khám phải ở trong tương lai.");
+    }
+    setSubmitting(true);
+    try {
+      await createAppointment({
+        patientName: form.name,
+        phone,
+        appointmentDate: form.date,
+        appointmentTime: form.time,
+        reasonForVisit: form.symptoms || null,
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : "Không thể đăng ký lịch khám.");
+      setTimeSlots(await getAvailability(form.date).catch(() => timeSlots));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const set = (field: keyof AppointmentForm) => (
@@ -219,6 +250,8 @@ export function HeroSection() {
                       id="ap-phone"
                       type="tel"
                       required
+                      pattern="(?:0[35789](?:[ .]?\d){8}|\+84[35789](?:[ .]?\d){8})"
+                      title="Nhập số di động Việt Nam, ví dụ 0912 345 678"
                       placeholder="0912 345 678"
                       value={form.phone}
                       onChange={set("phone")}
@@ -239,6 +272,7 @@ export function HeroSection() {
                         id="ap-date"
                         type="date"
                         required
+                        min={today()}
                         value={form.date}
                         onChange={set("date")}
                         className={inputClass}
@@ -309,13 +343,11 @@ export function HeroSection() {
                           {/* Header */}
                           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.62rem", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.08em", paddingBottom: "6px", borderBottom: "1px solid #f3f4f6", marginBottom: "2px" }}>
                             <span>Giờ khám</span>
-                            <span>Còn chỗ</span>
+                            <span>Trạng thái</span>
                           </div>
-                          {TIME_SLOTS.map((slot) => {
-                            const available = slot.total - slot.booked;
-                            const isFull = available === 0;
+                          {timeSlots.map((slot) => {
+                            const isFull = !slot.available;
                             const sel = form.time === slot.time;
-                            const pct = ((slot.total - available) / slot.total) * 100;
                             return (
                               <button
                                 key={slot.time}
@@ -343,14 +375,8 @@ export function HeroSection() {
                                 {/* Time label */}
                                 <span style={{ fontVariantNumeric: "tabular-nums", minWidth: 38 }}>{slot.time}</span>
 
-                                {/* Progress bar */}
-                                <div style={{ flex: 1, height: 4, borderRadius: 99, backgroundColor: sel ? "rgba(255,255,255,0.3)" : "#e5e7eb", overflow: "hidden" }}>
-                                  <div style={{ height: "100%", width: `${pct}%`, borderRadius: 99, backgroundColor: sel ? "#fff" : isFull ? "#ef4444" : pct >= 67 ? "#f59e0b" : "var(--color-primary)", transition: "width 300ms" }} />
-                                </div>
-
-                                {/* Slot count */}
-                                <span style={{ fontSize: "0.7rem", fontWeight: 600, minWidth: 40, textAlign: "right", color: sel ? "#fff" : isFull ? "#ef4444" : available <= 2 ? "#f59e0b" : "var(--color-primary)" }}>
-                                  {isFull ? "Hết chỗ" : `${available}/6 chỗ`}
+                                <span style={{ fontSize: "0.7rem", fontWeight: 600, textAlign: "right", color: sel ? "#fff" : "#ef4444" }}>
+                                  {isFull ? "Hết chỗ" : ""}
                                 </span>
                               </button>
                             );
@@ -386,12 +412,19 @@ export function HeroSection() {
                     />
                   </div>
 
+                  {formError && (
+                    <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
+                      {formError}
+                    </p>
+                  )}
+
                   <button
                     type="submit"
+                    disabled={submitting}
                     className="w-full py-3.5 rounded-[var(--radius-md)] text-white text-base font-bold tracking-widest transition-opacity hover:opacity-90 mt-1"
                     style={{ backgroundColor: "var(--color-primary)" }}
                   >
-                    ĐĂNG KÝ
+                    {submitting ? "ĐANG ĐĂNG KÝ..." : "ĐĂNG KÝ"}
                   </button>
                 </form>
               )}

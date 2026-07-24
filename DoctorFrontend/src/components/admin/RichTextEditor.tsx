@@ -110,26 +110,24 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             /* H1 is rarely used in body, but keep it */
             h1 { font-size: 2.25rem; }
             
-            /* Raccoon Tech Blog Style for H2 */
             h2 { 
-              font-size: 1.5rem; 
-              background-color: #17a2b8; 
-              color: white; 
-              padding: 12px 20px; 
-              border-radius: 4px;
-              margin-top: 2.5rem;
-              margin-bottom: 1.25rem;
+              font-size: 1.55rem;
+              color: #0f172a;
+              background: linear-gradient(90deg, #ecfeff 0%, rgba(236, 254, 255, 0) 88%);
+              border-left: 4px solid #0891b2;
+              padding: 10px 16px;
+              border-radius: 0 10px 10px 0;
+              margin-top: 2.25rem;
+              margin-bottom: 1rem;
             }
             
-            /* Raccoon Tech Blog Style for H3 */
             h3 { 
-              font-size: 1.25rem; 
-              border-left: 4px solid #17a2b8; 
-              padding-left: 1rem; 
-              padding-top: 4px;
-              padding-bottom: 4px;
-              margin-top: 2rem;
-              margin-bottom: 1rem;
+              font-size: 1.2rem;
+              color: #0f172a;
+              border-left: 3px solid #67e8f9;
+              padding-left: 0.8rem;
+              margin-top: 1.75rem;
+              margin-bottom: 0.75rem;
             }
 
             p { margin-top: 0; margin-bottom: 1rem; }

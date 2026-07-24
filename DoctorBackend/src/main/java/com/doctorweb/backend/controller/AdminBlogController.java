@@ -1,6 +1,7 @@
 package com.doctorweb.backend.controller;
 
 import com.doctorweb.backend.domain.BlogPost;
+import com.doctorweb.backend.domain.BlogPostRevision;
 import com.doctorweb.backend.service.BlogService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,26 @@ public class AdminBlogController {
     @PutMapping("/{id}")
     public ResponseEntity<BlogPost> updatePost(@PathVariable Long id, @Valid @RequestBody BlogPost post) {
         return ResponseEntity.ok(blogService.updatePost(id, post));
+    }
+
+    @PutMapping("/{id}/autosave")
+    public ResponseEntity<BlogPost> autosavePost(@PathVariable Long id, @Valid @RequestBody BlogPost post) {
+        return ResponseEntity.ok(blogService.autosavePost(id, post));
+    }
+
+    @GetMapping("/{id}/revisions")
+    public ResponseEntity<java.util.List<BlogPostRevision>> getRevisions(@PathVariable Long id) {
+        return ResponseEntity.ok(blogService.getRevisions(id));
+    }
+
+    @PostMapping("/{id}/revisions/{revisionId}/restore")
+    public ResponseEntity<BlogPost> restoreRevision(@PathVariable Long id, @PathVariable Long revisionId) {
+        return ResponseEntity.ok(blogService.restoreRevision(id, revisionId));
+    }
+
+    @PostMapping("/maintenance/repair-encoding")
+    public ResponseEntity<java.util.Map<String, Integer>> repairEncoding() {
+        return ResponseEntity.ok(java.util.Map.of("repairedPosts", blogService.repairVietnameseEncoding()));
     }
 
     @DeleteMapping("/{id}")

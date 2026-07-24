@@ -2,6 +2,8 @@ package com.doctorweb.backend.service;
 
 import com.doctorweb.backend.domain.BlogPost;
 import com.doctorweb.backend.repository.BlogPostRepository;
+import com.doctorweb.backend.repository.BlogPostRevisionRepository;
+import com.doctorweb.backend.domain.BlogPostRevision;
 import com.doctorweb.backend.global.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +14,7 @@ import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.regex.Pattern;
+import java.nio.charset.StandardCharsets;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 
@@ -20,9 +23,11 @@ import org.jsoup.safety.Safelist;
 public class BlogService {
 
     private final BlogPostRepository blogPostRepository;
+    private final BlogPostRevisionRepository revisionRepository;
 
-    public BlogService(BlogPostRepository blogPostRepository) {
+    public BlogService(BlogPostRepository blogPostRepository, BlogPostRevisionRepository revisionRepository) {
         this.blogPostRepository = blogPostRepository;
+        this.revisionRepository = revisionRepository;
     }
 
     public Page<BlogPost> getAllPosts(Pageable pageable) {
@@ -67,6 +72,15 @@ public class BlogService {
 
     public BlogPost updatePost(Long id, BlogPost updatedPost) {
         BlogPost existingPost = getPostById(id);
+        createRevision(existingPost);
+        return applyUpdate(existingPost, updatedPost);
+    }
+
+    public BlogPost autosavePost(Long id, BlogPost updatedPost) {
+        return applyUpdate(getPostById(id), updatedPost);
+    }
+
+    private BlogPost applyUpdate(BlogPost existingPost, BlogPost updatedPost) {
         
         if (!existingPost.getTitle().equals(updatedPost.getTitle())) {
             existingPost.setTitle(updatedPost.getTitle());
@@ -98,6 +112,87 @@ public class BlogService {
         }
         
         return blogPostRepository.save(existingPost);
+    }
+
+    public java.util.List<BlogPostRevision> getRevisions(Long postId) {
+        getPostById(postId);
+        return revisionRepository.findTop20ByPostIdOrderByCreatedAtDesc(postId);
+    }
+
+    public BlogPost restoreRevision(Long postId, Long revisionId) {
+        BlogPost post = getPostById(postId);
+        BlogPostRevision revision = revisionRepository.findById(revisionId)
+                .filter(item -> item.getPostId().equals(postId))
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiên bản"));
+        createRevision(post);
+        post.setTitle(revision.getTitle());
+        post.setExcerpt(revision.getExcerpt());
+        post.setContent(revision.getContent());
+        post.setCategory(revision.getCategory());
+        post.setCoverImage(revision.getCoverImage());
+        post.setSeoTitle(revision.getSeoTitle());
+        post.setSeoDescription(revision.getSeoDescription());
+        post.setTags(revision.getTags());
+        post.setReadingTime(calculateReadingTime(post.getContent()));
+        return blogPostRepository.save(post);
+    }
+
+    private void createRevision(BlogPost post) {
+        revisionRepository.save(BlogPostRevision.builder()
+                .postId(post.getId()).title(post.getTitle()).excerpt(post.getExcerpt())
+                .content(post.getContent()).category(post.getCategory()).coverImage(post.getCoverImage())
+                .seoTitle(post.getSeoTitle()).seoDescription(post.getSeoDescription()).tags(post.getTags())
+                .createdAt(LocalDateTime.now()).build());
+    }
+
+    public int repairVietnameseEncoding() {
+        int repaired = 0;
+        for (BlogPost post : blogPostRepository.findAll()) {
+            boolean changed = false;
+            String title = repairMojibake(post.getTitle());
+            String excerpt = repairMojibake(post.getExcerpt());
+            String content = repairMojibake(post.getContent());
+            String category = repairMojibake(post.getCategory());
+            String seoTitle = repairMojibake(post.getSeoTitle());
+            String seoDescription = repairMojibake(post.getSeoDescription());
+            String tags = repairMojibake(post.getTags());
+            if (!java.util.Objects.equals(title, post.getTitle())) { post.setTitle(title); changed = true; }
+            if (!java.util.Objects.equals(excerpt, post.getExcerpt())) { post.setExcerpt(excerpt); changed = true; }
+            if (!java.util.Objects.equals(content, post.getContent())) { post.setContent(content); changed = true; }
+            if (!java.util.Objects.equals(category, post.getCategory())) { post.setCategory(category); changed = true; }
+            if (!java.util.Objects.equals(seoTitle, post.getSeoTitle())) { post.setSeoTitle(seoTitle); changed = true; }
+            if (!java.util.Objects.equals(seoDescription, post.getSeoDescription())) { post.setSeoDescription(seoDescription); changed = true; }
+            if (!java.util.Objects.equals(tags, post.getTags())) { post.setTags(tags); changed = true; }
+            if (changed) { blogPostRepository.save(post); repaired++; }
+        }
+        for (BlogPostRevision revision : revisionRepository.findAll()) {
+            revision.setTitle(repairMojibake(revision.getTitle()));
+            revision.setExcerpt(repairMojibake(revision.getExcerpt()));
+            revision.setContent(repairMojibake(revision.getContent()));
+            revision.setCategory(repairMojibake(revision.getCategory()));
+            revision.setSeoTitle(repairMojibake(revision.getSeoTitle()));
+            revision.setSeoDescription(repairMojibake(revision.getSeoDescription()));
+            revision.setTags(repairMojibake(revision.getTags()));
+            revisionRepository.save(revision);
+        }
+        return repaired;
+    }
+
+    private String repairMojibake(String value) {
+        if (value == null) return null;
+        String current = value;
+        for (int i = 0; i < 3 && mojibakeScore(current) > 0; i++) {
+            String decoded = new String(current.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            if (decoded.indexOf('\uFFFD') >= 0 || mojibakeScore(decoded) >= mojibakeScore(current)) break;
+            current = decoded;
+        }
+        return current;
+    }
+
+    private long mojibakeScore(String value) {
+        return value.chars().filter(ch ->
+                ch == 0x00C3 || ch == 0x00C2 || ch == 0x00C4 || ch == 0x00C6
+        ).count();
     }
 
     public void deletePost(Long id) {
