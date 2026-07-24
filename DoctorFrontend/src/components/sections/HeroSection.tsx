@@ -290,6 +290,7 @@ export function HeroSection() {
                       {/* Trigger */}
                       <button
                         type="button"
+                        disabled={loadingSlots || !form.date}
                         onClick={() => setTimeOpen((v) => !v)}
                         style={{
                           width: "100%",
@@ -310,7 +311,7 @@ export function HeroSection() {
                           textAlign: "left",
                         }}
                       >
-                        <span>{form.time || "-- Chọn giờ --"}</span>
+                        <span>{loadingSlots ? "Đang tải..." : form.time || "-- Chọn giờ --"}</span>
                         <svg
                           width="14" height="14" viewBox="0 0 24 24" fill="none"
                           style={{ flexShrink: 0, transform: timeOpen ? "rotate(180deg)" : "none", transition: "transform 200ms" }}
