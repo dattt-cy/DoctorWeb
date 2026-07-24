@@ -29,8 +29,9 @@ async function getPosts() {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams?: { q?: string };
+  searchParams?: Promise<{ q?: string }>;
 }) {
+  const resolvedSearchParams = await searchParams;
   const posts = await getPosts();
 
   return (
@@ -106,7 +107,7 @@ export default async function BlogPage({
 
         <section id="bai-viet" className="scroll-mt-8 py-14 sm:py-20">
           <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <BlogListing posts={posts} initialQuery={searchParams?.q || ""} />
+            <BlogListing posts={posts} initialQuery={resolvedSearchParams?.q || ""} />
           </div>
         </section>
       </main>

@@ -2,26 +2,28 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { apiRequest } from "@/lib/blog-api";
 import { Appointment, Patient } from "@/lib/appointment-api";
 
 type Detail = { patient: Patient; appointments: Appointment[] };
 
-export default function PatientDetailPage({ params }: { params: { id: string } }) {
+export default function PatientDetailPage() {
+  const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<Detail | null>(null);
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    apiRequest<Detail>(`/api/admin/patients/${params.id}`).then(setData).catch((e) => setError(e.message));
-  }, [params.id]);
+    apiRequest<Detail>(`/api/admin/patients/${id}`).then(setData).catch((e) => setError(e.message));
+  }, [id]);
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     try {
-      const patient = await apiRequest<Patient>(`/api/admin/patients/${params.id}`, {
+      const patient = await apiRequest<Patient>(`/api/admin/patients/${id}`, {
         method: "PUT",
         body: JSON.stringify({
           fullName: form.get("fullName"),

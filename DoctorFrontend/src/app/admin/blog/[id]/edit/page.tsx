@@ -1,5 +1,6 @@
 import BlogPostEditor from "@/components/admin/BlogPostEditor";
 
-export default function EditBlogPost({ params }: { params: { id: string } }) {
-  return <BlogPostEditor postId={params.id} />;
+export default async function EditBlogPost({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <BlogPostEditor postId={id} />;
 }
