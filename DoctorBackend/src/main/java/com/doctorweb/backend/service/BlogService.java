@@ -12,6 +12,8 @@ import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.regex.Pattern;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 
 @Service
 @Transactional
@@ -41,9 +43,15 @@ public class BlogService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết"));
     }
 
+    public BlogPost getPublishedPostBySlug(String slug) {
+        return blogPostRepository.findBySlugAndStatus(slug, "PUBLISHED")
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết"));
+    }
+
     public BlogPost createPost(BlogPost post) {
         post.setStatus(normalizeStatus(post.getStatus()));
         post.setSlug(generateSlug(post.getTitle()));
+        post.setContent(sanitizeContent(post.getContent()));
         post.setReadingTime(calculateReadingTime(post.getContent()));
         if (post.getFeatured() == null) {
             post.setFeatured(false);
@@ -62,19 +70,23 @@ public class BlogService {
         
         if (!existingPost.getTitle().equals(updatedPost.getTitle())) {
             existingPost.setTitle(updatedPost.getTitle());
-            existingPost.setSlug(generateSlug(updatedPost.getTitle()));
+            // Giữ URL ổn định sau khi tạo để không làm hỏng backlink và thứ hạng SEO.
         }
         
         existingPost.setExcerpt(updatedPost.getExcerpt());
-        existingPost.setContent(updatedPost.getContent());
-        existingPost.setReadingTime(calculateReadingTime(updatedPost.getContent()));
+        existingPost.setContent(sanitizeContent(updatedPost.getContent()));
+        existingPost.setReadingTime(calculateReadingTime(existingPost.getContent()));
         existingPost.setCategory(updatedPost.getCategory());
         existingPost.setCoverImage(updatedPost.getCoverImage());
+        existingPost.setCoverImageAlt(updatedPost.getCoverImageAlt());
+        existingPost.setCoverPositionX(updatedPost.getCoverPositionX() == null ? 50 : updatedPost.getCoverPositionX());
+        existingPost.setCoverPositionY(updatedPost.getCoverPositionY() == null ? 50 : updatedPost.getCoverPositionY());
         if (updatedPost.getFeatured() != null) {
             existingPost.setFeatured(updatedPost.getFeatured());
         }
         existingPost.setSeoTitle(updatedPost.getSeoTitle());
         existingPost.setSeoDescription(updatedPost.getSeoDescription());
+        existingPost.setPrimaryKeyword(updatedPost.getPrimaryKeyword());
         existingPost.setTags(updatedPost.getTags());
         
         String newStatus = normalizeStatus(updatedPost.getStatus());
@@ -93,7 +105,7 @@ public class BlogService {
     }
 
     public void incrementViewCount(String slug) {
-        BlogPost post = getPostBySlug(slug);
+        BlogPost post = getPublishedPostBySlug(slug);
         if (post.getViewCount() == null) {
             post.setViewCount(1L);
         } else {
@@ -116,6 +128,16 @@ public class BlogService {
         }
         int wordCount = plainText.split("\\s+").length;
         return Math.max(1, (int) Math.ceil(wordCount / 220.0));
+    }
+
+    private String sanitizeContent(String html) {
+        if (html == null) return "";
+        Safelist safelist = Safelist.relaxed()
+                .addTags("figure", "figcaption")
+                .addAttributes("a", "target", "rel", "id")
+                .addAttributes(":all", "class")
+                .addProtocols("img", "src", "http", "https");
+        return Jsoup.clean(html, "", safelist, new org.jsoup.nodes.Document.OutputSettings().prettyPrint(false));
     }
 
     private String generateSlug(String title) {

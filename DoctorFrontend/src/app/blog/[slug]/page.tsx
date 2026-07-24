@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: post.seoDescription || post.excerpt,
       publishedTime: post.publishedAt,
       authors: [SITE.doctor],
-      images: post.coverImage ? [{ url: post.coverImage, alt: post.title }] : [],
+      images: post.coverImage ? [{ url: post.coverImage, alt: post.coverImageAlt || post.title }] : [],
     },
   };
 }
@@ -110,7 +110,15 @@ export default async function BlogDetailPage({ params }: PageProps) {
         <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
           {post.coverImage && (
             <div className="relative -mt-1 aspect-[16/8] overflow-hidden rounded-2xl bg-slate-100 shadow-xl shadow-slate-200/60 sm:rounded-3xl">
-              <Image src={post.coverImage} alt={post.title} fill priority className="object-cover" sizes="(max-width: 1280px) 100vw, 1152px" />
+              <Image
+                src={post.coverImage}
+                alt={post.coverImageAlt || post.title}
+                fill
+                priority
+                className="object-cover"
+                style={{ objectPosition: `${post.coverPositionX ?? 50}% ${post.coverPositionY ?? 50}%` }}
+                sizes="(max-width: 1280px) 100vw, 1152px"
+              />
             </div>
           )}
 

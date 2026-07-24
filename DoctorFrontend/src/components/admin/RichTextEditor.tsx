@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import { API_BASE_URL } from "@/lib/blog-api";
+import { uploadBlogImage } from "@/lib/blog-api";
 
 interface RichTextEditorProps {
   content: string;
@@ -14,6 +14,15 @@ interface TinyMceBlobInfo {
   filename: () => string;
 }
 
+interface TinyMceEditorApi {
+  ui: { registry: { addButton: (name: string, config: { text: string; tooltip: string; onAction: () => void }) => void } };
+  selection: { getNode: () => HTMLElement };
+  nodeChanged: () => void;
+  fire: (name: string) => void;
+  undoManager: { transact: (callback: () => void) => void };
+  on: (name: string, callback: (event: { element: HTMLElement }) => void) => void;
+}
+
 export default function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   return (
     <div className="w-full bg-white transition-all editor-wrapper">
@@ -22,15 +31,15 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
         value={content}
         onEditorChange={(newContent: string) => onChange(newContent)}
         init={{
-          min_height: 560,
-          height: "calc(100vh - 270px)",
+          min_height: 760,
+          height: "78vh",
           width: '100%',
           menubar: false,
           statusbar: true,
           plugins: [
             "advlist", "autolink", "lists", "link", "image", "charmap", "preview",
             "anchor", "searchreplace", "visualblocks", "code", "fullscreen",
-            "table", "wordcount"
+            "table", "wordcount", "quickbars"
           ],
           toolbar:
             "undo redo | blocks | " +
@@ -38,6 +47,45 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             "alignleft aligncenter alignright | " +
             "bullist numlist outdent indent | " +
             "link image table | removeformat | fullscreen preview",
+          image_advtab: true,
+          image_caption: true,
+          object_resizing: "img",
+          contextmenu: "link image table",
+          quickbars_image_toolbar: "alignleft aligncenter alignright | moveimageup moveimagedown | imageoptions",
+          setup: (editor: TinyMceEditorApi) => {
+            editor.ui.registry.addButton("moveimageup", {
+              text: "Lên",
+              tooltip: "Đưa ảnh lên trên một đoạn",
+              onAction: () => {
+                const image = editor.selection.getNode();
+                if (image.nodeName !== "IMG") return;
+                const block = image.parentElement;
+                const previous = block?.previousElementSibling;
+                if (!block || !previous) return;
+                editor.undoManager.transact(() => previous.before(block));
+                editor.nodeChanged();
+              },
+            });
+            editor.ui.registry.addButton("moveimagedown", {
+              text: "Xuống",
+              tooltip: "Đưa ảnh xuống dưới một đoạn",
+              onAction: () => {
+                const image = editor.selection.getNode();
+                if (image.nodeName !== "IMG") return;
+                const block = image.parentElement;
+                const next = block?.nextElementSibling;
+                if (!block || !next) return;
+                editor.undoManager.transact(() => next.after(block));
+                editor.nodeChanged();
+              },
+            });
+            editor.on("NodeChange", (event) => {
+              if (event.element.nodeName === "IMG") {
+                event.element.setAttribute("draggable", "true");
+                event.element.setAttribute("title", "Giữ giữa ảnh và kéo đến vị trí mới");
+              }
+            });
+          },
           content_style: `
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
             body { 
@@ -107,25 +155,9 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
           skin: "oxide",
           content_css: "default",
           images_upload_handler: async (blobInfo: TinyMceBlobInfo) => {
-            const formData = new FormData();
-            formData.append("file", blobInfo.blob(), blobInfo.filename());
-
             try {
-              const res = await fetch(`${API_BASE_URL}/api/admin/upload`, {
-                method: "POST",
-                body: formData,
-              });
-
-              if (!res.ok) {
-                throw new Error("HTTP Error: " + res.status);
-              }
-
-              const data = await res.json();
-              if (data && data.url) {
-                return data.url;
-              } else {
-                throw new Error("Invalid response from server");
-              }
+              const file = new File([blobInfo.blob()], blobInfo.filename(), { type: blobInfo.blob().type });
+              return await uploadBlogImage(file);
             } catch (error: unknown) {
               const message = error instanceof Error ? error.message : "Unknown error";
               throw new Error("Image upload failed: " + message);

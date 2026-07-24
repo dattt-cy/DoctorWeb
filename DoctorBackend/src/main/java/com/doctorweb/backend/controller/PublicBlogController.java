@@ -25,6 +25,6 @@ public class PublicBlogController {
     @GetMapping("/{slug}")
     public ResponseEntity<BlogPost> getPostBySlug(@PathVariable String slug) {
         blogService.incrementViewCount(slug);
-        return ResponseEntity.ok(blogService.getPostBySlug(slug));
+        return ResponseEntity.ok(blogService.getPublishedPostBySlug(slug));
     }
 }

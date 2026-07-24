@@ -30,10 +30,14 @@ const EMPTY_POST: BlogPostPayload = {
   category: CATEGORIES[0],
   excerpt: "",
   coverImage: "",
+  coverImageAlt: "",
+  coverPositionX: 50,
+  coverPositionY: 50,
   content: "",
   status: "DRAFT",
   seoTitle: "",
   seoDescription: "",
+  primaryKeyword: "",
   tags: "",
 };
 
@@ -69,10 +73,14 @@ export default function BlogPostEditor({ postId }: { postId?: string }) {
             category: data.category || CATEGORIES[0],
             excerpt: data.excerpt || "",
             coverImage: data.coverImage || "",
+            coverImageAlt: data.coverImageAlt || "",
+            coverPositionX: data.coverPositionX ?? 50,
+            coverPositionY: data.coverPositionY ?? 50,
             content: data.content || "",
             status: data.status || "DRAFT",
             seoTitle: data.seoTitle || "",
             seoDescription: data.seoDescription || "",
+            primaryKeyword: data.primaryKeyword || "",
             tags: data.tags || "",
           });
         } else {
@@ -117,6 +125,10 @@ export default function BlogPostEditor({ postId }: { postId?: string }) {
     .split(",")
     .map((tag) => tag.trim())
     .filter(Boolean);
+  const autoSeoTitle = post.seoTitle.trim() || truncateAtWord(post.title, 60);
+  const autoSeoDescription = post.seoDescription.trim() || truncateAtWord(post.excerpt || plainText, 160);
+  const autoKeyword = post.primaryKeyword.trim() || deriveKeyword(post.title);
+  const autoImageAlt = post.coverImageAlt.trim() || post.title.trim();
 
   const validate = useCallback(
     (status: BlogStatus) => {
@@ -144,7 +156,14 @@ export default function BlogPostEditor({ postId }: { postId?: string }) {
         postId ? `/api/admin/blogs/${postId}` : "/api/admin/blogs",
         {
           method: postId ? "PUT" : "POST",
-          body: JSON.stringify({ ...post, status }),
+          body: JSON.stringify({
+            ...post,
+            status,
+            seoTitle: autoSeoTitle,
+            seoDescription: autoSeoDescription,
+            primaryKeyword: autoKeyword,
+            coverImageAlt: autoImageAlt,
+          }),
         },
       );
       localStorage.removeItem(storageKey);
@@ -292,11 +311,16 @@ export default function BlogPostEditor({ postId }: { postId?: string }) {
 
           <Panel title="Ảnh đại diện" defaultOpen>
             {post.coverImage ? (
-              <div className="group relative overflow-hidden rounded-xl border border-slate-200">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={post.coverImage} alt="Ảnh đại diện bài viết" className="aspect-[16/9] w-full object-cover" />
-                <button onClick={() => update("coverImage", "")} className="absolute right-2 top-2 rounded-lg bg-white/95 p-2 text-red-600 shadow hover:bg-white" aria-label="Xóa ảnh"><Trash2 size={16} /></button>
-              </div>
+              <CoverPositionEditor
+                src={post.coverImage}
+                x={post.coverPositionX}
+                y={post.coverPositionY}
+                onChange={(x, y) => {
+                  setPost((current) => ({ ...current, coverPositionX: x, coverPositionY: y }));
+                  setSaveState("dirty");
+                }}
+                onRemove={() => update("coverImage", "")}
+              />
             ) : (
               <label className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed border-slate-300 p-7 text-center hover:border-blue-400 hover:bg-blue-50/50">
                 {uploading ? <Loader2 className="mb-2 animate-spin text-blue-600" /> : <ImagePlus className="mb-2 text-slate-400" />}
@@ -305,15 +329,18 @@ export default function BlogPostEditor({ postId }: { postId?: string }) {
                 <input type="file" accept="image/*" disabled={uploading} onChange={(event) => uploadCover(event.target.files?.[0])} className="sr-only" />
               </label>
             )}
+            {post.coverImage && <p className="mt-3 text-xs text-emerald-700">Mô tả ảnh SEO được tạo tự động từ tiêu đề bài viết.</p>}
           </Panel>
 
           <Panel title="Tối ưu tìm kiếm (SEO)">
-            <label className="mb-2 block text-sm font-medium text-slate-700">Tiêu đề SEO</label>
-            <input value={post.seoTitle} onChange={(event) => update("seoTitle", event.target.value)} placeholder={post.title || "Tiêu đề hiển thị trên Google"} maxLength={255} className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500" />
-            <p className="mt-1 text-right text-xs text-slate-400">{post.seoTitle.length}/60 khuyến nghị</p>
-            <label className="mb-2 mt-4 block text-sm font-medium text-slate-700">Mô tả SEO</label>
-            <textarea value={post.seoDescription} onChange={(event) => update("seoDescription", event.target.value)} placeholder={post.excerpt || "Mô tả ngắn trên kết quả tìm kiếm"} rows={4} maxLength={500} className="w-full resize-none rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500" />
-            <p className="mt-1 text-right text-xs text-slate-400">{post.seoDescription.length}/160 khuyến nghị</p>
+            <div className="rounded-xl bg-emerald-50 p-3 text-sm leading-6 text-emerald-800">
+              SEO đang được tạo tự động từ tiêu đề, mô tả ngắn và nội dung bài viết.
+            </div>
+            <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+              <p className="truncate text-sm text-emerald-700">doctorweb.vn › blog › {slug || "duong-dan-bai-viet"}</p>
+              <p className="mt-1 line-clamp-1 text-lg text-blue-700">{autoSeoTitle || "Tiêu đề bài viết trên Google"}</p>
+              <p className="mt-1 line-clamp-2 text-sm leading-5 text-slate-600">{autoSeoDescription || "Mô tả bài viết sẽ xuất hiện tại đây."}</p>
+            </div>
           </Panel>
         </aside>
       </main>
@@ -360,5 +387,65 @@ function CheckItem({ ok, label, optional = false }: { ok: boolean; label: string
       <span className={`flex h-5 w-5 items-center justify-center rounded-full ${ok ? "bg-emerald-100 text-emerald-700" : optional ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{ok ? <Check size={13} /> : "!"}</span>
       <span className="text-slate-700">{label}</span>
     </div>
+  );
+}
+
+function CoverPositionEditor({
+  src, x, y, onChange, onRemove,
+}: {
+  src: string;
+  x: number;
+  y: number;
+  onChange: (x: number, y: number) => void;
+  onRemove: () => void;
+}) {
+  const frame = useRef<HTMLDivElement>(null);
+
+  const move = (clientX: number, clientY: number) => {
+    const rect = frame.current?.getBoundingClientRect();
+    if (!rect) return;
+    const nextX = Math.round(Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100)));
+    const nextY = Math.round(Math.max(0, Math.min(100, ((clientY - rect.top) / rect.height) * 100)));
+    onChange(nextX, nextY);
+  };
+
+  return (
+    <div>
+      <div
+        ref={frame}
+        className="group relative aspect-[16/9] touch-none select-none overflow-hidden rounded-xl border border-slate-200 bg-slate-100 cursor-grab active:cursor-grabbing"
+        onPointerDown={(event) => {
+          event.currentTarget.setPointerCapture(event.pointerId);
+          move(event.clientX, event.clientY);
+        }}
+        onPointerMove={(event) => {
+          if (event.currentTarget.hasPointerCapture(event.pointerId)) move(event.clientX, event.clientY);
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt="Ảnh đại diện bài viết" draggable={false} className="h-full w-full object-cover pointer-events-none" style={{ objectPosition: `${x}% ${y}%` }} />
+        <span className="pointer-events-none absolute inset-x-0 bottom-2 mx-auto w-fit rounded-full bg-slate-950/65 px-3 py-1 text-xs text-white">Kéo để chọn vùng hiển thị</span>
+        <button onPointerDown={(event) => event.stopPropagation()} onClick={onRemove} className="absolute right-2 top-2 rounded-lg bg-white/95 p-2 text-red-600 shadow hover:bg-white" aria-label="Xóa ảnh"><Trash2 size={16} /></button>
+      </div>
+      <button type="button" onClick={() => onChange(50, 50)} className="mt-2 text-xs font-medium text-slate-500 hover:text-blue-600">Đưa ảnh về chính giữa</button>
+    </div>
+  );
+}
+
+function truncateAtWord(value: string, maxLength: number) {
+  const clean = value.replace(/\s+/g, " ").trim();
+  if (clean.length <= maxLength) return clean;
+  const shortened = clean.slice(0, maxLength + 1).replace(/\s+\S*$/, "").trim();
+  return shortened || clean.slice(0, maxLength).trim();
+}
+
+function deriveKeyword(title: string) {
+  return truncateAtWord(
+    title
+      .replace(/^\d+\s*/, "")
+      .replace(/^(cách|điều|dấu hiệu|bí quyết)\s+/i, "")
+      .replace(/[?!:–—|].*$/, "")
+      .trim(),
+    70,
   );
 }

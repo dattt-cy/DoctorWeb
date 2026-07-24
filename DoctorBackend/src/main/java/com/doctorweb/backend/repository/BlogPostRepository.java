@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface BlogPostRepository extends JpaRepository<BlogPost, Long> {
     Optional<BlogPost> findBySlug(String slug);
+    Optional<BlogPost> findBySlugAndStatus(String slug, String status);
     Page<BlogPost> findByStatus(String status, Pageable pageable);
     Page<BlogPost> findByCategoryAndStatus(String category, String status, Pageable pageable);
 }

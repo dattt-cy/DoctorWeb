@@ -3,15 +3,33 @@ package com.doctorweb.backend.global.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 public class AppConfig {
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> {
-            throw new UsernameNotFoundException("User not found");
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService(
+            @Value("${app.admin.username}") String username,
+            @Value("${app.admin.password}") String password,
+            PasswordEncoder passwordEncoder) {
+        var admin = User.withUsername(username)
+                .password(passwordEncoder.encode(password))
+                .roles("ADMIN")
+                .build();
+        return requestedUsername -> {
+            if (!admin.getUsername().equals(requestedUsername)) {
+                throw new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found");
+            }
+            return admin;
         };
     }
 }

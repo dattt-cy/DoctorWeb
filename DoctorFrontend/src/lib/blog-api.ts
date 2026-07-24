@@ -9,10 +9,14 @@ export type BlogPostPayload = {
   category: string;
   excerpt: string;
   coverImage: string;
+  coverImageAlt: string;
+  coverPositionX: number;
+  coverPositionY: number;
   content: string;
   status: BlogStatus;
   seoTitle: string;
   seoDescription: string;
+  primaryKeyword: string;
   tags: string;
 };
 
@@ -44,6 +48,7 @@ async function parseError(response: Response) {
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
+    credentials: "include",
     headers: {
       ...(init?.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
       ...init?.headers,
@@ -51,6 +56,11 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
   });
 
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      if (typeof window !== "undefined" && !path.includes("/auth/login")) {
+        window.location.assign("/admin/login");
+      }
+    }
     throw new Error(await parseError(response));
   }
 

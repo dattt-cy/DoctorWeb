@@ -5,6 +5,9 @@ export interface BlogPost {
   content: string;
   category: string;
   coverImage: string;
+  coverImageAlt?: string;
+  coverPositionX?: number;
+  coverPositionY?: number;
   publishedAt: string;
   readingTime: number;
   featured?: boolean;

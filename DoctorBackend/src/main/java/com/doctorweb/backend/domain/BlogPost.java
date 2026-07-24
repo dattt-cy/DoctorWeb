@@ -42,6 +42,18 @@ public class BlogPost extends AuditableEntity {
     @Column(name = "cover_image", length = 500)
     private String coverImage;
 
+    @Column(name = "cover_image_alt")
+    @Size(max = 255)
+    private String coverImageAlt;
+
+    @Column(name = "cover_position_x", nullable = false)
+    @Builder.Default
+    private Integer coverPositionX = 50;
+
+    @Column(name = "cover_position_y", nullable = false)
+    @Builder.Default
+    private Integer coverPositionY = 50;
+
     @Column(nullable = false)
     @Pattern(regexp = "DRAFT|PUBLISHED", message = "Trạng thái bài viết không hợp lệ")
     @Builder.Default
@@ -67,6 +79,10 @@ public class BlogPost extends AuditableEntity {
     @Column(name = "seo_description", length = 500)
     @Size(max = 500, message = "Mô tả SEO không được vượt quá 500 ký tự")
     private String seoDescription;
+
+    @Column(name = "primary_keyword", length = 150)
+    @Size(max = 150)
+    private String primaryKeyword;
 
     @Column(length = 500)
     @Size(max = 500, message = "Danh sách thẻ không được vượt quá 500 ký tự")

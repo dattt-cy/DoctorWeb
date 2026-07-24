@@ -1,0 +1,3 @@
+ALTER TABLE blog_post
+ADD COLUMN cover_position_x INT NOT NULL DEFAULT 50,
+ADD COLUMN cover_position_y INT NOT NULL DEFAULT 50;
