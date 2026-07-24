@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.Charset;
@@ -23,6 +24,9 @@ import org.jsoup.safety.Safelist;
 @Transactional
 public class BlogService {
     private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
+    private static final Pattern MOJIBAKE_UTF8_SEQUENCE = Pattern.compile(
+            "(?:[\\u00C2-\\u00C6][\\s\\S]|\\u00E1[\\u00BA\\u00BB][\\s\\S]|\\u00E2[\\u0080-\\u00BF\\u20AC\\u2018-\\u2122]{1,2})"
+    );
 
     private final BlogPostRepository blogPostRepository;
     private final BlogPostRevisionRepository revisionRepository;
@@ -192,6 +196,87 @@ public class BlogService {
     }
 
     private String repairMojibake(String value) {
+        if (value == null || value.isBlank()) return value;
+
+        String current = value;
+        for (int pass = 0; pass < 3; pass++) {
+            String locallyRepaired = repairEmbeddedUtf8Sequences(current);
+            if (!locallyRepaired.equals(current)) {
+                current = locallyRepaired;
+                continue;
+            }
+
+            long currentScore = utf8MojibakeScore(current);
+            if (currentScore == 0) break;
+
+            String candidate = decodeWindows1252(current);
+            String consoleCandidate = decodeWindows1252(current.replace('\u0102', '\u00C3'));
+            if (consoleCandidate != null
+                    && (candidate == null || utf8MojibakeScore(consoleCandidate) < utf8MojibakeScore(candidate))) {
+                candidate = consoleCandidate;
+            }
+            if (candidate == null || candidate.indexOf('\uFFFD') >= 0
+                    || utf8MojibakeScore(candidate) >= currentScore) break;
+            current = candidate;
+        }
+        return current;
+    }
+
+    private String repairEmbeddedUtf8Sequences(String value) {
+        Matcher matcher = MOJIBAKE_UTF8_SEQUENCE.matcher(value);
+        StringBuffer repaired = new StringBuffer();
+        boolean changed = false;
+        while (matcher.find()) {
+            String decoded = decodeWindows1252(matcher.group());
+            if (decoded != null && decoded.indexOf('\uFFFD') < 0
+                    && utf8MojibakeScore(decoded) < utf8MojibakeScore(matcher.group())) {
+                matcher.appendReplacement(repaired, Matcher.quoteReplacement(decoded));
+                changed = true;
+            } else {
+                matcher.appendReplacement(repaired, Matcher.quoteReplacement(matcher.group()));
+            }
+        }
+        matcher.appendTail(repaired);
+        return changed ? repaired.toString() : value;
+    }
+
+    private String decodeWindows1252(String value) {
+        java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream(value.length());
+        for (int offset = 0; offset < value.length();) {
+            int codePoint = value.codePointAt(offset);
+            String character = new String(Character.toChars(codePoint));
+            if (codePoint <= 0xFF) {
+                bytes.write(codePoint);
+            } else if (WINDOWS_1252.newEncoder().canEncode(character)) {
+                byte[] encoded = character.getBytes(WINDOWS_1252);
+                bytes.write(encoded, 0, encoded.length);
+            } else {
+                return null;
+            }
+            offset += Character.charCount(codePoint);
+        }
+        return new String(bytes.toByteArray(), StandardCharsets.UTF_8);
+    }
+
+    private long utf8MojibakeScore(String value) {
+        long score = 0;
+        Matcher encodedSequence = MOJIBAKE_UTF8_SEQUENCE.matcher(value);
+        while (encodedSequence.find()) score += 3;
+        int[] suspicious = {0x00C2, 0x00C3, 0x00C4, 0x00C5, 0x00C6, 0x00E2, 0x0102, 0x20AC, 0x2122};
+        for (int codePoint : suspicious) {
+            for (int i = 0; i < value.length(); i++) {
+                if (value.charAt(i) == codePoint) score++;
+            }
+        }
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch >= 0x0080 && ch <= 0x009F) score += 2;
+        }
+        return score;
+    }
+
+    @SuppressWarnings("unused")
+    private String legacyRepairMojibake(String value) {
         if (value == null) return null;
         String current = value;
         for (int i = 0; i < 3 && mojibakeScore(current) > 0; i++) {
