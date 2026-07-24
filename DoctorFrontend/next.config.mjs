@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
+  // Sites expects the production build output in `dist`.
+  distDir: process.env.NEXT_DIST_DIR || "dist",
   images: {
     remotePatterns: [
       {

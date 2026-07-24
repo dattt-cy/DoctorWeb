@@ -3,6 +3,7 @@ DoctorFrontend/node_modules/
 DoctorFrontend/.next/
 DoctorFrontend/.next-build-check/
 DoctorFrontend/.next-deploy-check/
+DoctorFrontend/dist/
 DoctorFrontend/out/
 DoctorFrontend/.env*.local
 DoctorFrontend/.env

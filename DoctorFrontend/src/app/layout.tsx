@@ -74,7 +74,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body className={`${inter.variable} ${playfair.variable} antialiased`}>
+      <body
+        suppressHydrationWarning
+        className={`${inter.variable} ${playfair.variable} antialiased`}
+      >
         {children}
       </body>
     </html>
