@@ -7,11 +7,12 @@ import { BlogCard } from "./BlogCard";
 
 interface BlogListingProps {
   posts: BlogPost[];
+  initialQuery?: string;
 }
 
-export function BlogListing({ posts }: BlogListingProps) {
+export function BlogListing({ posts, initialQuery = "" }: BlogListingProps) {
   const [activeCategory, setActiveCategory] = useState("Tất cả");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
 
   const categories = useMemo(
     () => ["Tất cả", ...Array.from(new Set(posts.map((post) => post.category).filter(Boolean)))],

@@ -1,21 +1,22 @@
 :root {
   /* ── Colors ── */
-  --color-bg: #f4f1eb;           /* warm cream — dễ nhìn, không chói */
-  --color-surface: #ede9e0;      /* warm sage surface */
-  --color-surface-alt: #ede6d8;  /* warm sand alt */
-  --color-primary: #e8702a;
-  --color-primary-hover: #cf5f1f;
-  --color-primary-light: #fdeadd;
-  --color-accent: #f6a623;
-  --color-accent-hover: #db8f12;
-  --color-text: #1a1a18;
-  --color-text-secondary: #5c6370;
-  --color-text-muted: #8e96a3;
-  --color-border: #ddd8ce;
-  --color-white: #fdfcf8;        /* warm white — không harsh */
+  --color-bg: #fffaf6;
+  --color-surface: #fff3e8;
+  --color-surface-alt: #fff7f0;
+  --color-primary: #ef7423;
+  --color-primary-hover: #d95f12;
+  --color-primary-light: #ffeadb;
+  --color-accent: #ef7423;
+  --color-accent-hover: #d95f12;
+  --color-brand-orange: #ef7423;
+  --color-text: #0f172a;
+  --color-text-secondary: #526178;
+  --color-text-muted: #8491a3;
+  --color-border: #f0dfd2;
+  --color-white: #ffffff;
 
   /* ── Typography ── */
-  --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-display: var(--font-inter), "Inter", -apple-system, sans-serif;
   --font-body: var(--font-inter), "Inter", -apple-system, sans-serif;
 
   --text-xs: 0.75rem;
@@ -45,9 +46,9 @@
 
   /* ── Shadows ── */
   --shadow-sm: 0 1px 8px rgba(28, 28, 30, 0.06);
-  --shadow-card: 0 4px 24px rgba(28, 28, 30, 0.08);
-  --shadow-hover: 0 10px 48px rgba(28, 28, 30, 0.14);
-  --shadow-accent: 0 8px 32px rgba(232, 112, 42, 0.25);
+  --shadow-card: 0 8px 30px rgba(239, 116, 35, 0.08);
+  --shadow-hover: 0 18px 55px rgba(239, 116, 35, 0.14);
+  --shadow-accent: 0 10px 32px rgba(239, 116, 35, 0.22);
 
   /* ── Motion ── */
   --duration-fast: 150ms;

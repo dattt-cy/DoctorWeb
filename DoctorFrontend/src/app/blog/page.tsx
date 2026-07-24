@@ -1,6 +1,7 @@
 import { BlogListing } from "@/components/blog/BlogListing";
 import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
 import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
 import { API_BASE_URL } from "@/lib/blog-api";
 import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, ShieldCheck } from "lucide-react";
 import Image from "next/image";
@@ -16,7 +17,7 @@ export const metadata = {
 async function getPosts() {
   try {
     const response = await fetch(`${API_BASE_URL}/api/public/blogs?size=30&sort=publishedAt,desc`, {
-      cache: "no-store",
+      next: { revalidate: 60 },
     });
     if (!response.ok) return [];
     const data = await response.json();
@@ -26,15 +27,20 @@ async function getPosts() {
   }
 }
 
-export default async function BlogPage() {
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams?: { q?: string };
+}) {
   const posts = await getPosts();
 
   return (
     <>
+      <Navbar />
       <main className="min-h-screen bg-slate-50">
-        <section className="relative overflow-hidden border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-blue-50">
+        <section className="relative overflow-hidden border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-orange-50">
           <div className="pointer-events-none absolute -left-32 top-24 h-80 w-80 rounded-full bg-cyan-200/30 blur-3xl" />
-          <div className="pointer-events-none absolute right-0 top-0 h-96 w-96 rounded-full bg-blue-200/30 blur-3xl" />
+          <div className="pointer-events-none absolute right-0 top-0 h-96 w-96 rounded-full bg-orange-200/30 blur-3xl" />
 
           <div className="mx-auto max-w-7xl px-5 pb-14 pt-6 sm:px-6 lg:px-8 lg:pb-20">
             <Link
@@ -65,10 +71,10 @@ export default async function BlogPage() {
                     Khám phá bài viết <ArrowRight size={17} />
                   </a>
                   <Link
-                    href="/lien-he"
+                    href="/#dat-lich"
                     className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-cyan-300 hover:text-cyan-800"
                   >
-                    Đặt lịch tư vấn
+                    Đặt lịch khám
                   </Link>
                 </div>
 
@@ -102,7 +108,7 @@ export default async function BlogPage() {
 
         <section id="bai-viet" className="scroll-mt-8 py-14 sm:py-20">
           <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <BlogListing posts={posts} />
+            <BlogListing posts={posts} initialQuery={searchParams?.q || ""} />
           </div>
         </section>
       </main>

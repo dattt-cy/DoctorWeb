@@ -40,7 +40,7 @@ export function AboutSection() {
               style={{
                 aspectRatio: "3 / 4",
                 border: "1px solid var(--color-border)",
-                boxShadow: "0 20px 60px rgba(232,112,42,0.15)",
+                boxShadow: "0 20px 60px rgba(239,116,35,0.15)",
               }}
             >
               <Image

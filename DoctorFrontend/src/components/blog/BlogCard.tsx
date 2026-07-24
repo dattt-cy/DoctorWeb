@@ -56,7 +56,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
 
 function Cover({ post, className, sizes }: { post: BlogPost; className: string; sizes: string }) {
   return (
-    <div className={`relative overflow-hidden bg-gradient-to-br from-cyan-50 to-blue-100 ${className}`}>
+    <div className={`relative overflow-hidden bg-gradient-to-br from-cyan-50 to-orange-100 ${className}`}>
       {post.coverImage ? (
         <Image src={post.coverImage} alt={post.title} fill className="object-cover transition duration-700 group-hover:scale-105" sizes={sizes} />
       ) : (

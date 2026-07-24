@@ -32,6 +32,13 @@ export function Navbar() {
   const router = useRouter();
   const isHomePage = pathname === "/";
 
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const query = String(formData.get("q") || "").trim();
+    router.push(query ? `/blog?q=${encodeURIComponent(query)}` : "/blog");
+  };
+
   // ── Scroll state: trực tiếp update data-attribute, không qua React state ──
   useLayoutEffect(() => {
     const el = headerRef.current;
@@ -61,46 +68,76 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ── Active section tracking ──
+  // Theo dõi section bằng vị trí cuộn để tránh nhiều IntersectionObserver
+  // cập nhật active tab sai thứ tự khi trang vừa được tải.
   useEffect(() => {
-    if (!isHomePage) return;
-    const sectionIds = NAV_LINKS.map((l) => l.sectionId).filter(Boolean) as string[];
-    const observers: IntersectionObserver[] = [];
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
-        { rootMargin: "-40% 0px -55% 0px" }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach((o) => o.disconnect());
+    if (!isHomePage) {
+      setActiveSection("");
+      return;
+    }
+
+    const sectionIds = NAV_LINKS
+      .map((link) => link.sectionId)
+      .filter(Boolean) as string[];
+    let frameId = 0;
+
+    const updateActiveSection = () => {
+      frameId = 0;
+      const headerHeight = headerRef.current?.offsetHeight ?? 0;
+      const probePosition = window.scrollY + headerHeight + 80;
+
+      // Hero đầu trang không có sectionId nên phải chủ động trả về Trang chủ.
+      let currentSection = "";
+      let currentSectionTop = -1;
+      for (const id of sectionIds) {
+        const section = document.getElementById(id);
+        if (
+          section &&
+          section.offsetTop <= probePosition &&
+          section.offsetTop > currentSectionTop
+        ) {
+          currentSection = id;
+          currentSectionTop = section.offsetTop;
+        }
+      }
+      setActiveSection(currentSection);
+    };
+
+    const onScroll = () => {
+      if (!frameId) frameId = requestAnimationFrame(updateActiveSection);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frameId) cancelAnimationFrame(frameId);
+    };
   }, [isHomePage]);
 
   const handleNavClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, link: typeof NAV_LINKS[number]) => {
       setMenuOpen(false);
       if (link.sectionId) {
-        e.preventDefault();
         if (isHomePage) {
+          e.preventDefault();
           smoothScrollToId(link.sectionId);
-        } else {
-          router.push(`/#${link.sectionId}`);
         }
       }
     },
-    [isHomePage, router]
+    [isHomePage]
   );
 
   useEffect(() => {
     if (isHomePage && window.location.hash) {
       const id = window.location.hash.replace("#", "");
-      const timer = setTimeout(() => {
-        smoothScrollToId(id);
-      }, 300);
-      return () => clearTimeout(timer);
+      const firstFrame = requestAnimationFrame(() => {
+        requestAnimationFrame(() => smoothScrollToId(id));
+      });
+      return () => cancelAnimationFrame(firstFrame);
     }
   }, [isHomePage]);
 
@@ -191,9 +228,10 @@ export function Navbar() {
             <VitaLogo theme="light" size="sm" href="/" />
 
             {/* Search bar */}
-            <div className="hidden md:flex flex-1 max-w-md items-center relative">
+            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md items-center relative">
               <input
                 type="search"
+                name="q"
                 placeholder="Nhập từ khoá tìm kiếm"
                 className="w-full pl-4 pr-11 py-2.5 rounded-[var(--radius-full)] text-sm transition-colors duration-150"
                 style={{
@@ -206,13 +244,14 @@ export function Navbar() {
                 onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")}
               />
               <button
+                type="submit"
                 aria-label="Tìm kiếm"
                 className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-60"
                 style={{ color: "var(--color-primary)" }}
               >
                 <Search size={17} aria-hidden />
               </button>
-            </div>
+            </form>
 
             {/* Booking + hamburger */}
             <div className="flex items-center gap-3 shrink-0">
@@ -256,15 +295,15 @@ export function Navbar() {
       </div>
 
       {/* ── Tầng 3: Navigation bar (teal) ── */}
-      <div className="hidden md:block w-full" style={{ backgroundColor: "var(--color-primary)" }}>
+      <div className="hidden md:block w-full" style={{ backgroundColor: "var(--color-brand-orange)" }}>
         <div className="container">
           <nav className="flex items-center" style={{ height: "44px" }}>
             {NAV_LINKS.map((link) => {
               const active = isActive(link);
               const navItemCls = "relative h-full flex items-center px-5 text-xs font-semibold tracking-wide cursor-pointer select-none";
               const navItemStyle = {
-                color: active ? "var(--color-accent)" : "rgba(255,255,255,0.88)" as string,
-                borderBottom: `2px solid ${active ? "var(--color-accent)" : "transparent"}`,
+                color: active ? "#ffffff" : "rgba(255,255,255,0.86)" as string,
+                borderBottom: `3px solid ${active ? "#ffe29a" : "transparent"}`,
                 transition: "color 150ms ease, border-color 150ms ease",
               };
               const hoverHandlers = {
@@ -281,20 +320,18 @@ export function Navbar() {
                   }
                 },
               };
-              // Dùng Next.js Link cho routes thực (/blog, /)
-              // Dùng <a> cho anchor links (#section)
               if (link.sectionId) {
                 return (
-                  <a
+                  <Link
                     key={link.label}
-                    href={link.href}
+                    href={isHomePage ? link.href : `/${link.href}`}
                     onClick={(e) => handleNavClick(e, link)}
                     className={navItemCls}
                     style={navItemStyle}
                     {...hoverHandlers}
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 );
               }
               return (
@@ -336,15 +373,15 @@ export function Navbar() {
             };
             if (link.sectionId) {
               return (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
+                  href={isHomePage ? link.href : `/${link.href}`}
                   className={mobileCls}
                   style={mobileStyle}
                   onClick={(e) => handleNavClick(e, link)}
                 >
                   {link.label}
-                </a>
+                </Link>
               );
             }
             return (

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import { Hospital, Check } from "lucide-react";
+import { Hospital, Check, BadgeCheck, ShieldCheck, Clock3 } from "lucide-react";
 import { DOCTOR_INFO } from "@/constants/doctor";
 
 const stats = [
@@ -92,113 +91,75 @@ export function HeroSection() {
     (e.target.style.borderColor = "#d1d5db");
 
   return (
-    <section className="relative w-full" style={{ minHeight: "calc(100vh - 120px)" }}>
-      {/* Background banner */}
-      <div className="absolute inset-0 overflow-hidden">
-        <Image
-          src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=85&auto=format&fit=crop"
-          alt="Phòng khám Nhi Vita"
-          fill
-          className="object-cover object-center"
-          sizes="100vw"
-          priority
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(100deg, rgba(184,71,20,0.7) 0%, rgba(207,95,31,0.5) 40%, rgba(232,112,42,0.22) 70%, rgba(232,112,42,0.05) 100%)",
-          }}
-        />
-      </div>
+    <section className="relative w-full overflow-hidden border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-orange-50">
+      <div className="pointer-events-none absolute -left-40 top-16 h-96 w-96 rounded-full bg-cyan-200/35 blur-3xl" />
+      <div className="pointer-events-none absolute right-0 top-0 h-[34rem] w-[34rem] rounded-full bg-orange-200/30 blur-3xl" />
 
-      <div className="relative z-10 container flex flex-col lg:flex-row items-stretch min-h-[calc(100vh-120px)]">
+      <div className="relative z-10 container flex min-h-[680px] flex-col items-stretch gap-10 py-12 lg:flex-row lg:py-16">
         {/* Left: Clinic info overlay */}
-        <div className="flex-1 flex flex-col justify-center py-16 pr-0 lg:pr-10 gap-6">
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-0.5 rounded-full" style={{ backgroundColor: "var(--color-accent)" }} />
-            <span
-              className="text-xs font-semibold tracking-[0.18em] uppercase"
-              style={{ color: "#fff4e0" }}
-            >
-              {DOCTOR_INFO.specialty}
-            </span>
+        <div className="flex flex-1 flex-col justify-center gap-6 py-4 pr-0 lg:pr-8">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-200 bg-white/80 px-4 py-2 text-sm font-semibold text-cyan-800 shadow-sm">
+            <BadgeCheck size={17} />
+            Bác sĩ Nhi khoa đồng hành cùng gia đình
           </div>
 
           <div>
             <h1
-              className="font-display font-bold text-white leading-[1.1] text-balance"
-              style={{ fontSize: "clamp(2.2rem, 1.6rem + 3vw, 4rem)" }}
+              className="font-display text-balance font-bold leading-[1.08] text-slate-950"
+              style={{ fontSize: "clamp(2.5rem, 1.8rem + 3vw, 4.5rem)" }}
             >
-              PHÒNG KHÁM<br />
-              <span style={{ color: "#ffe9b8" }}>NHI VITA</span>
+              Chăm sóc đúng cách,<br />
+              <span className="text-cyan-700">con khỏe mỗi ngày</span>
             </h1>
-            <p className="mt-3 text-sm font-semibold text-white/80 tracking-wider">
-              {DOCTOR_INFO.name}
+            <p className="mt-4 text-sm font-bold uppercase tracking-[0.16em] text-orange-600">
+              {DOCTOR_INFO.name} · {DOCTOR_INFO.specialty}
             </p>
           </div>
 
-          <p className="text-sm leading-relaxed text-white/75 max-w-[42ch]">
+          <p className="max-w-[58ch] text-base leading-8 text-slate-600 sm:text-lg">
             {DOCTOR_INFO.tagline}. Đồng hành cùng cha mẹ trong từng giai đoạn phát triển của con.
           </p>
 
           {/* Stats row */}
-          <div className="flex items-center gap-0 mt-2">
-            {stats.map((stat, i) => (
-              <div key={stat.label} className="flex items-center gap-0">
-                <div className="flex flex-col gap-0.5 pr-6">
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            {stats.map((stat) => (
+              <div key={stat.label} className="min-w-[125px] rounded-2xl border border-white bg-white/75 px-4 py-3 shadow-sm backdrop-blur">
+                <div className="flex flex-col gap-0.5">
                   <span
                     className="font-display font-bold tabular-nums"
-                    style={{ fontSize: "var(--text-2xl)", color: "#ffffff", lineHeight: 1.1 }}
+                    style={{ fontSize: "var(--text-xl)", color: "var(--color-primary)", lineHeight: 1.1 }}
                   >
                     {stat.value}
                   </span>
-                  <span className="text-xs text-white/65">{stat.label}</span>
+                  <span className="text-xs font-medium text-slate-500">{stat.label}</span>
                 </div>
-                {i < stats.length - 1 && (
-                  <div className="w-px h-10 mr-6 shrink-0 bg-white/20" />
-                )}
               </div>
             ))}
           </div>
 
-          {/* Credentials badge */}
-          <div
-            className="inline-flex items-center gap-3 self-start px-4 py-2.5 rounded-[var(--radius-lg)]"
-            style={{ backgroundColor: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)" }}
-          >
-            <div
-              className="w-9 h-9 rounded-[var(--radius-md)] flex items-center justify-center"
-              style={{ backgroundColor: "var(--color-accent)" }}
-            >
-              <Hospital size={18} className="text-white" aria-hidden />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-white">{DOCTOR_INFO.hospital}</p>
-              <p className="text-xs text-white/65">{DOCTOR_INFO.degree}</p>
-            </div>
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-slate-600">
+            <span className="flex items-center gap-2"><ShieldCheck size={16} className="text-cyan-700" /> Thông tin bảo mật</span>
+            <span className="flex items-center gap-2"><Clock3 size={16} className="text-cyan-700" /> Xác nhận lịch nhanh</span>
+            <span className="flex items-center gap-2"><Hospital size={16} className="text-cyan-700" /> {DOCTOR_INFO.hospital}</span>
           </div>
         </div>
 
         {/* Right: Appointment form */}
         <div
           id="dat-lich"
-          className="w-full lg:w-[360px] xl:w-[400px] self-stretch flex flex-col scroll-mt-[120px]"
-          style={{ minHeight: "100%" }}
+          className="w-full self-center scroll-mt-[120px] lg:w-[390px] xl:w-[420px]"
         >
           <div
-            className="flex flex-col h-full"
+            className="flex h-full flex-col overflow-hidden rounded-3xl border border-white bg-white/95 shadow-2xl shadow-cyan-900/10 backdrop-blur"
             style={{
-              backgroundColor: "rgba(255,255,255,0.97)",
-              backdropFilter: "blur(12px)",
+              minHeight: "590px",
             }}
           >
             {/* Form header */}
             <div
-              className="px-6 py-4 text-white shrink-0"
-              style={{ backgroundColor: "var(--color-primary)" }}
+              className="shrink-0 bg-gradient-to-r from-cyan-700 to-cyan-600 px-6 py-5 text-white"
             >
-              <h2 className="font-display font-bold text-lg tracking-wide">ĐĂNG KÝ KHÁM</h2>
+              <h2 className="font-display text-xl font-bold tracking-wide text-white">Đăng ký lịch khám</h2>
               <p className="text-xs text-white/75 mt-0.5">
                 Vui lòng điền thông tin vào form bên dưới để đăng ký khám bệnh theo yêu cầu
               </p>

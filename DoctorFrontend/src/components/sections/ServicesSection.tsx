@@ -55,72 +55,61 @@ const ServiceIcon = ({ type }: { type: string }) => {
 
 interface ServiceCardProps {
   service: Service;
+  index: number;
 }
 
-function ServiceCard({ service }: ServiceCardProps) {
+function ServiceCard({ service, index }: ServiceCardProps) {
   const isFeatured = service.featured;
-  const isWide = service.size === "wide";
 
   return (
     <div
       className={`
-        group relative flex flex-col gap-5 p-7 rounded-[var(--radius-xl)]
-        transition-all duration-[var(--duration-normal)]
-        hover:-translate-y-1 hover:shadow-[var(--shadow-hover)] cursor-default
-        ${isFeatured ? "col-span-1 md:col-span-2 row-span-2" : ""}
-        ${isWide ? "col-span-1 md:col-span-2" : ""}
+        group relative flex min-h-[260px] flex-col overflow-hidden rounded-3xl p-7
+        transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[var(--shadow-hover)]
+        ${isFeatured ? "bg-gradient-to-br from-orange-500 to-orange-600 text-white" : "bg-white"}
       `}
       style={{
-        backgroundColor: isFeatured ? "var(--color-primary)" : "var(--color-surface)",
-        border: "1px solid var(--color-border)",
+        border: isFeatured ? "1px solid rgba(255,255,255,.18)" : "1px solid var(--color-border)",
         boxShadow: "var(--shadow-sm)",
       }}
     >
-      {/* Icon */}
-      <div
-        className="w-14 h-14 rounded-[var(--radius-md)] flex items-center justify-center"
-        style={{
-          backgroundColor: isFeatured ? "rgba(255,255,255,0.15)" : "var(--color-primary-light)",
-          color: isFeatured ? "white" : "var(--color-primary)",
-        }}
-      >
-        <ServiceIcon type={service.icon} />
+      <div className="flex items-start justify-between">
+        <div
+          className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
+            isFeatured ? "bg-white/15 text-white" : "bg-orange-50 text-orange-600"
+          }`}
+        >
+          <ServiceIcon type={service.icon} />
+        </div>
+        <span className={`text-xs font-bold tracking-[0.16em] ${isFeatured ? "text-white/55" : "text-slate-300"}`}>
+          {String(index + 1).padStart(2, "0")}
+        </span>
       </div>
 
-      {/* Text */}
-      <div className="flex flex-col gap-2">
-        <h3
-          className="font-display font-semibold"
-          style={{
-            fontSize: isFeatured ? "var(--text-2xl)" : "var(--text-lg)",
-            color: isFeatured ? "white" : "var(--color-text)",
-          }}
-        >
+      <div className="mt-7 flex flex-1 flex-col">
+        <h3 className={`text-xl font-bold ${isFeatured ? "text-white" : "text-slate-950"}`}>
           {service.title}
         </h3>
-        <p
-          className="text-sm leading-relaxed"
-          style={{ color: isFeatured ? "rgba(255,255,255,0.75)" : "var(--color-text-secondary)" }}
-        >
+        <p className={`mt-3 text-sm leading-6 ${isFeatured ? "text-white/80" : "text-slate-500"}`}>
           {service.description}
         </p>
+        <div className={`mt-auto flex items-center justify-between pt-6 text-sm font-bold ${
+          isFeatured ? "text-white" : "text-orange-600"
+        }`}>
+          <span>Tìm hiểu dịch vụ</span>
+          <span className={`flex h-9 w-9 items-center justify-center rounded-full transition-transform duration-300 group-hover:translate-x-1 ${
+            isFeatured ? "bg-white/15" : "bg-orange-50"
+          }`}>
+            <ArrowRight size={17} aria-hidden />
+          </span>
+        </div>
       </div>
 
-      {/* Hover arrow */}
-      <div
-        className="absolute bottom-7 right-7 opacity-0 group-hover:opacity-100 transition-opacity duration-[var(--duration-fast)]"
-        style={{ color: isFeatured ? "rgba(255,255,255,0.7)" : "var(--color-primary)" }}
-      >
-        <ArrowRight size={20} aria-hidden />
-      </div>
-
-      {/* Accent bar for featured */}
       {isFeatured && (
-        <div
-          className="absolute top-7 right-7 w-8 h-8 rounded-full opacity-30"
-          style={{ backgroundColor: "var(--color-accent)" }}
-          aria-hidden
-        />
+        <>
+          <div className="pointer-events-none absolute -right-14 -top-14 h-40 w-40 rounded-full border-[28px] border-white/5" />
+          <div className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-white/5" />
+        </>
       )}
     </div>
   );
@@ -134,18 +123,21 @@ export function ServicesSection() {
       style={{ backgroundColor: "var(--color-surface-alt)" }}
     >
       <div className="container">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+        <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <SectionTitle
             eyebrow="Chuyên môn"
             title="Lĩnh vực tôi có thể giúp bé"
             subtitle="Từ khám tổng quát đến các vấn đề chuyên sâu, tôi đồng hành cùng gia đình bạn ở mỗi bước."
             className="max-w-lg"
           />
+          <div className="hidden max-w-xs rounded-2xl border border-orange-100 bg-white px-5 py-4 text-sm leading-6 text-slate-500 shadow-sm md:block">
+            Mỗi trẻ có một thể trạng riêng. Bác sĩ sẽ tư vấn hướng chăm sóc phù hợp sau khi thăm khám.
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 auto-rows-auto">
-          {SERVICES.map((service) => (
-            <ServiceCard key={service.id} service={service} />
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {SERVICES.map((service, index) => (
+            <ServiceCard key={service.id} service={service} index={index} />
           ))}
         </div>
       </div>
