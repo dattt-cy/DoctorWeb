@@ -2,13 +2,16 @@
 DoctorFrontend/node_modules/
 DoctorFrontend/.next/
 DoctorFrontend/.next-build-check/
+DoctorFrontend/.next-deploy-check/
 DoctorFrontend/out/
 DoctorFrontend/.env*.local
+DoctorFrontend/.env
 
 # Backend (Java/Maven)
 DoctorBackend/target/
 DoctorBackend/.mvn/wrapper/maven-wrapper.jar
 DoctorBackend/*.class
+DoctorBackend/.env
 
 # IDE
 .idea/

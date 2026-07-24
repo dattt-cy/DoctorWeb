@@ -31,6 +31,9 @@ public class AdminAuthController {
     @Value("${app.auth.cookie-secure:false}")
     private boolean cookieSecure;
 
+    @Value("${app.auth.cookie-same-site:Lax}")
+    private String cookieSameSite;
+
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequest request) {
         var authentication = authenticationManager.authenticate(
@@ -52,7 +55,7 @@ public class AdminAuthController {
         return ResponseCookie.from("doctor_admin_session", value)
                 .httpOnly(true)
                 .secure(cookieSecure)
-                .sameSite("Lax")
+                .sameSite(cookieSameSite)
                 .path("/")
                 .maxAge(maxAge)
                 .build();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Activity, CalendarCheck, CalendarClock, CalendarDays, Clock3,
   Loader2, RefreshCw, RotateCcw, UsersRound,
@@ -26,9 +26,8 @@ const shortDate = new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "2-d
 const longDate = new Intl.DateTimeFormat("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" });
 
 export default function AdminDashboardPage() {
-  const initial = useMemo(monthRange, []);
-  const [from, setFrom] = useState(initial.from);
-  const [to, setTo] = useState(initial.to);
+  const [from, setFrom] = useState(() => monthRange().from);
+  const [to, setTo] = useState(() => monthRange().to);
   const [data, setData] = useState<StatisticsDashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
