@@ -13,6 +13,7 @@ DoctorBackend/target/
 DoctorBackend/.mvn/wrapper/maven-wrapper.jar
 DoctorBackend/*.class
 DoctorBackend/.env
+DoctorBackend/.env.properties
 
 # IDE
 .idea/
