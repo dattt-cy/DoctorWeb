@@ -15,12 +15,14 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 
 @Service
 @Transactional
 public class BlogService {
+    private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
 
     private final BlogPostRepository blogPostRepository;
     private final BlogPostRevisionRepository revisionRepository;
@@ -31,29 +33,40 @@ public class BlogService {
     }
 
     public Page<BlogPost> getAllPosts(Pageable pageable) {
-        return blogPostRepository.findAll(pageable);
+        Page<BlogPost> posts = blogPostRepository.findAll(pageable);
+        posts.forEach(this::repairAndPersist);
+        return posts;
     }
 
     public Page<BlogPost> getPublishedPosts(Pageable pageable) {
-        return blogPostRepository.findByStatus("PUBLISHED", pageable);
+        Page<BlogPost> posts = blogPostRepository.findByStatus("PUBLISHED", pageable);
+        posts.forEach(this::repairAndPersist);
+        return posts;
     }
 
     public BlogPost getPostById(Long id) {
-        return blogPostRepository.findById(id)
+        BlogPost post = blogPostRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết"));
+        repairAndPersist(post);
+        return post;
     }
 
     public BlogPost getPostBySlug(String slug) {
-        return blogPostRepository.findBySlug(slug)
+        BlogPost post = blogPostRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết"));
+        repairAndPersist(post);
+        return post;
     }
 
     public BlogPost getPublishedPostBySlug(String slug) {
-        return blogPostRepository.findBySlugAndStatus(slug, "PUBLISHED")
+        BlogPost post = blogPostRepository.findBySlugAndStatus(slug, "PUBLISHED")
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy bài viết"));
+        repairAndPersist(post);
+        return post;
     }
 
     public BlogPost createPost(BlogPost post) {
+        repairPostFields(post);
         post.setStatus(normalizeStatus(post.getStatus()));
         post.setSlug(generateSlug(post.getTitle()));
         post.setContent(sanitizeContent(post.getContent()));
@@ -81,7 +94,7 @@ public class BlogService {
     }
 
     private BlogPost applyUpdate(BlogPost existingPost, BlogPost updatedPost) {
-        
+        repairPostFields(updatedPost);
         if (!existingPost.getTitle().equals(updatedPost.getTitle())) {
             existingPost.setTitle(updatedPost.getTitle());
             // Giữ URL ổn định sau khi tạo để không làm hỏng backlink và thứ hạng SEO.
@@ -182,7 +195,10 @@ public class BlogService {
         if (value == null) return null;
         String current = value;
         for (int i = 0; i < 3 && mojibakeScore(current) > 0; i++) {
-            String decoded = new String(current.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            // Một số dữ liệu cũ đi qua Windows console nên byte C3 bị biểu diễn thành ký tự Ă.
+            String legacyText = current.replace('\u0102', '\u00C3');
+            if (!WINDOWS_1252.newEncoder().canEncode(legacyText)) break;
+            String decoded = new String(legacyText.getBytes(WINDOWS_1252), StandardCharsets.UTF_8);
             if (decoded.indexOf('\uFFFD') >= 0 || mojibakeScore(decoded) >= mojibakeScore(current)) break;
             current = decoded;
         }
@@ -190,9 +206,45 @@ public class BlogService {
     }
 
     private long mojibakeScore(String value) {
-        return value.chars().filter(ch ->
-                ch == 0x00C3 || ch == 0x00C2 || ch == 0x00C4 || ch == 0x00C6
-        ).count();
+        String[] markers = {"Ã", "Ă", "Â", "Ä", "Æ", "â€", "áº", "á»", "ðŸ", "ï¿½"};
+        long score = 0;
+        for (String marker : markers) {
+            int index = 0;
+            while ((index = value.indexOf(marker, index)) >= 0) {
+                score++;
+                index += marker.length();
+            }
+        }
+        return score;
+    }
+
+    private void repairAndPersist(BlogPost post) {
+        if (repairPostFields(post)) {
+            blogPostRepository.save(post);
+        }
+    }
+
+    private boolean repairPostFields(BlogPost post) {
+        boolean changed = false;
+        String title = repairMojibake(post.getTitle());
+        String excerpt = repairMojibake(post.getExcerpt());
+        String content = repairMojibake(post.getContent());
+        String category = repairMojibake(post.getCategory());
+        String coverImageAlt = repairMojibake(post.getCoverImageAlt());
+        String seoTitle = repairMojibake(post.getSeoTitle());
+        String seoDescription = repairMojibake(post.getSeoDescription());
+        String primaryKeyword = repairMojibake(post.getPrimaryKeyword());
+        String tags = repairMojibake(post.getTags());
+        if (!java.util.Objects.equals(title, post.getTitle())) { post.setTitle(title); changed = true; }
+        if (!java.util.Objects.equals(excerpt, post.getExcerpt())) { post.setExcerpt(excerpt); changed = true; }
+        if (!java.util.Objects.equals(content, post.getContent())) { post.setContent(content); changed = true; }
+        if (!java.util.Objects.equals(category, post.getCategory())) { post.setCategory(category); changed = true; }
+        if (!java.util.Objects.equals(coverImageAlt, post.getCoverImageAlt())) { post.setCoverImageAlt(coverImageAlt); changed = true; }
+        if (!java.util.Objects.equals(seoTitle, post.getSeoTitle())) { post.setSeoTitle(seoTitle); changed = true; }
+        if (!java.util.Objects.equals(seoDescription, post.getSeoDescription())) { post.setSeoDescription(seoDescription); changed = true; }
+        if (!java.util.Objects.equals(primaryKeyword, post.getPrimaryKeyword())) { post.setPrimaryKeyword(primaryKeyword); changed = true; }
+        if (!java.util.Objects.equals(tags, post.getTags())) { post.setTags(tags); changed = true; }
+        return changed;
     }
 
     public void deletePost(Long id) {

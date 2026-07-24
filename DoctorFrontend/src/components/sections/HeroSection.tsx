@@ -137,7 +137,7 @@ export function HeroSection() {
           <div>
             <h1
               className="font-display text-balance font-bold leading-[1.08] text-slate-950"
-              style={{ fontSize: "clamp(2.5rem, 1.8rem + 3vw, 4.5rem)" }}
+              style={{ fontSize: "clamp(2.25rem, 1.65rem + 2.35vw, 3.75rem)" }}
             >
               Chăm sóc đúng cách,<br />
               <span className="text-cyan-700">con khỏe mỗi ngày</span>
@@ -188,10 +188,10 @@ export function HeroSection() {
           >
             {/* Form header */}
             <div
-              className="shrink-0 bg-gradient-to-r from-cyan-700 to-cyan-600 px-6 py-5 text-white"
+              className="shrink-0 border-b border-orange-100 bg-gradient-to-r from-orange-100 via-amber-50 to-white px-6 py-5"
             >
-              <h2 className="font-display text-xl font-bold tracking-wide text-white">Đăng ký lịch khám</h2>
-              <p className="text-xs text-white/75 mt-0.5">
+              <h2 className="font-display text-xl font-bold tracking-wide text-slate-950">Đăng ký lịch khám</h2>
+              <p className="mt-0.5 text-xs text-slate-600">
                 Vui lòng điền thông tin vào form bên dưới để đăng ký khám bệnh theo yêu cầu
               </p>
             </div>

@@ -17,6 +17,11 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
   metadataBase: new URL(SITE_URL),
   title: {
     default: "Bác sĩ Nhi Hòa Xuân, Đà Nẵng — ThS.BS. Nguyễn Thị Phương Thảo",

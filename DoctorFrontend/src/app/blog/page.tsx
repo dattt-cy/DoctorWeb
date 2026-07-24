@@ -1,7 +1,6 @@
 import { BlogListing } from "@/components/blog/BlogListing";
 import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
 import { Footer } from "@/components/layout/Footer";
-import { Navbar } from "@/components/layout/Navbar";
 import { API_BASE_URL } from "@/lib/blog-api";
 import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, ShieldCheck } from "lucide-react";
 import Image from "next/image";
@@ -36,7 +35,6 @@ export default async function BlogPage({
 
   return (
     <>
-      <Navbar />
       <main className="min-h-screen bg-slate-50">
         <section className="relative overflow-hidden border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-orange-50">
           <div className="pointer-events-none absolute -left-32 top-24 h-80 w-80 rounded-full bg-cyan-200/30 blur-3xl" />

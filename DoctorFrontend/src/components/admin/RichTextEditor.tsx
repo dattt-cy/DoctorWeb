@@ -87,9 +87,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             });
           },
           content_style: `
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
             body { 
-              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+              font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
               font-size: 16px; 
               line-height: 1.7;
               color: #374151; /* text-gray-700 */
@@ -162,6 +161,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             }
           },
           paste_data_images: true,
+          entity_encoding: "raw",
         }}
       />
       <style>{`

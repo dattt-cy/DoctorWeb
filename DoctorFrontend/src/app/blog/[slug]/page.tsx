@@ -1,7 +1,6 @@
 import { BlogCard } from "@/components/blog/BlogCard";
 import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
 import { Footer } from "@/components/layout/Footer";
-import { Navbar } from "@/components/layout/Navbar";
 import { DOCTOR_INFO } from "@/constants/doctor";
 import { API_BASE_URL } from "@/lib/blog-api";
 import { SITE, absoluteUrl } from "@/lib/site";
@@ -83,7 +82,6 @@ export default async function BlogDetailPage({ params }: PageProps) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
-      <Navbar />
       <main className="min-h-screen bg-white">
         <section className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-b from-cyan-50/80 to-white">
           <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-cyan-200/30 blur-3xl" />
@@ -161,14 +159,14 @@ export default async function BlogDetailPage({ params }: PageProps) {
                 </div>
               )}
 
-              <div className="mt-12 overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-700 to-orange-800 p-7 text-white shadow-xl shadow-cyan-900/15 sm:p-9">
+              <div className="mt-12 overflow-hidden rounded-2xl border border-orange-100 bg-gradient-to-br from-orange-50 via-amber-50 to-cyan-50 p-7 shadow-lg shadow-orange-100/50 sm:p-9">
                 <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-cyan-100">Cần tư vấn riêng cho bé?</p>
-                    <h2 className="mt-2 text-2xl font-bold">Đặt lịch trao đổi cùng bác sĩ</h2>
-                    <p className="mt-2 max-w-xl text-sm leading-6 text-cyan-50/80">Mỗi trẻ có thể trạng khác nhau. Bác sĩ sẽ thăm khám và đưa ra hướng chăm sóc phù hợp.</p>
+                    <p className="text-sm font-semibold text-orange-600">Cần tư vấn riêng cho bé?</p>
+                    <h2 className="mt-2 text-2xl font-bold text-slate-950">Đặt lịch trao đổi cùng bác sĩ</h2>
+                    <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">Mỗi trẻ có thể trạng khác nhau. Bác sĩ sẽ thăm khám và đưa ra hướng chăm sóc phù hợp.</p>
                   </div>
-                  <Link href="/#dat-lich" className="inline-flex flex-none items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-cyan-800 transition hover:bg-cyan-50">
+                  <Link href="/#dat-lich" className="inline-flex flex-none items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-orange-600">
                     Đặt lịch ngay <ArrowRight size={17} />
                   </Link>
                 </div>

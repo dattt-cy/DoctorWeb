@@ -79,9 +79,9 @@ export function AppointmentForm() {
     <section className="py-14" style={{ backgroundColor: "var(--color-surface)" }}>
       <div className="container">
         <div className="mx-auto max-w-xl overflow-hidden rounded-[30px] bg-white shadow-xl shadow-orange-100/60">
-          <header className="bg-orange-600 px-7 py-7 text-white md:px-8">
-            <h2 className="text-2xl font-bold">Đăng ký lịch khám</h2>
-            <p className="mt-1 max-w-md text-sm leading-relaxed text-orange-50">
+          <header className="border-b border-orange-100 bg-gradient-to-r from-orange-100 via-amber-50 to-white px-7 py-7 md:px-8">
+            <h2 className="text-2xl font-bold text-slate-950">Đăng ký lịch khám</h2>
+            <p className="mt-1 max-w-md text-sm leading-relaxed text-slate-600">
               Vui lòng điền thông tin vào form bên dưới để đăng ký khám bệnh theo yêu cầu
             </p>
           </header>

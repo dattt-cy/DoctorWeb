@@ -1,9 +1,10 @@
 "use client";
 
-import { CalendarDays, FileText, Home, LayoutDashboard, LogOut, Stethoscope, Users } from "lucide-react";
+import { CalendarDays, FileText, Home, LayoutDashboard, LogOut, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { apiRequest } from "@/lib/blog-api";
+import { VitaLogo } from "@/components/ui/VitaLogo";
 
 const navigation = [
   { href: "/admin/appointments", label: "Lịch hẹn", icon: CalendarDays },
@@ -26,9 +27,8 @@ export default function AdminChrome({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-slate-200 bg-white lg:flex">
-        <div className="flex h-16 items-center gap-3 border-b border-slate-100 px-6">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white"><Stethoscope size={20} /></span>
-          <div><p className="font-bold leading-tight text-slate-950">Doctor Admin</p><p className="text-xs text-slate-400">Quản trị nội dung</p></div>
+        <div className="flex h-20 items-center border-b border-slate-100 px-5">
+          <VitaLogo href="/admin" size="sm" />
         </div>
         <nav className="flex-1 space-y-1 p-4">
           <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Không gian làm việc</p>
@@ -43,7 +43,7 @@ export default function AdminChrome({ children }: { children: React.ReactNode })
       </aside>
       <div className="lg:pl-64">
         <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 lg:hidden">
-          <Link href="/admin" className="flex items-center gap-2 font-bold"><Stethoscope size={20} className="text-blue-600" /> Doctor Admin</Link>
+          <VitaLogo href="/admin" size="sm" />
           <button onClick={logout} className="rounded-lg p-2 text-red-600" aria-label="Đăng xuất"><LogOut size={19} /></button>
         </div>
         <main className="mx-auto max-w-[1600px] p-4 md:p-8">{children}</main>

@@ -181,9 +181,8 @@ public class AppointmentService {
 
     private List<LocalTime> operatingTimes(LocalDate date) {
         if (date.getDayOfWeek() == DayOfWeek.SUNDAY) return List.of();
-        int endHour = date.getDayOfWeek() == DayOfWeek.SATURDAY ? 11 : 16;
         List<LocalTime> times = new ArrayList<>();
-        for (int hour = 8; hour <= endHour; hour++) times.add(LocalTime.of(hour, 0));
+        for (int hour = 8; hour <= 15; hour++) times.add(LocalTime.of(hour, 0));
         return times;
     }
 
