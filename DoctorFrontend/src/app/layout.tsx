@@ -23,6 +23,9 @@ export const metadata: Metadata = {
     apple: "/icon.svg",
   },
   metadataBase: new URL(SITE_URL),
+  verification: {
+    google: "dDox9g1NOk31nSoGkKSdLFmIpptMm5MebN4QuILhTfE",
+  },
   title: {
     default: "Bác sĩ Nhi Hòa Xuân, Đà Nẵng — ThS.BS. Nguyễn Thị Phương Thảo",
     template: "%s | Phòng khám Nhi Vita",
