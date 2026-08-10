@@ -48,27 +48,27 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
     <>
       <Navbar />
       <main className="bg-[var(--color-surface-alt)]">
-        <section className="relative overflow-hidden border-b border-orange-100 bg-[#fffaf5] py-16 md:py-24">
+        <section className="relative overflow-hidden border-b border-orange-100 bg-[#fffaf5] py-12 md:py-16">
           <div className="pointer-events-none absolute -right-32 -top-40 h-[520px] w-[520px] rounded-full bg-orange-200/30 blur-3xl" />
           <div className="pointer-events-none absolute bottom-0 right-[20%] h-56 w-56 rounded-full bg-cyan-100/50 blur-3xl" />
           <div className="container">
-            <Link href="/#chuyen-mon" className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-orange-600">
+            <Link href="/#chuyen-mon" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-orange-600">
               <ArrowLeft size={17} /> Tất cả dịch vụ
             </Link>
-            <div className="relative grid items-end gap-10 lg:grid-cols-[1fr_360px]">
+            <div className="relative grid items-center gap-8 lg:grid-cols-[1fr_340px]">
               <div className="max-w-3xl">
               <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-orange-600">Chuyên môn Nhi khoa</p>
-              <h1 className="text-4xl font-extrabold leading-tight text-slate-950 md:text-6xl">Khám {service.title} cho trẻ em</h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">{service.introduction}</p>
-              <Link href="/#dat-lich" className="mt-8 inline-flex items-center gap-2 rounded-full bg-orange-500 px-7 py-3.5 font-bold text-white shadow-sm transition hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-500">
+              <h1 className="text-4xl font-extrabold leading-[1.12] text-slate-950 md:text-5xl">Khám {service.title} cho trẻ em</h1>
+              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">{service.introduction}</p>
+              <Link href="/#dat-lich" className="mt-6 inline-flex items-center gap-2 rounded-full bg-orange-500 px-6 py-3 font-bold text-white shadow-sm transition hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-500">
                 Đặt lịch khám <ArrowRight size={18} />
               </Link>
               </div>
-              <aside className="rounded-3xl border border-white/80 bg-white/85 p-6 shadow-xl shadow-orange-900/5 backdrop-blur">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-orange-600"><Stethoscope size={25} /></div>
-                <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-orange-600">Thăm khám cá thể hóa</p>
-                <p className="mt-2 text-lg font-bold leading-7 text-slate-950">Không chỉ xử lý triệu chứng, bác sĩ tìm nguyên nhân và hướng dẫn cha mẹ theo dõi trẻ tại nhà.</p>
-                <div className="mt-5 flex items-center gap-2 border-t border-slate-100 pt-5 text-sm text-slate-500"><ShieldCheck size={18} className="text-emerald-600" /> Tư vấn phù hợp theo độ tuổi</div>
+              <aside className="rounded-3xl border border-white/80 bg-white/85 p-5 shadow-xl shadow-orange-900/5 backdrop-blur">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-100 text-orange-600"><Stethoscope size={23} /></div>
+                <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-orange-600">Thăm khám cá thể hóa</p>
+                <p className="mt-2 text-base font-bold leading-6 text-slate-950">Không chỉ xử lý triệu chứng, bác sĩ tìm nguyên nhân và hướng dẫn cha mẹ theo dõi trẻ tại nhà.</p>
+                <div className="mt-4 flex items-center gap-2 border-t border-slate-100 pt-4 text-sm text-slate-500"><ShieldCheck size={18} className="text-emerald-600" /> Tư vấn phù hợp theo độ tuổi</div>
               </aside>
             </div>
           </div>
