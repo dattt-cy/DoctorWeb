@@ -123,9 +123,11 @@ export function HeroSection() {
     (e.target.style.borderColor = "#d1d5db");
 
   return (
-    <section className="relative w-full overflow-hidden border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-orange-50">
-      <div className="pointer-events-none absolute -left-40 top-16 h-96 w-96 rounded-full bg-cyan-200/35 blur-3xl" />
-      <div className="pointer-events-none absolute right-0 top-0 h-[34rem] w-[34rem] rounded-full bg-orange-200/30 blur-3xl" />
+    <section className="relative w-full border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-orange-50">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+        <div className="absolute -left-40 top-16 h-96 w-96 rounded-full bg-cyan-200/35 blur-3xl" />
+        <div className="absolute right-0 top-0 h-[34rem] w-[34rem] rounded-full bg-orange-200/30 blur-3xl" />
+      </div>
 
       <div className="relative z-10 container flex min-h-[680px] flex-col items-stretch gap-10 py-12 lg:flex-row lg:py-16">
         {/* Left: Clinic info overlay */}
@@ -182,14 +184,14 @@ export function HeroSection() {
           className="w-full self-center scroll-mt-[120px] lg:w-[390px] xl:w-[420px]"
         >
           <div
-            className="flex h-full flex-col overflow-hidden rounded-3xl border border-white bg-white/95 shadow-2xl shadow-cyan-900/10 backdrop-blur"
+            className="flex h-full flex-col overflow-visible rounded-3xl border border-white bg-white/95 shadow-2xl shadow-cyan-900/10 backdrop-blur"
             style={{
               minHeight: "590px",
             }}
           >
             {/* Form header */}
             <div
-              className="shrink-0 border-b border-orange-100 bg-gradient-to-r from-orange-100 via-amber-50 to-white px-6 py-5"
+              className="shrink-0 rounded-t-3xl border-b border-orange-100 bg-gradient-to-r from-orange-100 via-amber-50 to-white px-6 py-5"
             >
               <h2 className="font-display text-xl font-bold tracking-wide text-slate-950">Đăng ký lịch khám</h2>
               <p className="mt-0.5 text-xs text-slate-600">
@@ -340,6 +342,9 @@ export function HeroSection() {
                             boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
                             maxHeight: "280px",
                             overflowY: "auto",
+                            overscrollBehavior: "contain",
+                            scrollbarGutter: "stable",
+                            WebkitOverflowScrolling: "touch",
                           }}
                         >
                           {/* Header */}
