@@ -7,7 +7,7 @@ import { DOCTOR_INFO } from "@/constants/doctor";
 const credentials = [
   {
     Icon: Clock,
-    value: `${DOCTOR_INFO.yearsExperience}+`,
+    value: `Hơn ${DOCTOR_INFO.yearsExperience}`,
     label: "Năm kinh nghiệm",
     sub: "Thực hành lâm sàng nhi khoa",
   },

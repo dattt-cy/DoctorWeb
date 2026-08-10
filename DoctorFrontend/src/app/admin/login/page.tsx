@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiRequest } from "@/lib/blog-api";
+import { apiRequest } from "@/shared/api/client";
 import { Loader2, Stethoscope } from "lucide-react";
 
 export default function AdminLoginPage() {

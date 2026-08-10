@@ -180,10 +180,7 @@ public class AppointmentService {
     }
 
     private List<LocalTime> operatingTimes(LocalDate date) {
-        if (date.getDayOfWeek() == DayOfWeek.SUNDAY) return List.of();
-        List<LocalTime> times = new ArrayList<>();
-        for (int hour = 8; hour <= 15; hour++) times.add(LocalTime.of(hour, 0));
-        return times;
+        return ClinicSchedule.operatingTimes(date);
     }
 
     private void validateBookingDate(LocalDate date) {

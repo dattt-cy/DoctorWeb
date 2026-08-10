@@ -31,38 +31,38 @@ class StatisticsServiceTests {
         assertThat(dashboard.summary().completedAppointments()).isZero();
         assertThat(dashboard.summary().pendingAppointments()).isZero();
         assertThat(dashboard.summary().completionRate()).isZero();
-        assertThat(dashboard.summary().totalCapacity()).isEqualTo(48);
+        assertThat(dashboard.summary().totalCapacity()).isEqualTo(30);
         assertThat(dashboard.summary().occupancyRate()).isZero();
         assertThat(dashboard.daily()).singleElement().satisfies(day -> {
             assertThat(day.date()).isEqualTo(friday);
             assertThat(day.appointments()).isZero();
-            assertThat(day.capacity()).isEqualTo(48);
+            assertThat(day.capacity()).isEqualTo(30);
         });
-        assertThat(dashboard.hourly()).hasSize(8);
+        assertThat(dashboard.hourly()).hasSize(5);
         assertThat(dashboard.highlights().busiestDate()).isNull();
         assertThat(dashboard.highlights().busiestTime()).isNull();
     }
 
     @Test
-    void sundayHasNoClinicCapacity() {
+    void sundayHasMorningAndAfternoonCapacity() {
         LocalDate sunday = LocalDate.of(2026, 7, 26);
         when(appointmentRepository.findAdminRange(sunday, sunday)).thenReturn(List.of());
 
         var dashboard = service().dashboard(sunday, sunday);
 
-        assertThat(dashboard.summary().totalCapacity()).isZero();
-        assertThat(dashboard.daily().get(0).capacity()).isZero();
+        assertThat(dashboard.summary().totalCapacity()).isEqualTo(90);
+        assertThat(dashboard.daily().get(0).capacity()).isEqualTo(90);
         assertThat(dashboard.daily().get(0).occupancyRate()).isZero();
     }
 
     @Test
-    void saturdayHasEightHoursAndFortyEightSlots() {
+    void saturdayHasMorningAndAfternoonSlots() {
         LocalDate saturday = LocalDate.of(2026, 7, 25);
         when(appointmentRepository.findAdminRange(saturday, saturday)).thenReturn(List.of());
 
         var dashboard = service().dashboard(saturday, saturday);
 
-        assertThat(dashboard.summary().totalCapacity()).isEqualTo(48);
+        assertThat(dashboard.summary().totalCapacity()).isEqualTo(90);
     }
 
     @Test
@@ -91,9 +91,9 @@ class StatisticsServiceTests {
         assertThat(dashboard.summary().returningPatients()).isEqualTo(2);
         assertThat(dashboard.summary().releasedAppointments()).isEqualTo(2);
         assertThat(dashboard.summary().occupiedSlots()).isEqualTo(2);
-        assertThat(dashboard.summary().totalCapacity()).isEqualTo(96);
+        assertThat(dashboard.summary().totalCapacity()).isEqualTo(120);
         assertThat(dashboard.summary().completionRate()).isEqualTo(75.0);
-        assertThat(dashboard.summary().occupancyRate()).isEqualTo(2.1);
+        assertThat(dashboard.summary().occupancyRate()).isEqualTo(1.7);
 
         assertThat(dashboard.daily()).hasSize(2);
         assertThat(dashboard.daily().get(0).appointments()).isEqualTo(2);
@@ -139,7 +139,7 @@ class StatisticsServiceTests {
 
         assertThat(dashboard.daily()).extracting("date")
                 .containsExactly(from, from.plusDays(1), to);
-        assertThat(dashboard.summary().totalCapacity()).isEqualTo(96);
+        assertThat(dashboard.summary().totalCapacity()).isEqualTo(210);
     }
 
     @Test

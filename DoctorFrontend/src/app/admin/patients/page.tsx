@@ -3,8 +3,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { Search, Users } from "lucide-react";
-import { apiRequest } from "@/lib/blog-api";
-import { Patient } from "@/lib/appointment-api";
+import { apiRequest } from "@/shared/api/client";
+import type { Patient } from "@/features/appointments/types";
 
 type PatientPage = { content: Patient[]; totalElements: number };
 

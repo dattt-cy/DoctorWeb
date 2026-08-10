@@ -2,7 +2,7 @@ import { BlogCard } from "@/components/blog/BlogCard";
 import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
 import { Footer } from "@/components/layout/Footer";
 import { DOCTOR_INFO } from "@/constants/doctor";
-import { API_BASE_URL } from "@/lib/blog-api";
+import { API_BASE_URL } from "@/shared/api/config";
 import { SITE, absoluteUrl } from "@/lib/site";
 import type { BlogPost } from "@/types/post";
 import { ArrowLeft, ArrowRight, BadgeCheck, CalendarDays, Clock3, Eye, Stethoscope } from "lucide-react";

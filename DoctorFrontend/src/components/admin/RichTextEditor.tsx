@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import { uploadBlogImage } from "@/lib/blog-api";
+import { uploadBlogImage } from "@/features/blog/api";
 
 interface RichTextEditorProps {
   content: string;

@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AdminBlogPost, apiRequest, BlogPage, BlogStatus } from "@/lib/blog-api";
+import type { AdminBlogPost, BlogPage, BlogStatus } from "@/features/blog/types";
+import { apiRequest } from "@/shared/api/client";
 
 const EMPTY_PAGE: BlogPage = {
   content: [],

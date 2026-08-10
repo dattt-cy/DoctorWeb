@@ -115,15 +115,15 @@ export function Footer() {
               <div className="flex flex-col gap-1.5 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
                 <div className="flex justify-between">
                   <span>Thứ 2 – Thứ 6</span>
-                  <span className="font-semibold text-white">17:30 – 19:00</span>
+                  <span className="font-semibold text-white">17:30 – 20:00</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Thứ 7 – CN (sáng)</span>
-                  <span className="font-semibold text-white">9:00 – 11:30</span>
+                  <span className="font-semibold text-white">8:00 – 10:30</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Thứ 7 – CN (chiều)</span>
-                  <span className="font-semibold text-white">15:00 – 18:00</span>
+                  <span className="font-semibold text-white">15:00 – 20:00</span>
                 </div>
               </div>
             </div>

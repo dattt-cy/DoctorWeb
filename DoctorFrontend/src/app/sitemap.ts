@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/site";
-import { API_BASE_URL } from "@/lib/blog-api";
+import { API_BASE_URL } from "@/shared/api/config";
 
 type SitemapPost = { slug: string; publishedAt?: string; updatedAt?: string };
 

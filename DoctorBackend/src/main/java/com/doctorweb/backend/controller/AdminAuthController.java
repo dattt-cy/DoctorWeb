@@ -1,8 +1,8 @@
 package com.doctorweb.backend.controller;
 
+import com.doctorweb.backend.dto.auth.LoginRequest;
 import com.doctorweb.backend.global.security.JwtTokenProvider;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Map;
 
@@ -60,6 +59,4 @@ public class AdminAuthController {
                 .maxAge(maxAge)
                 .build();
     }
-
-    public record LoginRequest(@NotBlank String username, @NotBlank String password) {}
 }

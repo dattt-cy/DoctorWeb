@@ -47,14 +47,20 @@ export function ClinicJsonLd() {
       {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "08:00",
-        closes: "17:00",
+        opens: "17:30",
+        closes: "20:00",
       },
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: "Saturday",
+        dayOfWeek: ["Saturday", "Sunday"],
         opens: "08:00",
-        closes: "12:00",
+        closes: "10:30",
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Saturday", "Sunday"],
+        opens: "15:00",
+        closes: "20:00",
       },
     ],
     alumniOf: {

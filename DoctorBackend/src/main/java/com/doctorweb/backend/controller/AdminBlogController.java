@@ -2,8 +2,8 @@ package com.doctorweb.backend.controller;
 
 import com.doctorweb.backend.domain.BlogPost;
 import com.doctorweb.backend.domain.BlogPostRevision;
+import com.doctorweb.backend.dto.PageResponse;
 import com.doctorweb.backend.service.BlogService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +20,8 @@ public class AdminBlogController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<BlogPost>> getAllPosts(Pageable pageable) {
-        return ResponseEntity.ok(blogService.getAllPosts(pageable));
+    public ResponseEntity<PageResponse<BlogPost>> getAllPosts(Pageable pageable) {
+        return ResponseEntity.ok(PageResponse.from(blogService.getAllPosts(pageable)));
     }
 
     @GetMapping("/{id}")

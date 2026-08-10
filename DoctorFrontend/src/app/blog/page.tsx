@@ -1,7 +1,7 @@
 import { BlogListing } from "@/components/blog/BlogListing";
 import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
 import { Footer } from "@/components/layout/Footer";
-import { API_BASE_URL } from "@/lib/blog-api";
+import { API_BASE_URL } from "@/shared/api/config";
 import { ArrowLeft, ArrowRight, BadgeCheck, BookOpen, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

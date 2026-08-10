@@ -4,8 +4,8 @@ import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { apiRequest } from "@/lib/blog-api";
-import { Appointment, Patient } from "@/lib/appointment-api";
+import { apiRequest } from "@/shared/api/client";
+import type { Appointment, Patient } from "@/features/appointments/types";
 
 type Detail = { patient: Patient; appointments: Appointment[] };
 

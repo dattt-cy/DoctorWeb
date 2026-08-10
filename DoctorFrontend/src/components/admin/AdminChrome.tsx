@@ -3,7 +3,8 @@
 import { CalendarDays, FileText, Home, LayoutDashboard, LogOut, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { apiRequest } from "@/lib/blog-api";
+import { useEffect } from "react";
+import { apiRequest } from "@/shared/api/client";
 import { VitaLogo } from "@/components/ui/VitaLogo";
 
 const navigation = [
@@ -16,6 +17,12 @@ const navigation = [
 export default function AdminChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    const redirectToLogin = () => router.replace("/admin/login");
+    window.addEventListener("doctorweb:unauthorized", redirectToLogin);
+    return () => window.removeEventListener("doctorweb:unauthorized", redirectToLogin);
+  }, [router]);
   if (pathname === "/admin/login") return <>{children}</>;
 
   async function logout() {

@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
-import { createAppointment, getAvailability, Slot } from "@/lib/appointment-api";
+import { createAppointment, getAvailability } from "@/features/appointments/api";
+import type { AppointmentSlot } from "@/features/appointments/types";
 
 const today = () => {
   const date = new Date();
@@ -12,7 +13,7 @@ const today = () => {
 
 export function AppointmentForm() {
   const [date, setDate] = useState(today);
-  const [slots, setSlots] = useState<Slot[]>([]);
+  const [slots, setSlots] = useState<AppointmentSlot[]>([]);
   const [time, setTime] = useState("");
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -55,11 +56,11 @@ export function AppointmentForm() {
     }
     try {
       const result = await createAppointment({
-        patientName: form.get("patientName"),
+        patientName: String(form.get("patientName") || ""),
         phone: normalizedPhone,
         appointmentDate: date,
         appointmentTime: time,
-        reasonForVisit: form.get("reasonForVisit") || null,
+        reasonForVisit: String(form.get("reasonForVisit") || "") || null,
       });
       setSuccess(`${result.message} Mã bệnh nhân: ${result.patientCode}`);
       formElement.reset();

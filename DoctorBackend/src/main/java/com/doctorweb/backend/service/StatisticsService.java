@@ -76,8 +76,9 @@ public class StatisticsService {
 
         Map<LocalTime, List<Appointment>> byTime = appointments.stream()
                 .collect(Collectors.groupingBy(a -> a.getSlot().getAppointmentTime()));
-        SortedSet<LocalTime> times = new TreeSet<>();
-        for (int hour = 8; hour <= 15; hour++) times.add(LocalTime.of(hour, 0));
+        SortedSet<LocalTime> times = rangeFrom.datesUntil(rangeTo.plusDays(1))
+                .flatMap(date -> ClinicSchedule.operatingTimes(date).stream())
+                .collect(Collectors.toCollection(TreeSet::new));
         times.addAll(byTime.keySet());
         List<HourlyPoint> hourly = times.stream()
                 .map(time -> hourlyPoint(time, byTime.getOrDefault(time, List.of())))
@@ -124,8 +125,7 @@ public class StatisticsService {
     }
 
     private long dailyCapacity(LocalDate date) {
-        if (date.getDayOfWeek() == DayOfWeek.SUNDAY) return 0;
-        return 8L * SLOT_CAPACITY;
+        return (long) ClinicSchedule.operatingTimes(date).size() * SLOT_CAPACITY;
     }
 
     private double percent(long value, long total) {

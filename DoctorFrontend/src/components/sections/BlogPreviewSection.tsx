@@ -1,5 +1,5 @@
 import { BlogCard } from "@/components/blog/BlogCard";
-import { API_BASE_URL } from "@/lib/blog-api";
+import { API_BASE_URL } from "@/shared/api/config";
 import type { BlogPost } from "@/types/post";
 import { ArrowRight, BookOpen } from "lucide-react";
 import Link from "next/link";

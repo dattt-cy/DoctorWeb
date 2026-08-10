@@ -15,14 +15,14 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import RichTextEditor from "./RichTextEditor";
+import { uploadBlogImage } from "@/features/blog/api";
 import {
-  AdminBlogPost,
-  BlogRevision,
-  apiRequest,
-  BlogPostPayload,
-  BlogStatus,
-  uploadBlogImage,
-} from "@/lib/blog-api";
+  type AdminBlogPost,
+  type BlogRevision,
+  type BlogPostPayload,
+  type BlogStatus,
+} from "@/features/blog/types";
+import { apiRequest } from "@/shared/api/client";
 
 const CATEGORIES = ["Dinh dưỡng", "Tiêm chủng", "Hô hấp", "Phát triển", "Phòng bệnh"];
 

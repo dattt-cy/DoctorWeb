@@ -126,9 +126,9 @@ export function ContactSection() {
               </div>
               <div className="flex flex-col gap-3">
                 {[
-                  { day: "Thứ 2 – Thứ 6", hours: "8:00 – 17:00", open: true },
-                  { day: "Thứ 7", hours: "8:00 – 12:00", open: true },
-                  { day: "Chủ nhật", hours: "Nghỉ", open: false },
+                  { day: "Thứ 2 – Thứ 6", hours: "17:30 – 20:00", open: true },
+                  { day: "Thứ 7 – CN (sáng)", hours: "8:00 – 10:30", open: true },
+                  { day: "Thứ 7 – CN (chiều)", hours: "15:00 – 20:00", open: true },
                 ].map(({ day, hours, open }, i, arr) => (
                   <div key={day}>
                     <div className="flex justify-between items-center text-sm">

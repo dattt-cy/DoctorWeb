@@ -136,12 +136,6 @@ export function AboutSection() {
               >
                 {DOCTOR_INFO.bio}
               </p>
-              <p
-                className="text-sm leading-[1.9] mt-4"
-                style={{ color: "var(--color-text-secondary)" }}
-              >
-                Tốt nghiệp Tiến sĩ Y khoa tại Đại học Y Hà Nội năm 2008, tôi đã dành hơn 15 năm nghiên cứu và điều trị chuyên sâu về các bệnh lý Nhi khoa. Ngoài công tác khám chữa bệnh, tôi còn tích cực tham gia giảng dạy và nghiên cứu khoa học, góp phần nâng cao chất lượng y tế nhi khoa tại Việt Nam.
-              </p>
             </div>
 
             {/* Education timeline */}

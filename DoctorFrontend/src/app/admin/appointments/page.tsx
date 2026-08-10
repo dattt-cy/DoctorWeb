@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { CalendarDays, Loader2, RefreshCw } from "lucide-react";
-import { apiRequest } from "@/lib/blog-api";
-import { Appointment } from "@/lib/appointment-api";
+import { apiRequest } from "@/shared/api/client";
+import type { Appointment } from "@/features/appointments/types";
 
 function isoDate(offset = 0) {
   const date = new Date();

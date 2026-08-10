@@ -36,7 +36,7 @@ class AppointmentServiceTests {
     @BeforeEach
     void setUp() {
         bookingDate = nextWeekday(LocalDate.now(CLINIC_ZONE).plusDays(1));
-        bookingTime = LocalTime.of(8, 0);
+        bookingTime = LocalTime.of(17, 30);
     }
 
     @Test
@@ -56,10 +56,18 @@ class AppointmentServiceTests {
     }
 
     @Test
-    void sundayHasNoAvailableTimes() {
+    void sundayOffersMorningAndAfternoonTimes() {
         LocalDate sunday = nextDayOfWeek(LocalDate.now(CLINIC_ZONE), DayOfWeek.SUNDAY);
-        assertThat(service.availability(sunday)).isEmpty();
-        verifyNoInteractions(slotRepository);
+        when(slotRepository.findByAppointmentDateAndAppointmentTime(any(), any()))
+                .thenReturn(Optional.empty());
+
+        assertThat(service.availability(sunday))
+                .extracting(SlotAvailability::time)
+                .containsExactly(
+                        "08:00", "08:30", "09:00", "09:30", "10:00",
+                        "15:00", "15:30", "16:00", "16:30", "17:00",
+                        "17:30", "18:00", "18:30", "19:00", "19:30"
+                );
     }
 
     @Test
@@ -71,7 +79,7 @@ class AppointmentServiceTests {
         var slots = service.availability(bookingDate);
 
         assertThat(slots).isNotEmpty();
-        assertThat(slots.stream().filter(s -> s.time().equals("08:00")).findFirst())
+        assertThat(slots.stream().filter(s -> s.time().equals("17:30")).findFirst())
                 .get().extracting(SlotAvailability::available).isEqualTo(false);
     }
 
@@ -85,15 +93,14 @@ class AppointmentServiceTests {
     }
 
     @Test
-    void workingDayOffersExactlyEightTimesFromEightToFifteen() {
+    void weekdayOffersHalfHourTimesFromSeventeenThirtyToTwenty() {
         when(slotRepository.findByAppointmentDateAndAppointmentTime(any(), any()))
                 .thenReturn(Optional.empty());
 
         assertThat(service.availability(bookingDate))
                 .extracting(SlotAvailability::time)
                 .containsExactly(
-                        "08:00", "09:00", "10:00", "11:00",
-                        "12:00", "13:00", "14:00", "15:00"
+                        "17:30", "18:00", "18:30", "19:00", "19:30"
                 );
     }
 

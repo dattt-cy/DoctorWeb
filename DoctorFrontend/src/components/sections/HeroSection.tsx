@@ -3,10 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Hospital, Check, BadgeCheck, ShieldCheck, Clock3 } from "lucide-react";
 import { DOCTOR_INFO } from "@/constants/doctor";
-import { createAppointment, getAvailability, Slot } from "@/lib/appointment-api";
+import { createAppointment, getAvailability } from "@/features/appointments/api";
+import type { AppointmentSlot } from "@/features/appointments/types";
 
 const stats = [
-  { value: "10+", label: "Năm kinh nghiệm" },
+  { value: "Hơn 10", label: "Năm kinh nghiệm" },
   { value: "ThS.BS", label: "Học vị" },
   { value: "Hòa Xuân", label: "Đà Nẵng" },
 ];
@@ -21,7 +22,7 @@ interface AppointmentForm {
 
 
 
-// Khung giờ 8:00–17:00, mỗi tiếng 1 suất, tối đa 6 ca/giờ
+// Khung giờ được tải từ backend theo lịch làm việc của phòng khám.
 const today = () => {
   const date = new Date();
   date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
@@ -40,7 +41,7 @@ export function HeroSection() {
   const [form, setForm] = useState<AppointmentForm>(INITIAL_FORM);
   const [submitted, setSubmitted] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
-  const [timeSlots, setTimeSlots] = useState<Slot[]>([]);
+  const [timeSlots, setTimeSlots] = useState<AppointmentSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");

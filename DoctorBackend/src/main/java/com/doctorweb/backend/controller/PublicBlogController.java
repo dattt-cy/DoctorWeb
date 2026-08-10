@@ -1,8 +1,8 @@
 package com.doctorweb.backend.controller;
 
 import com.doctorweb.backend.domain.BlogPost;
+import com.doctorweb.backend.dto.PageResponse;
 import com.doctorweb.backend.service.BlogService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +18,8 @@ public class PublicBlogController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<BlogPost>> getPublishedPosts(Pageable pageable) {
-        return ResponseEntity.ok(blogService.getPublishedPosts(pageable));
+    public ResponseEntity<PageResponse<BlogPost>> getPublishedPosts(Pageable pageable) {
+        return ResponseEntity.ok(PageResponse.from(blogService.getPublishedPosts(pageable)));
     }
 
     @GetMapping("/{slug}")

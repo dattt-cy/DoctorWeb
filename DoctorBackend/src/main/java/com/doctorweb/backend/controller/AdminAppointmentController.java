@@ -1,6 +1,7 @@
 package com.doctorweb.backend.controller;
 
 import com.doctorweb.backend.dto.AppointmentDtos.*;
+import com.doctorweb.backend.dto.PageResponse;
 import com.doctorweb.backend.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,10 @@ public class AdminAppointmentController {
     }
 
     @GetMapping("/patients")
-    public Page<PatientSummary> patients(@RequestParam(defaultValue = "") String query, Pageable pageable) {
-        return appointmentService.patients(query, pageable);
+    public PageResponse<PatientSummary> patients(
+            @RequestParam(defaultValue = "") String query,
+            Pageable pageable) {
+        return PageResponse.from(appointmentService.patients(query, pageable));
     }
 
     @GetMapping("/patients/{id}")
