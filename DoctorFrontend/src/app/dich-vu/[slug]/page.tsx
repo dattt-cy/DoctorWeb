@@ -74,7 +74,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
           </div>
         </section>
 
-        <section className="py-14 md:py-20">
+        <section className="pb-8 pt-14 md:pb-10 md:pt-20">
           <div className="container">
             <div className="mb-9 max-w-2xl">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-600">Hiểu đúng tình trạng của trẻ</p>
@@ -92,7 +92,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
           </div>
         </section>
 
-        <section className="border-y border-orange-100 bg-white py-14 md:py-20">
+        <section className="pb-14 pt-0 md:pb-20">
           <div className="container grid gap-6 lg:grid-cols-2">
             <article className="rounded-3xl border border-orange-100 bg-[#fffaf5] p-7">
               <HeartPulse className="text-orange-600" size={30} />
