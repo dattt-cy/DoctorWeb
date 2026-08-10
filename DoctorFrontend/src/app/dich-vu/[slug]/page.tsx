@@ -82,10 +82,10 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
               <p className="mt-4 leading-7 text-slate-600">Khám sớm giúp phân biệt tình trạng có thể chăm sóc tại nhà với những dấu hiệu cần can thiệp y tế.</p>
             </div>
             <div>
-              <article className="rounded-3xl border border-orange-100 bg-white p-7 shadow-sm md:p-9">
-                <div className="flex items-center gap-3"><HeartPulse className="text-orange-600" size={30} /><h3 className="text-xl font-bold text-slate-950">Nên đặt lịch thăm khám</h3></div>
-                <div className="mt-7 grid gap-4 sm:grid-cols-3">
-                  {service.whenToVisit.map((item, index) => <div key={item} className="rounded-2xl bg-orange-50/70 p-5"><span className="text-xs font-extrabold text-orange-500">0{index + 1}</span><p className="mt-2 text-sm font-semibold leading-6 text-slate-700">{item}</p></div>)}
+              <article className="rounded-3xl border border-orange-100 bg-white p-8 shadow-sm md:p-11">
+                <div className="flex items-center gap-4"><HeartPulse className="text-orange-600" size={36} /><h3 className="text-2xl font-bold text-slate-950 md:text-3xl">Nên đặt lịch thăm khám</h3></div>
+                <div className="mt-9 grid gap-5 sm:grid-cols-3">
+                  {service.whenToVisit.map((item, index) => <div key={item} className="flex min-h-40 flex-col justify-center rounded-2xl bg-orange-50/70 p-6 md:p-7"><span className="text-sm font-extrabold text-orange-500">0{index + 1}</span><p className="mt-4 text-base font-semibold leading-7 text-slate-700 md:text-lg">{item}</p></div>)}
                 </div>
               </article>
             </div>
