@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { SERVICES } from "@/constants/services";
 import type { Service } from "@/types/service";
@@ -62,10 +63,13 @@ function ServiceCard({ service, index }: ServiceCardProps) {
   const isFeatured = service.featured;
 
   return (
-    <div
+    <Link
+      href={`/dich-vu/${service.id}`}
+      aria-label={`Tìm hiểu dịch vụ ${service.title}`}
       className={`
         group relative flex min-h-[260px] flex-col overflow-hidden rounded-3xl p-7
-        transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[var(--shadow-hover)]
+        cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[var(--shadow-hover)]
+        focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-500
         ${isFeatured ? "bg-gradient-to-br from-orange-500 to-orange-600 text-white" : "bg-white"}
       `}
       style={{
@@ -111,7 +115,7 @@ function ServiceCard({ service, index }: ServiceCardProps) {
           <div className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-white/5" />
         </>
       )}
-    </div>
+    </Link>
   );
 }
 

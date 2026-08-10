@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/site";
 import { API_BASE_URL } from "@/shared/api/config";
+import { SERVICES } from "@/constants/services";
 
 type SitemapPost = { slug: string; publishedAt?: string; updatedAt?: string };
 
@@ -28,5 +29,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...postRoutes];
+  const serviceRoutes: MetadataRoute.Sitemap = SERVICES.map((service) => ({
+    url: absoluteUrl(`/dich-vu/${service.id}`),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...serviceRoutes, ...postRoutes];
 }
