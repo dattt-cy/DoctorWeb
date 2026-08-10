@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, ArrowLeft, ArrowRight, Check, HeartPulse, ShieldCheck, Sparkles, Stethoscope } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, HeartPulse, ShieldCheck, Sparkles, Stethoscope } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -81,17 +81,12 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
               <h2 className="mt-3 text-3xl font-extrabold text-slate-950 md:text-4xl">Khi nào cha mẹ nên đưa trẻ đi khám?</h2>
               <p className="mt-4 leading-7 text-slate-600">Khám sớm giúp phân biệt tình trạng có thể chăm sóc tại nhà với những dấu hiệu cần can thiệp y tế.</p>
             </div>
-            <div className="grid gap-6 lg:grid-cols-[1.25fr_.75fr]">
+            <div>
               <article className="rounded-3xl border border-orange-100 bg-white p-7 shadow-sm md:p-9">
                 <div className="flex items-center gap-3"><HeartPulse className="text-orange-600" size={30} /><h3 className="text-xl font-bold text-slate-950">Nên đặt lịch thăm khám</h3></div>
                 <div className="mt-7 grid gap-4 sm:grid-cols-3">
                   {service.whenToVisit.map((item, index) => <div key={item} className="rounded-2xl bg-orange-50/70 p-5"><span className="text-xs font-extrabold text-orange-500">0{index + 1}</span><p className="mt-2 text-sm font-semibold leading-6 text-slate-700">{item}</p></div>)}
                 </div>
-              </article>
-              <article className="rounded-3xl bg-slate-950 p-7 text-white shadow-lg md:p-9">
-                <div className="flex items-center gap-3 text-amber-300"><AlertTriangle size={27} /><h3 className="text-xl font-bold text-white">Dấu hiệu cần xử trí ngay</h3></div>
-                <ul className="mt-6 space-y-4">{service.urgentSigns.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-slate-300"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300" />{item}</li>)}</ul>
-                <p className="mt-6 border-t border-white/10 pt-5 text-xs leading-5 text-slate-400">Nếu trẻ có dấu hiệu nguy hiểm, hãy đưa trẻ đến cơ sở cấp cứu gần nhất; không chờ lịch hẹn trực tuyến.</p>
               </article>
             </div>
           </div>

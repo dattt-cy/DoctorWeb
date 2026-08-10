@@ -5,7 +5,6 @@ export interface Service {
   introduction: string;
   commonConditions: string[];
   whenToVisit: string[];
-  urgentSigns: string[];
   parentNotes: string[];
   faqs: { question: string; answer: string }[];
   icon: string;
