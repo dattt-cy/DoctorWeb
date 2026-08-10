@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, ArrowLeft, ArrowRight, Check, ClipboardList, HeartPulse, ShieldCheck, Sparkles, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Check, HeartPulse, ShieldCheck, Sparkles, Stethoscope } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -98,20 +98,13 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
         </section>
 
         <section className="border-y border-orange-100 bg-white py-14 md:py-20">
-          <div className="container grid gap-6 lg:grid-cols-3">
+          <div className="container grid gap-6 lg:grid-cols-2">
             <article className="rounded-3xl border border-orange-100 bg-[#fffaf5] p-7">
               <HeartPulse className="text-orange-600" size={30} />
               <h2 className="mt-5 text-xl font-bold text-slate-950">Vấn đề thường gặp</h2>
               <ul className="mt-5 space-y-3">
                 {service.commonConditions.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-slate-600"><Check className="mt-1 shrink-0 text-orange-500" size={16} />{item}</li>)}
               </ul>
-            </article>
-            <article className="rounded-3xl border border-cyan-100 bg-cyan-50/40 p-7">
-              <ClipboardList className="text-cyan-700" size={30} />
-              <h2 className="mt-5 text-xl font-bold text-slate-950">Quy trình thăm khám</h2>
-              <ol className="mt-5 space-y-4">
-                {service.examinationSteps.map((item, index) => <li key={item} className="flex gap-3 text-sm leading-6 text-slate-600"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-cyan-50 text-xs font-bold text-cyan-700">{index + 1}</span>{item}</li>)}
-              </ol>
             </article>
             <article className="rounded-3xl border border-emerald-100 bg-emerald-50/40 p-7">
               <ShieldCheck className="text-emerald-600" size={30} />
@@ -137,10 +130,12 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
                   <div className="flex gap-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-white">{index + 1}</span><div><h3 className="text-lg font-bold text-slate-950">{faq.question}</h3><p className="mt-3 text-sm leading-7 text-slate-600">{faq.answer}</p></div></div>
                 </article>
               ))}
-              <div className="rounded-3xl bg-gradient-to-r from-orange-500 to-orange-600 p-7 text-white shadow-lg shadow-orange-500/15">
-                <p className="font-bold">Bạn vẫn chưa chắc tình trạng của bé?</p>
-                <p className="mt-2 text-sm leading-6 text-white/80">Đặt lịch để bác sĩ thăm khám và tư vấn kế hoạch chăm sóc phù hợp.</p>
-                <Link href="/#dat-lich" className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-orange-600 transition hover:bg-orange-50">Đặt lịch khám <ArrowRight size={16} /></Link>
+              <div className="relative overflow-hidden rounded-3xl border border-orange-200 bg-[#fff8f1] p-7 shadow-sm">
+                <div className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-orange-200/45" />
+                <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                  <div><p className="text-lg font-bold text-slate-950">Bạn vẫn chưa chắc tình trạng của bé?</p><p className="mt-2 max-w-lg text-sm leading-6 text-slate-600">Bác sĩ sẽ thăm khám và cùng gia đình chọn hướng chăm sóc phù hợp, không vội vàng điều trị khi chưa cần thiết.</p></div>
+                  <Link href="/#dat-lich" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-orange-500 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-orange-600">Đặt lịch khám <ArrowRight size={16} /></Link>
+                </div>
               </div>
             </div>
           </div>

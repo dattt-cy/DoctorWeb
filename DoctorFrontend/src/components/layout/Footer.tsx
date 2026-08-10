@@ -14,9 +14,8 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer style={{ backgroundColor: "#1a1612", color: "#fff" }}>
-      {/* Orange top accent bar */}
-      <div style={{ height: "4px", backgroundColor: "var(--color-primary)" }} />
+    <footer style={{ background: "linear-gradient(135deg, #115e59 0%, #0f766e 55%, #0d6b66 100%)", color: "#fff" }}>
+      <div style={{ height: "4px", background: "linear-gradient(90deg, #fb923c, #fdba74, #5eead4)" }} />
 
       <div className="container py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16">
@@ -40,7 +39,7 @@ export function Footer() {
             <p
               className="text-xs font-bold tracking-[0.2em] uppercase pb-2"
               style={{
-                color: "var(--color-accent)",
+                color: "#fed7aa",
                 borderBottom: "1px solid rgba(255,255,255,0.1)",
               }}
             >
@@ -69,7 +68,7 @@ export function Footer() {
             <p
               className="text-xs font-bold tracking-[0.2em] uppercase pb-2"
               style={{
-                color: "var(--color-accent)",
+                color: "#fed7aa",
                 borderBottom: "1px solid rgba(255,255,255,0.1)",
               }}
             >
@@ -85,7 +84,7 @@ export function Footer() {
                 <a
                   href={`tel:${DOCTOR_INFO.phone}`}
                   className="hover:text-white transition-colors font-semibold"
-                  style={{ color: "var(--color-accent)" }}
+                  style={{ color: "#fed7aa" }}
                 >
                   {DOCTOR_INFO.phone}
                 </a>
@@ -97,7 +96,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors font-semibold"
-                  style={{ color: "var(--color-accent)" }}
+                  style={{ color: "#fed7aa" }}
                 >
                   {DOCTOR_INFO.phone}
                 </a>
@@ -109,7 +108,7 @@ export function Footer() {
               className="mt-1 rounded-xl px-4 py-3 flex flex-col gap-2"
               style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
             >
-              <p className="text-xs font-bold tracking-wider uppercase" style={{ color: "var(--color-accent)" }}>
+              <p className="text-xs font-bold tracking-wider uppercase" style={{ color: "#fed7aa" }}>
                 Giờ khám bệnh
               </p>
               <div className="flex flex-col gap-1.5 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
