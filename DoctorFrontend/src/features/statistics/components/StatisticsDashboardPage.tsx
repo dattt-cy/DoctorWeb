@@ -1,12 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import {
-  Activity, CalendarCheck, CalendarClock, CalendarDays, Clock3,
+  Activity, AlertTriangle, CalendarCheck, CalendarClock, CalendarDays, Clock3,
   Loader2, RefreshCw, RotateCcw, UsersRound,
 } from "lucide-react";
 import { getStatistics } from "@/features/statistics/api";
 import type { StatisticsDashboard } from "@/features/statistics/types";
+import type { FollowUpReminder } from "@/features/appointments/types";
+import { apiRequest } from "@/shared/api/client";
 
 function localIso(date: Date) {
   const copy = new Date(date);
@@ -115,6 +118,65 @@ export default function AdminDashboardPage() {
   );
 }
 
+function FollowUpReminders() {
+  const [items, setItems] = useState<FollowUpReminder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    const from = new Date(today); from.setDate(from.getDate() - 30);
+    const to = new Date(today); to.setDate(to.getDate() + 14);
+    apiRequest<FollowUpReminder[]>(`/api/admin/follow-ups?from=${localIso(from)}&to=${localIso(to)}`)
+      .then(setItems)
+      .catch((e) => setError(e instanceof Error ? e.message : "Không tải được lịch tái khám."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const today = localIso(new Date());
+  const overdue = items.filter((item) => item.followUpDate < today && !item.followUpAppointmentId).length;
+
+  return (
+    <section className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-blue-100 bg-blue-50/70 px-5 py-4">
+        <div>
+          <h2 className="flex items-center gap-2 font-bold text-slate-900"><CalendarClock size={19} className="text-blue-600" />Nhắc tái khám</h2>
+          <p className="mt-1 text-xs text-slate-500">Quá hạn 30 ngày và các lịch trong 14 ngày tới</p>
+        </div>
+        {overdue > 0 && <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700"><AlertTriangle size={14} />{overdue} ca quá hạn</span>}
+      </div>
+      {loading ? (
+        <div className="flex h-28 items-center justify-center"><Loader2 size={22} className="animate-spin text-blue-600" /></div>
+      ) : error ? (
+        <p className="px-5 py-6 text-sm text-red-600">{error}</p>
+      ) : items.length === 0 ? (
+        <p className="px-5 py-7 text-center text-sm text-slate-500">Chưa có bệnh nhân cần tái khám trong khoảng này.</p>
+      ) : (
+        <div className="divide-y divide-slate-100">
+          {items.slice(0, 8).map((item) => {
+            const isOverdue = item.followUpDate < today && !item.followUpAppointmentId;
+            return (
+              <Link key={item.noteId} href={`/admin/patients/${item.patient.id}`}
+                className="flex min-w-0 items-center gap-3 px-5 py-3 transition hover:bg-slate-50">
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-bold ${isOverdue ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"}`}>
+                  {new Date(`${item.followUpDate}T00:00:00`).getDate()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-slate-900">{item.patient.fullName}</p>
+                  <p className="text-xs text-slate-500">{new Date(`${item.followUpDate}T00:00:00`).toLocaleDateString("vi-VN")}{item.followUpTime ? ` · ${item.followUpTime.slice(0, 5)}` : " · Chưa chọn giờ"}</p>
+                </div>
+                <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${item.followUpAppointmentId ? "bg-emerald-100 text-emerald-700" : isOverdue ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
+                  {item.followUpAppointmentId ? "Đã tạo lịch" : isOverdue ? "Quá hạn" : "Cần theo dõi"}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function DashboardContent({ data }: { data: StatisticsDashboard }) {
   const { summary } = data;
   const cards = [
@@ -128,12 +190,14 @@ function DashboardContent({ data }: { data: StatisticsDashboard }) {
 
   return (
     <>
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 min-[1450px]:grid-cols-6">
         {cards.map((card) => <MetricCard key={card.label} {...card} />)}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
+      <FollowUpReminders />
+
+      <section className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+        <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <SectionHeading title="Lịch hẹn theo ngày" subtitle="Màu xanh: đã khám · Màu cam: chưa khám" />
           <DailyChart data={data.daily} />
         </div>
@@ -143,8 +207,8 @@ function DashboardContent({ data }: { data: StatisticsDashboard }) {
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
+      <section className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+        <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <SectionHeading title="Mức độ đặt theo khung giờ" subtitle="Tổng lượt đặt, đã khám và số lượt giải phóng" />
           <HourlyChart data={data.hourly} />
         </div>
@@ -171,10 +235,10 @@ function MetricCard({ label, value, note, icon: Icon, color }: {
   label: string; value: number; note: string; icon: React.ElementType; color: string;
 }) {
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${colors[color]}`}><Icon size={20} /></div>
+    <article className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-xl ${colors[color]}`}><Icon size={18} /></div>
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-1 text-3xl font-bold tabular-nums text-slate-950">{number.format(value)}</p>
+      <p className="mt-1 text-2xl font-bold tabular-nums text-slate-950">{number.format(value)}</p>
       <p className="mt-1 text-xs text-slate-500">{note}</p>
     </article>
   );
@@ -188,22 +252,22 @@ function DailyChart({ data }: { data: StatisticsDashboard["daily"] }) {
   const max = Math.max(1, ...data.map((point) => point.appointments));
   const visibleLabels = data.length <= 14 ? 1 : Math.ceil(data.length / 10);
   return (
-    <div className="overflow-x-auto pb-2">
-      <div className="flex h-64 min-w-[620px] items-end gap-2 border-b border-slate-200 px-1">
+    <div className="w-full">
+      <div className="relative flex h-56 w-full items-stretch gap-1 px-1 after:absolute after:inset-x-1 after:bottom-6 after:border-b after:border-slate-200">
         {data.map((point, index) => {
           const totalHeight = point.appointments ? Math.max(12, point.appointments / max * 190) : 2;
           const completedHeight = point.appointments ? totalHeight * point.completed / point.appointments : 0;
           const pendingHeight = totalHeight - completedHeight;
           return (
-            <div key={point.date} className="group flex min-w-4 flex-1 flex-col items-center justify-end">
-              <div className="pointer-events-none mb-2 hidden whitespace-nowrap rounded-lg bg-slate-900 px-2 py-1 text-[10px] text-white group-hover:block">
+            <div key={point.date} className="group relative z-[1] flex min-w-0 flex-1 flex-col items-center justify-end">
+              <div className="pointer-events-none absolute bottom-full z-10 mb-2 hidden whitespace-nowrap rounded-lg bg-slate-900 px-2 py-1 text-[10px] text-white group-hover:block">
                 {shortDate.format(new Date(`${point.date}T00:00:00`))}: {point.appointments} lịch
               </div>
               <div className="flex w-full max-w-8 flex-col-reverse overflow-hidden rounded-t-md" style={{ height: totalHeight }}>
                 <div className="bg-emerald-500" style={{ height: completedHeight }} />
                 <div className="bg-orange-400" style={{ height: pendingHeight }} />
               </div>
-              <span className="mt-2 h-4 text-[9px] text-slate-400">
+              <span className="mt-2 h-4 whitespace-nowrap text-[9px] text-slate-400">
                 {index % visibleLabels === 0 ? shortDate.format(new Date(`${point.date}T00:00:00`)) : ""}
               </span>
             </div>
@@ -219,15 +283,15 @@ function PatientBreakdown({ data }: { data: StatisticsDashboard }) {
   const newPercent = summary.uniquePatients ? summary.newPatients / summary.uniquePatients * 100 : 0;
   return (
     <div>
-      <div className="mx-auto flex h-44 w-44 items-center justify-center rounded-full"
+      <div className="mx-auto flex h-36 w-36 items-center justify-center rounded-full"
         style={{ background: `conic-gradient(#2563eb 0 ${newPercent}%, #8b5cf6 ${newPercent}% 100%)` }}>
-        <div className="flex h-28 w-28 flex-col items-center justify-center rounded-full bg-white">
+        <div className="flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white">
           <UsersRound size={22} className="text-slate-400" />
           <span className="mt-1 text-3xl font-bold">{summary.uniquePatients}</span>
           <span className="text-[10px] uppercase text-slate-400">bệnh nhân</span>
         </div>
       </div>
-      <div className="mt-6 grid grid-cols-2 gap-3">
+      <div className="mt-5 grid grid-cols-2 gap-3">
         <BreakdownItem color="bg-blue-600" label="Bệnh nhân mới" value={summary.newPatients} />
         <BreakdownItem color="bg-violet-500" label="Quay lại" value={summary.returningPatients} />
       </div>
@@ -245,12 +309,12 @@ function HourlyChart({ data }: { data: StatisticsDashboard["hourly"] }) {
   return (
     <div className="space-y-3">
       {data.map((point) => (
-        <div key={point.time} className="grid grid-cols-[48px_1fr_155px] items-center gap-3 text-xs">
+        <div key={point.time} className="grid grid-cols-[48px_minmax(60px,1fr)_155px] items-center gap-3 text-xs">
           <span className="font-bold tabular-nums text-slate-700">{point.time.slice(0, 5)}</span>
           <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
             <div className="h-full rounded-full bg-blue-500" style={{ width: `${point.appointments / max * 100}%` }} />
           </div>
-          <span className="text-right tabular-nums text-slate-500">
+          <span className="whitespace-nowrap text-right tabular-nums text-slate-500">
             <strong className="text-slate-800">{point.appointments}</strong> đặt · {point.completed} khám · {point.released} trả
           </span>
         </div>

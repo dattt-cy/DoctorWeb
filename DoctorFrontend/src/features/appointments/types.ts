@@ -33,6 +33,42 @@ export type Appointment = {
   adminNote?: string | null;
 };
 
+export type VisitNoteStatus = "DRAFT" | "FINALIZED";
+
+export type VisitNote = {
+  id?: number | null;
+  appointmentId: number;
+  patientId: number;
+  symptoms?: string | null;
+  examination?: string | null;
+  assessment?: string | null;
+  treatmentPlan?: string | null;
+  followUpDate?: string | null;
+  followUpTime?: string | null;
+  followUpAppointmentId?: number | null;
+  status: VisitNoteStatus;
+  createdBy?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  finalizedAt?: string | null;
+};
+
+export type FollowUpReminder = {
+  noteId: number;
+  patient: Patient;
+  sourceAppointmentId: number;
+  followUpDate: string;
+  followUpTime?: string | null;
+  followUpAppointmentId?: number | null;
+  noteStatus: VisitNoteStatus;
+};
+
+export type PatientRecord = {
+  patient: Patient;
+  appointments: Appointment[];
+  visitNotes: VisitNote[];
+};
+
 export type AppointmentSlot = { time: string; available: boolean };
 
 export type CreateAppointmentRequest = {

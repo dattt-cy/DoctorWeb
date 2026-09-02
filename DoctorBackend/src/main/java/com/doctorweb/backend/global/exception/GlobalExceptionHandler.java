@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 @Slf4j
@@ -60,6 +61,17 @@ public class GlobalExceptionHandler {
                 ApiError.builder()
                         .status(HttpStatus.UNAUTHORIZED.value())
                         .message("Tên đăng nhập hoặc mật khẩu không đúng")
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> handleUploadTooLarge(MaxUploadSizeExceededException ex) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(
+                ApiError.builder()
+                        .status(HttpStatus.PAYLOAD_TOO_LARGE.value())
+                        .message("Image must not exceed the configured upload limit")
                         .timestamp(LocalDateTime.now())
                         .build()
         );

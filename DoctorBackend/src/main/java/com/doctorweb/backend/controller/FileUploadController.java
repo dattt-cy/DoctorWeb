@@ -27,7 +27,7 @@ public class FileUploadController {
             response.put("url", url);
             return ResponseEntity.ok(response);
         } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("Image upload failed: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(Map.of("message", "Image upload failed"));
         }
     }
 }

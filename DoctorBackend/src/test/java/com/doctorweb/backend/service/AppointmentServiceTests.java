@@ -27,6 +27,7 @@ class AppointmentServiceTests {
     @Mock PatientRepository patientRepository;
     @Mock AppointmentSlotRepository slotRepository;
     @Mock AppointmentRepository appointmentRepository;
+    @Mock VisitNoteRepository visitNoteRepository;
 
     @InjectMocks AppointmentService service;
 
@@ -57,7 +58,7 @@ class AppointmentServiceTests {
 
     @Test
     void sundayOffersMorningAndAfternoonTimes() {
-        LocalDate sunday = nextDayOfWeek(LocalDate.now(CLINIC_ZONE), DayOfWeek.SUNDAY);
+        LocalDate sunday = nextDayOfWeek(LocalDate.now(CLINIC_ZONE).plusDays(1), DayOfWeek.SUNDAY);
         when(slotRepository.findByAppointmentDateAndAppointmentTime(any(), any()))
                 .thenReturn(Optional.empty());
 
@@ -317,7 +318,7 @@ class AppointmentServiceTests {
 
     @Test
     void updatingUnknownAppointmentReturnsNotFound() {
-        when(appointmentRepository.findById(404L)).thenReturn(Optional.empty());
+        when(appointmentRepository.findAdminById(404L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.updateStatus(404L,
                 new StatusUpdate(AppointmentStatus.COMPLETED, false, null)))
@@ -335,13 +336,13 @@ class AppointmentServiceTests {
     @Test
     void patientSearchNormalizesVietnameseName() {
         Pageable pageable = PageRequest.of(0, 20);
-        when(patientRepository.findByNormalizedNameContainingOrPhoneContainingOrPatientCodeContaining(
+        when(patientRepository.search(
                 "nguyen van a", "", "NGUYỄN VĂN A", pageable))
                 .thenReturn(Page.empty(pageable));
 
         service.patients("Nguyễn Văn A", pageable);
 
-        verify(patientRepository).findByNormalizedNameContainingOrPhoneContainingOrPatientCodeContaining(
+        verify(patientRepository).search(
                 "nguyen van a", "", "NGUYỄN VĂN A", pageable);
     }
 
@@ -370,6 +371,51 @@ class AppointmentServiceTests {
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("số di động Việt Nam");
         verify(patientRepository, never()).save(any());
+    }
+
+    @Test
+    void savingVisitNoteCreatesDraftAndPrefillsSearchableContent() {
+        Appointment appointment = appointment(AppointmentStatus.IN_PROGRESS, true, 3);
+        when(appointmentRepository.findAdminById(appointment.getId())).thenReturn(Optional.of(appointment));
+        when(visitNoteRepository.findByAppointmentId(appointment.getId())).thenReturn(Optional.empty());
+        when(visitNoteRepository.save(any(VisitNote.class))).thenAnswer(invocation -> {
+            VisitNote note = invocation.getArgument(0);
+            note.setId(9L);
+            return note;
+        });
+
+        VisitNoteView saved = service.saveVisitNote(appointment.getId(),
+                new VisitNoteRequest("Đau họng", "Niêm mạc đỏ", "Viêm họng",
+                        "Theo dõi tại nhà", null, null, VisitNoteStatus.DRAFT, false, false, false),
+                "doctor-admin");
+
+        assertThat(saved.id()).isEqualTo(9L);
+        assertThat(saved.status()).isEqualTo(VisitNoteStatus.DRAFT);
+        assertThat(saved.createdBy()).isEqualTo("doctor-admin");
+        ArgumentCaptor<VisitNote> captor = ArgumentCaptor.forClass(VisitNote.class);
+        verify(visitNoteRepository).save(captor.capture());
+        assertThat(captor.getValue().getSearchText()).contains("dau hong", "viem hong");
+        verify(slotRepository, never()).findAndLock(any(), any());
+    }
+
+    @Test
+    void finalizingVisitNoteCompletesAppointmentAndReleasesCapacityInOneAction() {
+        Appointment appointment = appointment(AppointmentStatus.IN_PROGRESS, true, 3);
+        when(appointmentRepository.findAdminById(appointment.getId())).thenReturn(Optional.of(appointment));
+        when(visitNoteRepository.findByAppointmentId(appointment.getId())).thenReturn(Optional.empty());
+        when(visitNoteRepository.save(any(VisitNote.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(slotRepository.findAndLock(bookingDate, bookingTime)).thenReturn(Optional.of(appointment.getSlot()));
+        when(appointmentRepository.save(any(Appointment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        VisitNoteView saved = service.saveVisitNote(appointment.getId(),
+                new VisitNoteRequest("Sốt", null, "Theo dõi", "Uống đủ nước",
+                        null, null, VisitNoteStatus.FINALIZED, true, true, false), "admin");
+
+        assertThat(saved.status()).isEqualTo(VisitNoteStatus.FINALIZED);
+        assertThat(saved.finalizedAt()).isNotNull();
+        assertThat(appointment.getStatus()).isEqualTo(AppointmentStatus.COMPLETED);
+        assertThat(appointment.isConsumesCapacity()).isFalse();
+        assertThat(appointment.getSlot().getBookedCount()).isEqualTo(2);
     }
 
     private BookingRequest request(String name, String phone, LocalDate date, LocalTime time) {
@@ -407,7 +453,7 @@ class AppointmentServiceTests {
     }
 
     private void mockStatusUpdate(Appointment appointment) {
-        when(appointmentRepository.findById(appointment.getId())).thenReturn(Optional.of(appointment));
+        when(appointmentRepository.findAdminById(appointment.getId())).thenReturn(Optional.of(appointment));
         when(slotRepository.findAndLock(
                 appointment.getSlot().getAppointmentDate(),
                 appointment.getSlot().getAppointmentTime()))

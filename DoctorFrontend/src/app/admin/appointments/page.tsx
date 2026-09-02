@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { CalendarDays, Loader2, RefreshCw } from "lucide-react";
 import { apiRequest } from "@/shared/api/client";
-import type { Appointment } from "@/features/appointments/types";
+import VisitNoteDialog from "@/components/admin/VisitNoteDialog";
+import type { Appointment, VisitNote } from "@/features/appointments/types";
 
 function isoDate(offset = 0) {
   const date = new Date();
@@ -20,6 +22,7 @@ export default function AdminAppointmentsPage() {
   const [error, setError] = useState("");
   const [completionTarget, setCompletionTarget] = useState<Appointment | null>(null);
   const [reopenTarget, setReopenTarget] = useState<Appointment | null>(null);
+  const [noteTarget, setNoteTarget] = useState<Appointment | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -50,7 +53,7 @@ export default function AdminAppointmentsPage() {
 
   function changeStatus(item: Appointment, value: string) {
     if (value === "COMPLETED") {
-      setCompletionTarget(item);
+      setNoteTarget(item);
       return;
     }
     setReopenTarget(item);
@@ -115,7 +118,14 @@ export default function AdminAppointmentsPage() {
                 })}
               </h2>
               <div className="overflow-x-auto rounded-xl border bg-white">
-                <table className="w-full min-w-[800px] text-left text-sm">
+                <table className="w-full min-w-[900px] table-fixed text-left text-sm">
+                  <colgroup>
+                    <col className="w-[11%]" />
+                    <col className="w-[20%]" />
+                    <col className="w-[18%]" />
+                    <col className="w-[28%]" />
+                    <col className="w-[23%]" />
+                  </colgroup>
                   <thead className="bg-slate-50 text-xs uppercase text-slate-500">
                     <tr>
                       <th className="p-4">Giờ</th>
@@ -133,14 +143,14 @@ export default function AdminAppointmentsPage() {
                           <span className="block text-[10px] text-slate-500">{occupied(item)}/6 suất</span>
                           {!item.consumesCapacity && <span className="block text-[10px] text-emerald-600">Đã giải phóng</span>}
                         </td>
-                        <td className="p-4">
-                          <p className="font-semibold">{item.patient.fullName}</p>
+                        <td className="min-w-0 p-4">
+                          <Link href={`/admin/patients/${item.patient.id}`} className="font-semibold text-slate-900 hover:text-blue-600">{item.patient.fullName}</Link>
                           <p className="text-xs text-slate-500">{item.patient.patientCode}</p>
                         </td>
                         <td className="p-4">
                           <a className="text-blue-600" href={`tel:${item.patient.phone}`}>{item.patient.phone}</a>
                         </td>
-                        <td className="max-w-56 p-4 text-slate-600">{item.reasonForVisit || "—"}</td>
+                        <td className="break-words p-4 text-slate-600">{item.reasonForVisit || "—"}</td>
                         <td className="p-4">
                           <select
                             value={item.status === "COMPLETED" || !item.consumesCapacity ? "COMPLETED" : "PENDING"}
@@ -150,6 +160,10 @@ export default function AdminAppointmentsPage() {
                             <option value="PENDING">Chưa khám</option>
                             <option value="COMPLETED">Đã khám</option>
                           </select>
+                          <button onClick={() => setNoteTarget(item)}
+                            className="mt-2 block text-xs font-semibold text-blue-600 hover:text-blue-800">
+                            {item.status === "COMPLETED" ? "Xem phiếu khám" : "Ghi phiếu khám →"}
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -159,6 +173,19 @@ export default function AdminAppointmentsPage() {
             </section>
           ))}
         </div>
+      )}
+
+      {noteTarget && (
+        <VisitNoteDialog
+          appointment={noteTarget}
+          onClose={() => setNoteTarget(null)}
+          onSaved={(_note: VisitNote, completed: boolean) => {
+            if (!completed) return;
+            setItems((current) => current.map((item) => item.id === noteTarget.id
+              ? { ...item, status: "COMPLETED", consumesCapacity: false, completedAt: new Date().toISOString() }
+              : item));
+          }}
+        />
       )}
 
       {completionTarget && (

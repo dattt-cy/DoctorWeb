@@ -6,7 +6,7 @@ export const DOCTOR_INFO: DoctorProfile = {
   title: "Thạc sĩ · Bác sĩ Nhi khoa",
   specialty: "Bác sĩ Nhi khoa",
   tagline: "Thạc sĩ Bác sĩ Nhi khoa — Phòng khám tại 522 Phạm Hùng, Đà Nẵng",
-  bio: "Tôi là Bác sĩ Phương Thảo, tốt nghiệp Trường Đại học Y Dược Huế và đã hoàn thành chương trình Thạc sĩ chuyên ngành Nhi khoa. Với hơn 10 năm học tập và làm việc tại các bệnh viện lớn (Bệnh viện Trung ương Huế, Bệnh viện Phụ sản – Nhi Đà Nẵng), tôi đã đồng hành cùng rất nhiều gia đình trong việc chăm sóc và nuôi dưỡng con. Mong muốn của tôi là lan tỏa những kiến thức y khoa hữu ích, giúp bố mẹ tự tin hơn khi chăm sóc trẻ và kịp thời nhận biết các dấu hiệu nguy hiểm để đưa con đi điều trị đúng lúc.",
+  bio: "Thạc sĩ - Bác sĩ Phương Thảo có hơn 10 năm kinh nghiệm học tập, khám và điều trị tại các bệnh viện lớn như Bệnh viện Trung ương Huế và Bệnh viện Phụ sản - Nhi Đà Nẵng. Bác sĩ luôn ưu tiên phác đồ chuẩn y khoa, hạn chế kháng sinh, giúp bé nhanh khỏi và phát triển toàn diện.",
   quote: "Mỗi đứa trẻ xứng đáng được chăm sóc bởi bàn tay tận tâm và trái tim yêu thương.",
   photo: "/images/bac-si.jpg",
   photoAlt: "ThS.BS. Nguyễn Thị Phương Thảo đang khám cho trẻ",
@@ -30,7 +30,7 @@ export const DOCTOR_INFO: DoctorProfile = {
   education: [
     { year: "Thạc sĩ", description: "Thạc sĩ chuyên ngành Nhi khoa – Trường Đại học Y Dược, Đại học Huế" },
     { year: "Bác sĩ", description: "Bác sĩ Y khoa – Trường Đại học Y Dược, Đại học Huế" },
-    { year: "Kinh nghiệm", description: "Công tác tại Bệnh viện Trung ương Huế và Bệnh viện Phụ sản – Nhi Đà Nẵng" },
+    { year: "Kinh nghiệm", description: "Công tác tại Bệnh viện Phụ Sản Nhi Đà Nẵng" },
   ],
   memberships: [
     "Bệnh viện Phụ Sản – Nhi Đà Nẵng",

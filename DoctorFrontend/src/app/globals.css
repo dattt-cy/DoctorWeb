@@ -149,7 +149,9 @@ header[data-scrolled="true"] .nav-logobar {
 
 /* Chuyển cảnh nhẹ giữa các route; chỉ dùng opacity/transform để không gây giật layout. */
 .page-transition {
-  animation: page-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* `both` kept a transform on the route wrapper after the animation, which
+     made every position:fixed dialog behave like it was fixed to <main>. */
+  animation: page-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @keyframes page-enter {

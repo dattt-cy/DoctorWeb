@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,12 +37,30 @@ public class AdminAppointmentController {
     }
 
     @GetMapping("/patients/{id}")
-    public PatientDetail patient(@PathVariable Long id) {
+    public PatientRecord patient(@PathVariable Long id) {
         return appointmentService.patientDetail(id);
     }
 
     @PutMapping("/patients/{id}")
     public PatientSummary updatePatient(@PathVariable Long id, @Valid @RequestBody PatientUpdate request) {
         return appointmentService.updatePatient(id, request);
+    }
+
+    @GetMapping("/appointments/{id}/visit-note")
+    public VisitNoteView visitNote(@PathVariable Long id) {
+        return appointmentService.visitNote(id);
+    }
+
+    @PutMapping("/appointments/{id}/visit-note")
+    public VisitNoteView saveVisitNote(@PathVariable Long id,
+                                       @Valid @RequestBody VisitNoteRequest request,
+                                       Authentication authentication) {
+        return appointmentService.saveVisitNote(id, request,
+                authentication == null ? "admin" : authentication.getName());
+    }
+
+    @GetMapping("/follow-ups")
+    public List<FollowUpReminder> followUps(@RequestParam LocalDate from, @RequestParam LocalDate to) {
+        return appointmentService.followUps(from, to);
     }
 }

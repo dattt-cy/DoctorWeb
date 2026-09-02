@@ -1,8 +1,11 @@
 package com.doctorweb.backend.global.config;
 
 import com.doctorweb.backend.global.security.JwtAuthFilter;
+import com.doctorweb.backend.global.security.AdminOriginFilter;
+import com.doctorweb.backend.global.security.RateLimitFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +24,8 @@ import org.springframework.security.config.Customizer;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final AdminOriginFilter adminOriginFilter;
+    private final RateLimitFilter rateLimitFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,7 +44,9 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(adminOriginFilter, JwtAuthFilter.class)
+                .addFilterBefore(rateLimitFilter, AdminOriginFilter.class);
 
         return http.build();
     }
@@ -47,5 +54,26 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public FilterRegistrationBean<JwtAuthFilter> jwtFilterRegistration(JwtAuthFilter filter) {
+        return disabledRegistration(filter);
+    }
+
+    @Bean
+    public FilterRegistrationBean<AdminOriginFilter> adminOriginFilterRegistration(AdminOriginFilter filter) {
+        return disabledRegistration(filter);
+    }
+
+    @Bean
+    public FilterRegistrationBean<RateLimitFilter> rateLimitFilterRegistration(RateLimitFilter filter) {
+        return disabledRegistration(filter);
+    }
+
+    private <T extends jakarta.servlet.Filter> FilterRegistrationBean<T> disabledRegistration(T filter) {
+        FilterRegistrationBean<T> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 }

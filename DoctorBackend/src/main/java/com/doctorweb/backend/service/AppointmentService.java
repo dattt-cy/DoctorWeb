@@ -23,6 +23,7 @@ public class AppointmentService {
     private final PatientRepository patientRepository;
     private final AppointmentSlotRepository slotRepository;
     private final AppointmentRepository appointmentRepository;
+    private final VisitNoteRepository visitNoteRepository;
 
     @Transactional(readOnly = true)
     public List<SlotAvailability> availability(LocalDate date) {
@@ -90,7 +91,7 @@ public class AppointmentService {
 
     @Transactional
     public AppointmentView updateStatus(Long id, StatusUpdate request) {
-        Appointment appointment = appointmentRepository.findById(id)
+        Appointment appointment = appointmentRepository.findAdminById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy lịch hẹn"));
         AppointmentSlot slot = slotRepository.findAndLock(
                 appointment.getSlot().getAppointmentDate(), appointment.getSlot().getAppointmentTime())
@@ -137,16 +138,107 @@ public class AppointmentService {
         String q = query == null ? "" : query.trim();
         Page<Patient> result = q.isEmpty()
                 ? patientRepository.findAll(pageable)
-                : patientRepository.findByNormalizedNameContainingOrPhoneContainingOrPatientCodeContaining(
+                : patientRepository.search(
                         normalizeName(q), normalizePhone(q), q.toUpperCase(Locale.ROOT), pageable);
         return result.map(this::toPatient);
     }
 
     @Transactional(readOnly = true)
-    public PatientDetail patientDetail(Long id) {
+    public PatientRecord patientDetail(Long id) {
         Patient patient = getPatient(id);
-        return new PatientDetail(toPatient(patient),
-                appointmentRepository.findByPatientIdWithSlot(id).stream().map(this::toView).toList());
+        return new PatientRecord(toPatient(patient),
+                appointmentRepository.findByPatientIdWithSlot(id).stream().map(this::toView).toList(),
+                visitNoteRepository.findByPatientId(id).stream().map(this::toVisitNote).toList());
+    }
+
+    @Transactional(readOnly = true)
+    public VisitNoteView visitNote(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findAdminById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy lịch hẹn"));
+        return visitNoteRepository.findByAppointmentId(appointmentId)
+                .map(this::toVisitNote)
+                .orElseGet(() -> emptyVisitNote(appointment));
+    }
+
+    @Transactional
+    public VisitNoteView saveVisitNote(Long appointmentId, VisitNoteRequest request, String username) {
+        Appointment appointment = appointmentRepository.findAdminById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy lịch hẹn"));
+        VisitNote note = visitNoteRepository.findByAppointmentId(appointmentId)
+                .orElseGet(() -> VisitNote.builder()
+                        .appointment(appointment)
+                        .patient(appointment.getPatient())
+                        .createdBy(username == null || username.isBlank() ? "admin" : username)
+                        .status(VisitNoteStatus.DRAFT)
+                        .build());
+
+        note.setSymptoms(clean(request.symptoms()));
+        note.setExamination(clean(request.examination()));
+        note.setAssessment(clean(request.assessment()));
+        note.setTreatmentPlan(clean(request.treatmentPlan()));
+        note.setFollowUpDate(request.followUpDate());
+        note.setFollowUpTime(request.followUpTime());
+        note.setStatus(request.status());
+        note.setSearchText(normalizeName(String.join(" ",
+                safe(note.getSymptoms()), safe(note.getExamination()),
+                safe(note.getAssessment()), safe(note.getTreatmentPlan()))));
+        if (request.status() == VisitNoteStatus.FINALIZED && note.getFinalizedAt() == null) {
+            note.setFinalizedAt(LocalDateTime.now(CLINIC_ZONE));
+        }
+        if (Boolean.TRUE.equals(request.createFollowUpAppointment())) {
+            scheduleFollowUp(note);
+        }
+        VisitNote saved = visitNoteRepository.save(note);
+
+        if (Boolean.TRUE.equals(request.completeAppointment())) {
+            updateStatus(appointmentId, new StatusUpdate(
+                    AppointmentStatus.COMPLETED, request.releaseCapacity(), appointment.getAdminNote()));
+        }
+        return toVisitNote(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FollowUpReminder> followUps(LocalDate from, LocalDate to) {
+        if (from == null || to == null || to.isBefore(from) || to.isAfter(from.plusMonths(6))) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "Khoảng ngày tái khám không hợp lệ");
+        }
+        return visitNoteRepository.findFollowUps(from, to).stream()
+                .map(note -> new FollowUpReminder(
+                        note.getId(), toPatient(note.getPatient()), note.getAppointment().getId(),
+                        note.getFollowUpDate(), note.getFollowUpTime(),
+                        note.getFollowUpAppointment() == null ? null : note.getFollowUpAppointment().getId(),
+                        note.getStatus()))
+                .toList();
+    }
+
+    private void scheduleFollowUp(VisitNote note) {
+        if (note.getFollowUpAppointment() != null) return;
+        LocalDate date = note.getFollowUpDate();
+        LocalTime time = note.getFollowUpTime();
+        if (date == null || time == null) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "Vui lòng chọn ngày và giờ tái khám");
+        }
+        validateBookingDate(date);
+        if (!operatingTimes(date).contains(time)
+                || !LocalDateTime.of(date, time).isAfter(LocalDateTime.now(CLINIC_ZONE))) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "Giờ tái khám không hợp lệ");
+        }
+        slotRepository.createIfMissing(date, time);
+        AppointmentSlot slot = slotRepository.findAndLock(date, time)
+                .orElseThrow(() -> new IllegalStateException("Không thể tạo khung giờ tái khám"));
+        if (slot.getBookedCount() >= slot.getCapacity()) {
+            throw new BusinessException(HttpStatus.CONFLICT, "Khung giờ tái khám vừa hết chỗ");
+        }
+        Appointment followUp = Appointment.builder()
+                .patient(note.getPatient())
+                .slot(slot)
+                .reasonForVisit("Tái khám theo chỉ định")
+                .status(AppointmentStatus.PENDING)
+                .consumesCapacity(true)
+                .build();
+        slot.setBookedCount(slot.getBookedCount() + 1);
+        slotRepository.save(slot);
+        note.setFollowUpAppointment(appointmentRepository.save(followUp));
     }
 
     @Transactional
@@ -208,6 +300,21 @@ public class AppointmentService {
                 a.getCancelledAt(), a.getAdminNote());
     }
 
+    private VisitNoteView toVisitNote(VisitNote note) {
+        return new VisitNoteView(note.getId(), note.getAppointment().getId(), note.getPatient().getId(),
+                note.getSymptoms(), note.getExamination(), note.getAssessment(), note.getTreatmentPlan(),
+                note.getFollowUpDate(), note.getFollowUpTime(),
+                note.getFollowUpAppointment() == null ? null : note.getFollowUpAppointment().getId(),
+                note.getStatus(), note.getCreatedBy(),
+                note.getCreatedAt(), note.getUpdatedAt(), note.getFinalizedAt());
+    }
+
+    private VisitNoteView emptyVisitNote(Appointment appointment) {
+        return new VisitNoteView(null, appointment.getId(), appointment.getPatient().getId(),
+                appointment.getReasonForVisit(), null, null, null, null, null, null,
+                VisitNoteStatus.DRAFT, null, null, null, null);
+    }
+
     private String normalizeName(String value) {
         if (value == null) return "";
         return Normalizer.normalize(value.trim().toLowerCase(Locale.forLanguageTag("vi")), Normalizer.Form.NFD)
@@ -224,5 +331,9 @@ public class AppointmentService {
 
     private String clean(String value) {
         return value == null || value.isBlank() ? null : value.trim();
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value;
     }
 }

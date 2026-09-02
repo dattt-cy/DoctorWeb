@@ -134,6 +134,17 @@ class AppointmentRequestValidationTests {
         assertThat(validator.validate(request)).isEmpty();
     }
 
+    @Test
+    void visitNoteRequiresStatusAndLimitsClinicalFields() {
+        VisitNoteRequest request = new VisitNoteRequest(
+                "a".repeat(5001), null, null, null, null, null, null, false, false, false);
+
+        Set<ConstraintViolation<VisitNoteRequest>> violations = validator.validate(request);
+
+        assertFieldViolation(violations, "symptoms");
+        assertFieldViolation(violations, "status");
+    }
+
     private BookingRequest validBooking() {
         return new BookingRequest(
                 "Nguyễn Văn A",
