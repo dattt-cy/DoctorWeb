@@ -7,7 +7,7 @@ const footerNav = [
   { label: "Về tôi", href: "/#ve-toi" },
   { label: "Dịch vụ phòng khám", href: "/#chuyen-mon" },
   { label: "Blog sức khoẻ", href: "/blog" },
-  { label: "Liên hệ", href: "/#lien-he" },
+  { label: "Liên hệ & đặt lịch", href: "/#dat-lich" },
 ];
 
 export function Footer() {

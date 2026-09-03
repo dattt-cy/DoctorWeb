@@ -17,6 +17,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },

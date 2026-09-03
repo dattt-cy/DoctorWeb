@@ -21,7 +21,7 @@ const NAV_LINKS = [
   { label: "DỊCH VỤ PHÒNG KHÁM", href: "#chuyen-mon", sectionId: "chuyen-mon" },
   { label: "ĐỘI NGŨ BÁC SĨ", href: "#ve-toi", sectionId: "ve-toi" },
   { label: "TIN TỨC", href: "/blog", sectionId: null },
-  { label: "LIÊN HỆ", href: "#lien-he", sectionId: "lien-he" },
+  { label: "LIÊN HỆ", href: "#dat-lich", sectionId: "dat-lich" },
 ];
 
 export function Navbar() {

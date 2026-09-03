@@ -18,6 +18,7 @@ export function ClinicJsonLd() {
     alternateName: SITE.doctor,
     url: SITE_URL,
     image: absoluteUrl(SITE.ogImage),
+    logo: absoluteUrl("/icon-192.png"),
     description:
       "Bác sĩ Nhi khoa tại 522 Phạm Hùng, Hòa Xuân, Cẩm Lệ, Đà Nẵng. Khám và tư vấn dinh dưỡng, hô hấp và chăm sóc sức khỏe trẻ em.",
     medicalSpecialty: "Pediatric",
