@@ -3,7 +3,7 @@
  * Khi deploy domain thật, đặt biến môi trường NEXT_PUBLIC_SITE_URL = "https://tenmien-cua-ban.vn"
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://phongkhamnhivita.vn"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://phongkhamnhivita.com"
 ).replace(/\/$/, "");
 
 export const SITE = {
