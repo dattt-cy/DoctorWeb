@@ -121,6 +121,12 @@ export function Navbar() {
   const handleNavClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, link: typeof NAV_LINKS[number]) => {
       setMenuOpen(false);
+      if (link.href === "/" && isHomePage) {
+        e.preventDefault();
+        window.history.replaceState(null, "", "/");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
       if (link.sectionId) {
         if (isHomePage) {
           e.preventDefault();
