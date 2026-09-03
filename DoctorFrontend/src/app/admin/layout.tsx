@@ -4,7 +4,7 @@ import AdminChrome from "@/components/admin/AdminChrome";
 export const metadata = {
   title: { absolute: "Quản trị | Vita Nhi" },
   robots: { index: false, follow: false, nocache: true },
-  icons: { icon: "/icon.svg", shortcut: "/icon.svg", apple: "/icon.svg" },
+  icons: { icon: "/favicon.ico", shortcut: "/favicon.ico", apple: "/apple-touch-icon.png" },
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
