@@ -5,16 +5,12 @@ import { DOCTOR_INFO } from "@/constants/doctor";
 
 const clinicalPhotos = [
   {
-    src: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=600&q=80&auto=format&fit=crop",
-    alt: "Bác sĩ thăm khám trẻ em",
+    src: "/images/about/hoi-nghi-nhi-khoa-quoc-te-2026.webp",
+    alt: "ThS.BS. Nguyễn Thị Phương Thảo tại Hội nghị Nhi khoa Quốc tế 2026, Bệnh viện Phụ Sản – Nhi Đà Nẵng",
   },
   {
-    src: "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=600&q=80&auto=format&fit=crop",
-    alt: "Hội thảo chuyên môn Nhi khoa",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600&q=80&auto=format&fit=crop",
-    alt: "Phòng khám Nhi hiện đại",
+    src: "/images/about/hoi-nghi-ho-hap-nhi-2026.webp",
+    alt: "ThS.BS. Nguyễn Thị Phương Thảo tại Hội nghị Hô hấp Nhi 2026",
   },
 ];
 
@@ -58,11 +54,11 @@ export function AboutSection() {
               />
             </div>
 
-            {/* 3 clinical photos strip */}
-            <div className="grid grid-cols-3 gap-3">
-              {clinicalPhotos.map((img, i) => (
+            {/* Professional activity photos */}
+            <div className="grid grid-cols-2 gap-3">
+              {clinicalPhotos.map((img) => (
                 <div
-                  key={i}
+                  key={img.src}
                   className="relative aspect-[4/3] rounded-[var(--radius-md)] overflow-hidden"
                   style={{ border: "1px solid var(--color-border)" }}
                 >
@@ -70,8 +66,8 @@ export function AboutSection() {
                     src={img.src}
                     alt={img.alt}
                     fill
-                    className="object-cover transition-transform duration-500 hover:scale-105"
-                    sizes="140px"
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 45vw, 200px"
                   />
                 </div>
               ))}

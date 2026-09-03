@@ -2,7 +2,7 @@ import React from "react";
 import AdminChrome from "@/components/admin/AdminChrome";
 
 export const metadata = {
-  title: "Quản trị nội dung - DoctorWeb",
+  title: { absolute: "Quản trị | Vita Nhi" },
   robots: { index: false, follow: false, nocache: true },
   icons: { icon: "/icon.svg", shortcut: "/icon.svg", apple: "/icon.svg" },
 };

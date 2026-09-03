@@ -6,6 +6,10 @@ import { CalendarDays, Loader2, RefreshCw } from "lucide-react";
 import { apiRequest } from "@/shared/api/client";
 import VisitNoteDialog from "@/components/admin/VisitNoteDialog";
 import type { Appointment, VisitNote } from "@/features/appointments/types";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 function isoDate(offset = 0) {
   const date = new Date();
@@ -84,30 +88,20 @@ export default function AdminAppointmentsPage() {
     <div>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Lịch hẹn</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Lịch hẹn</h1>
           <p className="mt-1 text-sm text-slate-500">Quản lý trạng thái khám và giải phóng suất.</p>
         </div>
-        <div className="flex items-end gap-2">
-          <label className="text-xs text-slate-500">Từ ngày
-            <input type="date" value={from} onChange={(e) => setFrom(e.target.value)}
-              className="mt-1 block rounded-lg border px-3 py-2 text-sm" />
-          </label>
-          <label className="text-xs text-slate-500">Đến ngày
-            <input type="date" value={to} onChange={(e) => setTo(e.target.value)}
-              className="mt-1 block rounded-lg border px-3 py-2 text-sm" />
-          </label>
-          <button onClick={load} className="rounded-lg border bg-white p-2.5" aria-label="Tải lại">
-            <RefreshCw size={18} />
-          </button>
+        <div className="flex flex-wrap items-end gap-2">
+          <div className="space-y-1.5"><Label htmlFor="appointments-from" className="text-xs text-slate-500">Từ ngày</Label><Input id="appointments-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-[150px]" /></div>
+          <div className="space-y-1.5"><Label htmlFor="appointments-to" className="text-xs text-slate-500">Đến ngày</Label><Input id="appointments-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-[150px]" /></div>
+          <Button onClick={load} variant="outline" size="icon" aria-label="Tải lại"><RefreshCw size={17} /></Button>
         </div>
       </div>
 
       {error && <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
       {loading ? <Loader2 className="animate-spin text-blue-600" /> : items.length === 0 ? (
-        <div className="rounded-xl border bg-white p-10 text-center text-slate-500">
-          <CalendarDays className="mx-auto mb-3" />Không có lịch hẹn.
-        </div>
+        <Card className="p-12 text-center text-slate-500 shadow-none"><CalendarDays className="mx-auto mb-3 text-slate-400" size={28} /><p className="text-sm font-medium text-slate-700">Không có lịch hẹn</p><p className="mt-1 text-xs">Thử chọn một khoảng ngày khác.</p></Card>
       ) : (
         <div className="space-y-6">
           {dates.map((date) => (
@@ -117,7 +111,7 @@ export default function AdminAppointmentsPage() {
                   weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
                 })}
               </h2>
-              <div className="overflow-x-auto rounded-xl border bg-white">
+              <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
                 <table className="w-full min-w-[900px] table-fixed text-left text-sm">
                   <colgroup>
                     <col className="w-[11%]" />
@@ -126,7 +120,7 @@ export default function AdminAppointmentsPage() {
                     <col className="w-[28%]" />
                     <col className="w-[23%]" />
                   </colgroup>
-                  <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                  <thead className="bg-slate-50 text-xs font-medium text-slate-500">
                     <tr>
                       <th className="p-4">Giờ</th>
                       <th className="p-4">Bệnh nhân</th>
@@ -137,8 +131,8 @@ export default function AdminAppointmentsPage() {
                   </thead>
                   <tbody>
                     {items.filter((item) => item.appointmentDate === date).map((item) => (
-                      <tr key={item.id} className="border-t align-top">
-                        <td className="p-4 font-bold text-blue-700">
+                      <tr key={item.id} className="border-t align-top hover:bg-slate-50/60">
+                        <td className="p-4 font-semibold tabular-nums text-slate-900">
                           {item.appointmentTime.slice(0, 5)}
                           <span className="block text-[10px] text-slate-500">{occupied(item)}/6 suất</span>
                           {!item.consumesCapacity && <span className="block text-[10px] text-emerald-600">Đã giải phóng</span>}
@@ -155,7 +149,7 @@ export default function AdminAppointmentsPage() {
                           <select
                             value={item.status === "COMPLETED" || !item.consumesCapacity ? "COMPLETED" : "PENDING"}
                             onChange={(e) => changeStatus(item, e.target.value)}
-                            className="rounded-lg border px-3 py-2 text-sm font-medium"
+                            className="h-9 rounded-md border border-slate-300 bg-white px-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-200"
                           >
                             <option value="PENDING">Chưa khám</option>
                             <option value="COMPLETED">Đã khám</option>

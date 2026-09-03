@@ -4,6 +4,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Admin is intentionally denser and quieter than the public marketing site. */
+.admin-ui .rounded-3xl,
+.admin-ui .rounded-2xl {
+  border-radius: 0.5rem;
+}
+
+.admin-ui .shadow-2xl,
+.admin-ui .shadow-xl,
+.admin-ui .shadow-lg,
+.admin-ui .shadow-md,
+.admin-ui .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+}
+
+.admin-ui table thead {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .medical-note,
 .medical-warning {
   margin: 2rem 0;

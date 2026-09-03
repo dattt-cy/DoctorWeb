@@ -15,6 +15,10 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { AdminBlogPost, BlogPage, BlogStatus } from "@/features/blog/types";
 import { apiRequest } from "@/shared/api/client";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 const EMPTY_PAGE: BlogPage = {
   content: [],
@@ -82,12 +86,10 @@ export default function AdminBlogList() {
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-950">Bài viết</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Bài viết</h1>
           <p className="mt-1 text-sm text-slate-500">Soạn thảo và quản lý nội dung sức khỏe.</p>
         </div>
-        <Link href="/admin/blog/create" className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">
-          <Plus size={18} /> Viết bài mới
-        </Link>
+        <Button asChild><Link href="/admin/blog/create"><Plus size={17} />Viết bài mới</Link></Button>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -96,13 +98,13 @@ export default function AdminBlogList() {
         <Stat label="Bản nháp (trang này)" value={draftsOnPage} icon={<Edit3 size={18} />} tone="amber" />
       </div>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <Card className="overflow-hidden shadow-none">
         <div className="flex flex-col gap-3 border-b border-slate-200 p-4 md:flex-row md:items-center">
           <label className="relative flex-1">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo tiêu đề hoặc chuyên mục…" className="w-full rounded-lg border border-slate-300 py-2.5 pl-10 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo tiêu đề hoặc chuyên mục…" className="pl-10" />
           </label>
-          <select value={status} onChange={(event) => setStatus(event.target.value as "ALL" | BlogStatus)} className="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500">
+          <select value={status} onChange={(event) => setStatus(event.target.value as "ALL" | BlogStatus)} className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm outline-none focus:ring-2 focus:ring-slate-200">
             <option value="ALL">Tất cả trạng thái</option>
             <option value="PUBLISHED">Đã xuất bản</option>
             <option value="DRAFT">Bản nháp</option>
@@ -113,7 +115,7 @@ export default function AdminBlogList() {
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-left">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <thead className="bg-slate-50 text-xs font-medium text-slate-500">
               <tr>
                 <th className="px-5 py-3">Bài viết</th>
                 <th className="px-5 py-3">Chuyên mục</th>
@@ -145,9 +147,9 @@ export default function AdminBlogList() {
                   <td className="px-5 py-4 text-sm text-slate-500">{formatDate(post.updatedAt || post.publishedAt)}</td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-1">
-                      {post.status === "PUBLISHED" && <Link href={`/blog/${post.slug}`} target="_blank" aria-label="Xem bài viết" className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600"><Eye size={17} /></Link>}
-                      <Link href={`/admin/blog/${post.id}/edit`} aria-label="Sửa bài viết" className="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-600"><Edit3 size={17} /></Link>
-                      <button onClick={() => deletePost(post)} aria-label="Xóa bài viết" className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600"><Trash2 size={17} /></button>
+                      {post.status === "PUBLISHED" && <Button asChild variant="ghost" size="icon"><Link href={`/blog/${post.slug}`} target="_blank" aria-label="Xem bài viết"><Eye size={16} /></Link></Button>}
+                      <Button asChild variant="ghost" size="icon"><Link href={`/admin/blog/${post.id}/edit`} aria-label="Sửa bài viết"><Edit3 size={16} /></Link></Button>
+                      <Button onClick={() => deletePost(post)} variant="ghost" size="icon" aria-label="Xóa bài viết" className="hover:text-red-700"><Trash2 size={16} /></Button>
                     </div>
                   </td>
                 </tr>
@@ -159,23 +161,23 @@ export default function AdminBlogList() {
         <div className="flex items-center justify-between border-t border-slate-200 px-5 py-3 text-sm text-slate-500">
           <span>Trang {data.totalPages ? data.number + 1 : 0}/{data.totalPages}</span>
           <div className="flex gap-2">
-            <button onClick={() => setPage((value) => Math.max(0, value - 1))} disabled={page === 0 || loading} className="rounded-lg border border-slate-300 p-2 hover:bg-slate-50 disabled:opacity-40" aria-label="Trang trước"><ChevronLeft size={17} /></button>
-            <button onClick={() => setPage((value) => value + 1)} disabled={page + 1 >= data.totalPages || loading} className="rounded-lg border border-slate-300 p-2 hover:bg-slate-50 disabled:opacity-40" aria-label="Trang sau"><ChevronRight size={17} /></button>
+            <Button onClick={() => setPage((value) => Math.max(0, value - 1))} disabled={page === 0 || loading} variant="outline" size="icon" aria-label="Trang trước"><ChevronLeft size={17} /></Button>
+            <Button onClick={() => setPage((value) => value + 1)} disabled={page + 1 >= data.totalPages || loading} variant="outline" size="icon" aria-label="Trang sau"><ChevronRight size={17} /></Button>
           </div>
         </div>
-      </section>
+      </Card>
     </div>
   );
 }
 
 function StatusBadge({ status }: { status: string }) {
   const published = status === "PUBLISHED";
-  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${published ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{published ? "Đã xuất bản" : "Bản nháp"}</span>;
+  return <Badge variant={published ? "success" : "warning"}>{published ? "Đã xuất bản" : "Bản nháp"}</Badge>;
 }
 
 function Stat({ label, value, icon, tone }: { label: string; value: number; icon: React.ReactNode; tone: "blue" | "green" | "amber" }) {
   const colors = { blue: "bg-blue-50 text-blue-700", green: "bg-emerald-50 text-emerald-700", amber: "bg-amber-50 text-amber-700" };
-  return <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><span className={`rounded-lg p-2.5 ${colors[tone]}`}>{icon}</span><div><p className="text-2xl font-bold text-slate-950">{value}</p><p className="text-xs text-slate-500">{label}</p></div></div>;
+  return <Card className="flex items-center gap-3 p-4 shadow-none"><span className={`rounded-md p-2 ${colors[tone]}`}>{icon}</span><div><p className="text-xl font-semibold tabular-nums text-slate-950">{value}</p><p className="text-xs text-slate-500">{label}</p></div></Card>;
 }
 
 function formatDate(value?: string | null) {
