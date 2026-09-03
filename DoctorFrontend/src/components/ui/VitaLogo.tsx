@@ -10,25 +10,37 @@ interface VitaLogoProps {
 }
 
 const sizes = {
-  sm: { width: 54, height: 57 },
-  md: { width: 78, height: 82 },
+  sm: { mark: 38, text: "text-[22px]", subtitle: "text-[9px]" },
+  md: { mark: 36, text: "text-[21px]", subtitle: "text-[9px]" },
 };
 
 export function VitaLogo({ theme = "light", href = "/", size = "md" }: VitaLogoProps) {
   const dimensions = sizes[size];
   const logo = (
-    <Image
-      src="/images/brand/vita-logo.png"
-      alt="VITA – Phòng khám Nhi"
-      width={dimensions.width}
-      height={dimensions.height}
-      priority={size === "sm"}
-      className="h-auto object-contain transition-transform duration-200 group-hover:scale-[1.03]"
-      style={{
-        width: dimensions.width,
-        filter: theme === "dark" ? "drop-shadow(0 4px 12px rgba(0,0,0,0.18))" : undefined,
-      }}
-    />
+    <span className="inline-flex items-center gap-2.5">
+      <span
+        className="relative block shrink-0"
+        style={{ width: dimensions.mark, height: dimensions.mark }}
+        aria-hidden="true"
+      >
+        <Image
+          src="/images/brand/vita-mark.png"
+          alt=""
+          width={dimensions.mark}
+          height={dimensions.mark}
+          priority
+          className="block object-contain transition-transform duration-200 group-hover:scale-[1.03]"
+        />
+      </span>
+      <span className="flex min-w-0 flex-col leading-none">
+        <span className={`font-black tracking-[0.08em] ${dimensions.text}`} style={{ color: theme === "dark" ? "#fff" : "#202124" }}>
+          VITA <span style={{ color: "#f97316" }}>· NHI</span>
+        </span>
+        <span className={`mt-1 font-bold tracking-[0.16em] ${dimensions.subtitle}`} style={{ color: theme === "dark" ? "rgba(255,255,255,0.82)" : "#9ca3af" }}>
+          PHÒNG KHÁM CHUYÊN KHOA
+        </span>
+      </span>
+    </span>
   );
 
   if (!href) return logo;

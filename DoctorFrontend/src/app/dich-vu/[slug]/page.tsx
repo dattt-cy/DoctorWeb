@@ -28,8 +28,18 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
   const service = findService((await params).slug);
   if (!service) notFound();
   const relatedServices = SERVICES.filter((item) => item.id !== service.id).slice(0, 3);
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Trang chủ", item: absoluteUrl("/") },
+      { "@type": "ListItem", position: 2, name: "Dịch vụ Nhi khoa", item: absoluteUrl("/#chuyen-mon") },
+      { "@type": "ListItem", position: 3, name: `Khám ${service.title}`, item: absoluteUrl(`/dich-vu/${service.id}`) },
+    ],
+  };
 
   return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
     <Navbar />
     <main className="bg-white">
       <section className="border-b border-stone-200 bg-[#faf7f4]">

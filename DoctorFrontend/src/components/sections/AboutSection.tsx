@@ -72,6 +72,24 @@ export function AboutSection() {
                 </div>
               ))}
             </div>
+
+            <figure
+              className="overflow-hidden rounded-[var(--radius-md)] border bg-white"
+              style={{ borderColor: "var(--color-border)" }}
+            >
+              <div className="relative aspect-[16/10] bg-stone-50">
+                <Image
+                  src="/images/about/chung-chi-1000-ngay-monash.png"
+                  alt="Chứng nhận hoàn thành khóa học Chăm sóc phát triển toàn diện trẻ 1000 ngày đầu đời dành cho cán bộ y tế của Nguyễn Thị Phương Thảo"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 90vw, 420px"
+                />
+              </div>
+              <figcaption className="px-4 py-3 text-xs leading-5 text-slate-500">
+                Chứng nhận Chăm sóc phát triển toàn diện trẻ 1000 ngày đầu đời, Monash University và Bộ Y tế.
+              </figcaption>
+            </figure>
           </div>
 
           {/* Right: Bio content */}
@@ -158,6 +176,33 @@ export function AboutSection() {
                   </span>
                   <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
                     {item.description}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Chứng chỉ và hoạt động cập nhật chuyên môn */}
+            <div className="flex flex-col gap-1">
+              <p
+                className="text-xs font-semibold uppercase tracking-[0.15em] mb-3"
+                style={{ color: "var(--color-text-muted)" }}
+              >
+                Chứng chỉ & cập nhật chuyên môn
+              </p>
+              {DOCTOR_INFO.certifications.map((item) => (
+                <div
+                  key={item}
+                  className="flex gap-3 py-3.5"
+                  style={{ borderBottom: "1px solid var(--color-border)" }}
+                >
+                  <CheckCircle
+                    size={16}
+                    className="mt-0.5 shrink-0"
+                    style={{ color: "var(--color-primary)" }}
+                    aria-hidden
+                  />
+                  <span className="text-sm leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
+                    {item}
                   </span>
                 </div>
               ))}

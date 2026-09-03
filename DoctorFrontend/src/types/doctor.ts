@@ -22,6 +22,7 @@ export interface DoctorProfile {
   };
   currentPositions: string[];
   education: Array<{ year: string; description: string }>;
+  certifications: string[];
   memberships: string[];
   socialLinks: {
     facebook?: string;

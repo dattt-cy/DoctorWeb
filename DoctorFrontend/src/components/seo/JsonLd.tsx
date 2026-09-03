@@ -39,6 +39,15 @@ export function ClinicJsonLd() {
       { "@type": "City", name: "Đà Nẵng" },
       { "@type": "AdministrativeArea", name: "Hòa Xuân, Cẩm Lệ, Đà Nẵng" },
     ],
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Dịch vụ khám Nhi khoa",
+      itemListElement: DOCTOR_INFO.currentPositions.map((service, index) => ({
+        "@type": "Offer",
+        position: index + 1,
+        itemOffered: { "@type": "MedicalProcedure", name: service },
+      })),
+    },
     availableService: DOCTOR_INFO.currentPositions.map((s) => ({
       "@type": "MedicalProcedure",
       name: s,

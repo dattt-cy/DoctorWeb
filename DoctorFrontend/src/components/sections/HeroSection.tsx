@@ -138,10 +138,10 @@ export function HeroSection() {
           <div>
             <h1
               className="font-display text-balance font-bold leading-[1.08] text-slate-950"
-              style={{ fontSize: "clamp(2.25rem, 1.65rem + 2.35vw, 3.75rem)" }}
+              style={{ fontSize: "clamp(2rem, 1.5rem + 2vw, 3.25rem)" }}
             >
-              Chăm sóc đúng cách,<br />
-              <span className="text-orange-600">con khỏe mỗi ngày</span>
+              Bác sĩ Nhi Hòa Xuân, Đà Nẵng<br />
+              <span className="text-orange-600">Chăm sóc đúng cách, con khỏe mỗi ngày</span>
             </h1>
             <p className="mt-4 text-sm font-bold uppercase tracking-[0.16em] text-orange-600">
               {DOCTOR_INFO.name} · {DOCTOR_INFO.specialty}

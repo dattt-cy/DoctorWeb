@@ -31,11 +31,11 @@ export const metadata: Metadata = {
     google: "dDox9g1NOk31nSoGkKSdLFmIpptMm5MebN4QuILhTfE",
   },
   title: {
-    default: "Vita Nhi",
+    default: "Bác sĩ Nhi Hòa Xuân, Đà Nẵng | Vita Nhi",
     template: "%s | Vita Nhi",
   },
   description:
-    "Bác sĩ Nhi khoa tại 522 Phạm Hùng, Hòa Xuân, Cẩm Lệ, Đà Nẵng. ThS.BS. Nguyễn Thị Phương Thảo khám và tư vấn dinh dưỡng, hô hấp, chăm sóc sức khỏe trẻ em. Hotline/Zalo: 0919.083.332.",
+    "Phòng khám Nhi Vita tại 522 Phạm Hùng, Hòa Xuân, Đà Nẵng. ThS.BS. Nguyễn Thị Phương Thảo khám và tư vấn sức khỏe trẻ em.",
   keywords: [
     "bác sĩ nhi Hòa Xuân",
     "bác sĩ nhi Đà Nẵng",
@@ -60,16 +60,16 @@ export const metadata: Metadata = {
     locale: SITE.locale,
     url: SITE_URL,
     siteName: SITE.name,
-    title: "Vita Nhi – Phòng khám Nhi khoa tại Đà Nẵng",
+    title: "Bác sĩ Nhi Hòa Xuân, Đà Nẵng | Vita Nhi",
     description:
-      "Bác sĩ Nhi khoa tại 522 Phạm Hùng, Hòa Xuân, Đà Nẵng. Khám và tư vấn dinh dưỡng, chăm sóc sức khỏe trẻ em. Hotline/Zalo: 0919.083.332.",
+      "Phòng khám Nhi Vita tại 522 Phạm Hùng, Hòa Xuân, Đà Nẵng. Khám và tư vấn sức khỏe trẻ em.",
     images: [{ url: absoluteUrl(SITE.ogImage), width: 1200, height: 630, alt: SITE.doctor }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vita Nhi – Phòng khám Nhi khoa tại Đà Nẵng",
+    title: "Bác sĩ Nhi Hòa Xuân, Đà Nẵng | Vita Nhi",
     description:
-      "Bác sĩ Nhi khoa tại Hòa Xuân, Đà Nẵng. Nhận khám bệnh tại nhà, tư vấn chăm sóc sức khỏe trẻ em.",
+      "Khám Nhi tại Hòa Xuân, Cẩm Lệ, Đà Nẵng cùng ThS.BS. Nguyễn Thị Phương Thảo.",
     images: [absoluteUrl(SITE.ogImage)],
   },
 };

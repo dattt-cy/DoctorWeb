@@ -25,7 +25,7 @@ export function Footer() {
             {/* VITA Logo */}
             <VitaLogo theme="dark" />
 
-            <p className="text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+            <p className="text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.86)" }}>
               {DOCTOR_INFO.tagline}
             </p>
 
@@ -40,7 +40,7 @@ export function Footer() {
               className="text-xs font-bold tracking-[0.2em] uppercase pb-2"
               style={{
                 color: "#fed7aa",
-                borderBottom: "1px solid rgba(255,255,255,0.1)",
+                borderBottom: "1px solid rgba(255,255,255,0.24)",
               }}
             >
               Điều hướng
@@ -51,7 +51,7 @@ export function Footer() {
                   key={link.href}
                   href={link.href}
                   className="text-base transition-colors duration-150 hover:text-white flex items-center gap-2 group"
-                  style={{ color: "rgba(255,255,255,0.7)" }}
+                  style={{ color: "rgba(255,255,255,0.9)" }}
                 >
                   <span
                     className="w-4 h-px transition-all duration-200 group-hover:w-6"
@@ -69,18 +69,18 @@ export function Footer() {
               className="text-xs font-bold tracking-[0.2em] uppercase pb-2"
               style={{
                 color: "#fed7aa",
-                borderBottom: "1px solid rgba(255,255,255,0.1)",
+                borderBottom: "1px solid rgba(255,255,255,0.24)",
               }}
             >
               Liên hệ
             </p>
             <div className="flex flex-col gap-3 text-base">
               <div className="flex flex-col gap-1">
-                <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.6)" }}>Địa chỉ</span>
+                <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.78)" }}>Địa chỉ</span>
                 <span style={{ color: "rgba(255,255,255,0.85)" }}>{DOCTOR_INFO.address}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.6)" }}>Hotline</span>
+                <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.78)" }}>Hotline</span>
                 <a
                   href={`tel:${DOCTOR_INFO.phone}`}
                   className="hover:text-white transition-colors font-semibold"
@@ -90,7 +90,7 @@ export function Footer() {
                 </a>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.6)" }}>Zalo</span>
+                <span className="text-sm font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.78)" }}>Zalo</span>
                 <a
                   href={DOCTOR_INFO.socialLinks.zalo}
                   target="_blank"
@@ -106,12 +106,12 @@ export function Footer() {
             {/* Giờ khám */}
             <div
               className="mt-1 rounded-xl px-4 py-3 flex flex-col gap-2"
-              style={{ backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+              style={{ backgroundColor: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}
             >
               <p className="text-xs font-bold tracking-wider uppercase" style={{ color: "#fed7aa" }}>
                 Giờ khám bệnh
               </p>
-              <div className="flex flex-col gap-1.5 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
+              <div className="flex flex-col gap-1.5 text-sm" style={{ color: "rgba(255,255,255,0.86)" }}>
                 <div className="flex justify-between">
                   <span>Thứ 2 – Thứ 6</span>
                   <span className="font-semibold text-white">17:30 – 20:00</span>
@@ -131,11 +131,11 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div
-          className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)" }}
+          className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-lg border px-4 py-4 text-sm font-medium"
+          style={{ borderColor: "rgba(255,255,255,0.28)", backgroundColor: "rgba(4,65,61,0.32)", color: "#ffffff" }}
         >
-          <p>© {currentYear} {DOCTOR_INFO.clinicName ?? DOCTOR_INFO.name}. Bảo lưu mọi quyền.</p>
-          <p>Website dành cho mục đích thông tin — không thay thế chẩn đoán y khoa.</p>
+          <p className="text-center sm:text-left" style={{ color: "#ffffff" }}>© {currentYear} {DOCTOR_INFO.clinicName ?? DOCTOR_INFO.name}. Bảo lưu mọi quyền.</p>
+          <p className="text-center sm:text-right" style={{ color: "#e7fffb" }}>Website dành cho mục đích thông tin — không thay thế chẩn đoán y khoa.</p>
         </div>
       </div>
     </footer>

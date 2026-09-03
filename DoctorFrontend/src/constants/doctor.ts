@@ -32,6 +32,12 @@ export const DOCTOR_INFO: DoctorProfile = {
     { year: "Bác sĩ", description: "Bác sĩ Y khoa – Trường Đại học Y Dược, Đại học Huế" },
     { year: "Kinh nghiệm", description: "Công tác tại Bệnh viện Phụ Sản – Nhi Đà Nẵng (Bệnh viện 600 giường)" },
   ],
+  certifications: [
+    "Chứng chỉ Chăm sóc phát triển toàn diện trẻ 1000 ngày đầu đời dành cho cán bộ y tế – Monash University, Úc",
+    "Chứng chỉ Giảng dạy học lâm sàng cho người giảng dạy thực hành trong đào tạo khối ngành sức khỏe",
+    "Thực hành cấp cứu tại Bệnh viện Nhi Đồng 1",
+    "Tham gia hội thảo, chương trình đào tạo Y khoa và cập nhật kiến thức thực hành lâm sàng theo CME",
+  ],
   memberships: [
     "Bệnh viện Phụ Sản – Nhi Đà Nẵng",
   ],

@@ -46,24 +46,24 @@ function TikTokIcon() {
 }
 
 const ICON_MAP = {
-  facebook: { Icon: FacebookIcon, label: "Facebook" },
-  youtube: { Icon: YouTubeIcon, label: "YouTube" },
-  zalo: { Icon: ZaloIcon, label: "Zalo" },
-  tiktok: { Icon: TikTokIcon, label: "TikTok" },
+  facebook: { Icon: FacebookIcon, label: "Facebook", color: "#1877F2" },
+  youtube: { Icon: YouTubeIcon, label: "YouTube", color: "#FF0000" },
+  zalo: { Icon: ZaloIcon, label: "Zalo", color: "#0068FF" },
+  tiktok: { Icon: TikTokIcon, label: "TikTok", color: "#000000" },
 } as const;
 
 export function SocialIcons({ links, size = "md", theme = "light" }: SocialIconsProps) {
-  const btnSize = size === "sm" ? "w-9 h-9 text-lg" : "w-11 h-11 text-xl";
+  const btnSize = size === "sm" ? "w-10 h-10 text-xl" : "w-12 h-12 text-2xl";
 
   const darkStyle = {
-    backgroundColor: "rgba(255,255,255,0.15)",
-    color: "rgba(255,255,255,0.9)",
+    backgroundColor: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.8)",
   };
   const lightStyle = {
     backgroundColor: "var(--color-primary-light)",
-    color: "var(--color-primary)",
+    border: "1px solid rgba(255,255,255,0.75)",
   };
-  const hoverDark = "hover:bg-white/30";
+  const hoverDark = "hover:-translate-y-0.5 hover:shadow-md";
   const hoverLight = "hover:opacity-80";
 
   return (
@@ -71,7 +71,7 @@ export function SocialIcons({ links, size = "md", theme = "light" }: SocialIcons
       {(Object.keys(ICON_MAP) as Array<keyof typeof ICON_MAP>).map((key) => {
         const href = links[key];
         if (!href) return null;
-        const { Icon, label } = ICON_MAP[key];
+        const { Icon, label, color } = ICON_MAP[key];
         return (
           <Link
             key={key}
@@ -80,7 +80,7 @@ export function SocialIcons({ links, size = "md", theme = "light" }: SocialIcons
             rel="noopener noreferrer"
             aria-label={label}
             className={`${btnSize} rounded-full flex items-center justify-center transition-all duration-150 ${theme === "dark" ? hoverDark : hoverLight}`}
-            style={theme === "dark" ? darkStyle : lightStyle}
+            style={theme === "dark" ? { ...darkStyle, color } : { ...lightStyle, color }}
           >
             <Icon />
           </Link>
