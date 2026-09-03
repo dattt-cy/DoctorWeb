@@ -5,6 +5,7 @@ import { Hospital, Check, BadgeCheck, ShieldCheck, Clock3 } from "lucide-react";
 import { DOCTOR_INFO } from "@/constants/doctor";
 import { createAppointment, getAvailability } from "@/features/appointments/api";
 import type { AppointmentSlot } from "@/features/appointments/types";
+import { Button } from "@/components/ui/Button";
 
 const stats = [
   { value: "Hơn 10", label: "Năm kinh nghiệm" },
@@ -123,16 +124,13 @@ export function HeroSection() {
     (e.target.style.borderColor = "#d1d5db");
 
   return (
-    <section className="relative w-full border-b border-cyan-100 bg-gradient-to-br from-cyan-50 via-white to-orange-50">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-        <div className="absolute -left-40 top-16 h-96 w-96 rounded-full bg-cyan-200/35 blur-3xl" />
-        <div className="absolute right-0 top-0 h-[34rem] w-[34rem] rounded-full bg-orange-200/30 blur-3xl" />
-      </div>
+    <section className="relative w-full border-b border-stone-200 bg-[#fffdfb]">
+      <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-[42%] border-r border-orange-100 bg-[#faf7f4] lg:block" aria-hidden />
 
-      <div className="relative z-10 container flex min-h-[680px] flex-col items-stretch gap-10 py-12 lg:flex-row lg:py-16">
+      <div className="relative z-10 container flex min-h-[650px] flex-col items-stretch gap-12 py-12 lg:flex-row lg:items-center lg:py-16">
         {/* Left: Clinic info overlay */}
         <div className="flex flex-1 flex-col justify-center gap-6 py-4 pr-0 lg:pr-8">
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-cyan-200 bg-white/80 px-4 py-2 text-sm font-semibold text-cyan-800 shadow-sm">
+          <div className="inline-flex w-fit items-center gap-2 border-l-2 border-orange-500 pl-3 text-sm font-semibold text-slate-700">
             <BadgeCheck size={17} />
             Bác sĩ Nhi khoa đồng hành cùng gia đình
           </div>
@@ -143,7 +141,7 @@ export function HeroSection() {
               style={{ fontSize: "clamp(2.25rem, 1.65rem + 2.35vw, 3.75rem)" }}
             >
               Chăm sóc đúng cách,<br />
-              <span className="text-cyan-700">con khỏe mỗi ngày</span>
+              <span className="text-orange-600">con khỏe mỗi ngày</span>
             </h1>
             <p className="mt-4 text-sm font-bold uppercase tracking-[0.16em] text-orange-600">
               {DOCTOR_INFO.name} · {DOCTOR_INFO.specialty}
@@ -157,7 +155,7 @@ export function HeroSection() {
           {/* Stats row */}
           <div className="mt-2 flex flex-wrap items-center gap-3">
             {stats.map((stat) => (
-              <div key={stat.label} className="min-w-[125px] rounded-2xl border border-white bg-white/75 px-4 py-3 shadow-sm backdrop-blur">
+              <div key={stat.label} className="min-w-[125px] border-l border-stone-300 px-4 py-2 first:border-l-0 first:pl-0">
                 <div className="flex flex-col gap-0.5">
                   <span
                     className="font-display font-bold tabular-nums"
@@ -172,9 +170,9 @@ export function HeroSection() {
           </div>
 
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-slate-600">
-            <span className="flex items-center gap-2"><ShieldCheck size={16} className="text-cyan-700" /> Thông tin bảo mật</span>
-            <span className="flex items-center gap-2"><Clock3 size={16} className="text-cyan-700" /> Xác nhận lịch nhanh</span>
-            <span className="flex items-center gap-2"><Hospital size={16} className="text-cyan-700" /> {DOCTOR_INFO.hospital}</span>
+            <span className="flex items-center gap-2"><ShieldCheck size={16} className="text-orange-600" /> Thông tin bảo mật</span>
+            <span className="flex items-center gap-2"><Clock3 size={16} className="text-orange-600" /> Xác nhận lịch nhanh</span>
+            <span className="flex items-center gap-2"><Hospital size={16} className="text-orange-600" /> {DOCTOR_INFO.hospital}</span>
           </div>
         </div>
 
@@ -184,14 +182,14 @@ export function HeroSection() {
           className="w-full self-center scroll-mt-[120px] lg:w-[390px] xl:w-[420px]"
         >
           <div
-            className="flex h-full flex-col overflow-visible rounded-3xl border border-white bg-white/95 shadow-2xl shadow-cyan-900/10 backdrop-blur"
+            className="flex h-full flex-col overflow-visible rounded-xl border border-stone-200 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.09)]"
             style={{
               minHeight: "590px",
             }}
           >
             {/* Form header */}
             <div
-              className="shrink-0 rounded-t-3xl border-b border-orange-100 bg-gradient-to-r from-orange-100 via-amber-50 to-white px-6 py-5"
+              className="shrink-0 rounded-t-xl border-b border-stone-200 border-t-4 border-t-orange-500 bg-stone-50 px-6 py-5"
             >
               <h2 className="font-display text-xl font-bold tracking-wide text-slate-950">Đăng ký lịch khám</h2>
               <p className="mt-0.5 text-xs text-slate-600">
@@ -425,14 +423,14 @@ export function HeroSection() {
                     </p>
                   )}
 
-                  <button
+                  <Button
                     type="submit"
                     disabled={submitting}
-                    className="w-full py-3.5 rounded-[var(--radius-md)] text-white text-base font-bold tracking-widest transition-opacity hover:opacity-90 mt-1"
-                    style={{ backgroundColor: "var(--color-primary)" }}
+                    size="lg"
+                    className="mt-1 w-full tracking-[0.08em]"
                   >
                     {submitting ? "ĐANG ĐĂNG KÝ..." : "ĐĂNG KÝ"}
-                  </button>
+                  </Button>
                 </form>
               )}
             </div>

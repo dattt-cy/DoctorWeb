@@ -18,12 +18,13 @@ export function SectionTitle({
   const alignClass = align === "center" ? "text-center items-center" : "items-start";
 
   return (
-    <div className={`flex flex-col gap-3 ${alignClass} ${className}`}>
+    <div className={`flex flex-col gap-4 ${alignClass} ${className}`}>
       {eyebrow && (
         <span
-          className="text-xs font-semibold tracking-[0.18em] uppercase"
+          className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.14em] uppercase"
           style={{ color: "var(--color-accent)" }}
         >
+          <span className="h-px w-7 bg-current" aria-hidden />
           {eyebrow}
         </span>
       )}
@@ -32,8 +33,9 @@ export function SectionTitle({
         style={{
           fontSize: "var(--text-3xl)",
           color: light ? "var(--color-white)" : "var(--color-text)",
-          fontWeight: 700,
-          lineHeight: 1.2,
+          fontWeight: 750,
+          lineHeight: 1.12,
+          letterSpacing: "-0.035em",
         }}
       >
         {title}
@@ -43,8 +45,8 @@ export function SectionTitle({
           className="text-balance max-w-[54ch]"
           style={{
             color: light ? "rgba(255,255,255,0.75)" : "var(--color-text-secondary)",
-            fontSize: "var(--text-lg)",
-            lineHeight: 1.7,
+            fontSize: "1rem",
+            lineHeight: 1.75,
           }}
         >
           {subtitle}

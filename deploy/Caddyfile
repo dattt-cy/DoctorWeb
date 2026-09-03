@@ -1,0 +1,30 @@
+(app_routes) {
+	encode zstd gzip
+	header {
+		-X-Powered-By
+		X-Content-Type-Options nosniff
+		X-Frame-Options SAMEORIGIN
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+	}
+
+	handle_path /backend-api/* {
+		reverse_proxy backend:8080
+	}
+
+	handle {
+		reverse_proxy frontend:3000
+	}
+}
+
+phongkhamnhivita.com {
+	import app_routes
+}
+
+www.phongkhamnhivita.com {
+	redir https://phongkhamnhivita.com{uri} permanent
+}
+
+http://162.4.176.24 {
+	import app_routes
+}

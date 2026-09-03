@@ -67,10 +67,10 @@ function ServiceCard({ service, index }: ServiceCardProps) {
       href={`/dich-vu/${service.id}`}
       aria-label={`Tìm hiểu dịch vụ ${service.title}`}
       className={`
-        group relative flex min-h-[260px] flex-col overflow-hidden rounded-3xl p-7
-        cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[var(--shadow-hover)]
+        group relative flex min-h-[250px] flex-col overflow-hidden rounded-xl p-6
+        cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:border-orange-200 hover:shadow-[var(--shadow-hover)]
         focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-500
-        ${isFeatured ? "bg-gradient-to-br from-orange-500 to-orange-600 text-white" : "bg-white"}
+        ${isFeatured ? "bg-orange-600 text-white" : "bg-white"}
       `}
       style={{
         border: isFeatured ? "1px solid rgba(255,255,255,.18)" : "1px solid var(--color-border)",
@@ -79,7 +79,7 @@ function ServiceCard({ service, index }: ServiceCardProps) {
     >
       <div className="flex items-start justify-between">
         <div
-          className={`flex h-14 w-14 items-center justify-center rounded-2xl ${
+          className={`flex h-12 w-12 items-center justify-center rounded-lg ${
             isFeatured ? "bg-white/15 text-white" : "bg-orange-50 text-orange-600"
           }`}
         >
@@ -90,7 +90,7 @@ function ServiceCard({ service, index }: ServiceCardProps) {
         </span>
       </div>
 
-      <div className="mt-7 flex flex-1 flex-col">
+      <div className="mt-6 flex flex-1 flex-col">
         <h3 className={`text-xl font-bold ${isFeatured ? "text-white" : "text-slate-950"}`}>
           {service.title}
         </h3>
@@ -101,7 +101,7 @@ function ServiceCard({ service, index }: ServiceCardProps) {
           isFeatured ? "text-white" : "text-orange-600"
         }`}>
           <span>Tìm hiểu dịch vụ</span>
-          <span className={`flex h-9 w-9 items-center justify-center rounded-full transition-transform duration-300 group-hover:translate-x-1 ${
+          <span className={`flex h-9 w-9 items-center justify-center rounded-lg transition-transform duration-300 group-hover:translate-x-1 ${
             isFeatured ? "bg-white/15" : "bg-orange-50"
           }`}>
             <ArrowRight size={17} aria-hidden />
@@ -109,12 +109,7 @@ function ServiceCard({ service, index }: ServiceCardProps) {
         </div>
       </div>
 
-      {isFeatured && (
-        <>
-          <div className="pointer-events-none absolute -right-14 -top-14 h-40 w-40 rounded-full border-[28px] border-white/5" />
-          <div className="pointer-events-none absolute -bottom-20 -left-12 h-44 w-44 rounded-full bg-white/5" />
-        </>
-      )}
+      {isFeatured && <div className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-orange-300" />}
     </Link>
   );
 }
@@ -134,7 +129,7 @@ export function ServicesSection() {
             subtitle="Từ khám tổng quát đến các vấn đề chuyên sâu, tôi đồng hành cùng gia đình bạn ở mỗi bước."
             className="max-w-lg"
           />
-          <div className="hidden max-w-xs rounded-2xl border border-orange-100 bg-white px-5 py-4 text-sm leading-6 text-slate-500 shadow-sm md:block">
+          <div className="hidden max-w-xs border-l-2 border-orange-500 pl-5 text-sm leading-6 text-slate-500 md:block">
             Mỗi trẻ có một thể trạng riêng. Bác sĩ sẽ tư vấn hướng chăm sóc phù hợp sau khi thăm khám.
           </div>
         </div>

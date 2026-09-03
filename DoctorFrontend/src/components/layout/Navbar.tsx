@@ -233,7 +233,7 @@ export function Navbar() {
                 type="search"
                 name="q"
                 placeholder="Nhập từ khoá tìm kiếm"
-                className="w-full pl-4 pr-11 py-2.5 rounded-[var(--radius-full)] text-sm transition-colors duration-150"
+                className="w-full rounded-lg py-2.5 pl-4 pr-11 text-sm transition-colors duration-150"
                 style={{
                   border: "1.5px solid var(--color-border)",
                   backgroundColor: "var(--color-bg)",
@@ -294,28 +294,28 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* ── Tầng 3: Navigation bar (teal) ── */}
-      <div className="hidden md:block w-full" style={{ backgroundColor: "var(--color-brand-orange)" }}>
+      {/* ── Tầng 3: Navigation bar ── */}
+      <div className="hidden w-full border-b border-stone-200 bg-white md:block">
         <div className="container">
           <nav className="flex items-center" style={{ height: "44px" }}>
             {NAV_LINKS.map((link) => {
               const active = isActive(link);
               const navItemCls = "relative h-full flex items-center px-5 text-xs font-semibold tracking-wide cursor-pointer select-none";
               const navItemStyle = {
-                color: active ? "#ffffff" : "rgba(255,255,255,0.86)" as string,
-                borderBottom: `3px solid ${active ? "#ffe29a" : "transparent"}`,
+                color: active ? "var(--color-primary)" : "#475569" as string,
+                borderBottom: `2px solid ${active ? "var(--color-primary)" : "transparent"}`,
                 transition: "color 150ms ease, border-color 150ms ease",
               };
               const hoverHandlers = {
                 onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
                   if (!active) {
-                    (e.currentTarget as HTMLElement).style.color = "#fff";
-                    (e.currentTarget as HTMLElement).style.borderBottomColor = "rgba(255,255,255,0.35)";
+                    (e.currentTarget as HTMLElement).style.color = "var(--color-primary)";
+                    (e.currentTarget as HTMLElement).style.borderBottomColor = "#fed7aa";
                   }
                 },
                 onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
                   if (!active) {
-                    (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)";
+                    (e.currentTarget as HTMLElement).style.color = "#475569";
                     (e.currentTarget as HTMLElement).style.borderBottomColor = "transparent";
                   }
                 },

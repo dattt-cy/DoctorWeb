@@ -27,3 +27,9 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+
+# Local deployment artifacts and credentials
+.tools/
+deploy/backend/
+deploy/frontend/
+deploy/*.env

@@ -1,0 +1,1 @@
+17 2 * * * root /opt/phongkhamnhivita/app/backup-db.sh >> /var/log/phongkhamnhivita-backup.log 2>&1

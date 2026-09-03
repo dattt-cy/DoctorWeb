@@ -49,6 +49,16 @@ body {
   font-size: var(--text-base);
   line-height: 1.7;
   min-height: 100dvh;
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: 3px;
+  z-index: 100;
+  background: var(--color-primary);
 }
 
 /* ── Typography base ── */

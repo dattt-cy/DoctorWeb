@@ -368,7 +368,8 @@ public class BlogService {
                 .addTags("figure", "figcaption")
                 .addAttributes("a", "target", "rel", "id")
                 .addAttributes(":all", "class")
-                .addProtocols("img", "src", "http", "https");
+                .addProtocols("img", "src", "http", "https")
+                .preserveRelativeLinks(true);
         return Jsoup.clean(html, "", safelist, new org.jsoup.nodes.Document.OutputSettings().prettyPrint(false));
     }
 
