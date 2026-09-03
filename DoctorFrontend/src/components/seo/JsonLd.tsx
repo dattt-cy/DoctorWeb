@@ -10,7 +10,7 @@ export function ClinicJsonLd() {
   const phone = DOCTOR_INFO.phone.replace(/[.\s]/g, "");
   const tel = `+84${phone.replace(/^0/, "")}`;
 
-  const data = {
+  const clinic = {
     "@context": "https://schema.org",
     "@type": ["Physician", "MedicalBusiness", "LocalBusiness"],
     "@id": `${SITE_URL}/#clinic`,
@@ -84,10 +84,20 @@ export function ClinicJsonLd() {
     sameAs: [DOCTOR_INFO.socialLinks.facebook].filter((u) => u && u !== "#"),
   };
 
+  const website = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    url: SITE_URL,
+    name: "NhiVita",
+    alternateName: ["Phòng khám NhiVita", "Phòng khám Nhi Vita"],
+    publisher: { "@id": `${SITE_URL}/#clinic` },
+  };
+
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify([website, clinic]) }}
     />
   );
 }

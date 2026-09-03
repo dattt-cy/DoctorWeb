@@ -7,8 +7,8 @@ export const SITE_URL = (
 ).replace(/\/$/, "");
 
 export const SITE = {
-  name: "Vita Nhi",
-  shortName: "Vita Nhi",
+  name: "NhiVita",
+  shortName: "NhiVita",
   doctor: "ThS.BS. Nguyễn Thị Phương Thảo",
   locale: "vi_VN",
   /** Khu vực phục vụ — phục vụ SEO địa phương */

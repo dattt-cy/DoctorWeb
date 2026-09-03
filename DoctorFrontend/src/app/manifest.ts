@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Vita Nhi – Phòng khám Nhi khoa",
-    short_name: "Vita Nhi",
+    name: "NhiVita – Phòng khám Nhi khoa",
+    short_name: "NhiVita",
     description: "Phòng khám Nhi tại Hòa Xuân, Cẩm Lệ, Đà Nẵng.",
     start_url: "/",
     display: "standalone",

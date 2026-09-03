@@ -32,8 +32,8 @@ export const metadata: Metadata = {
     google: "dDox9g1NOk31nSoGkKSdLFmIpptMm5MebN4QuILhTfE",
   },
   title: {
-    default: "Bác sĩ Nhi Hòa Xuân, Đà Nẵng | Vita Nhi",
-    template: "%s | Vita Nhi",
+    default: "NhiVita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng",
+    template: "%s | NhiVita",
   },
   description:
     "Phòng khám Nhi Vita tại 522 Phạm Hùng, Hòa Xuân, Đà Nẵng. ThS.BS. Nguyễn Thị Phương Thảo khám và tư vấn sức khỏe trẻ em.",
@@ -61,14 +61,14 @@ export const metadata: Metadata = {
     locale: SITE.locale,
     url: SITE_URL,
     siteName: SITE.name,
-    title: "Bác sĩ Nhi Hòa Xuân, Đà Nẵng | Vita Nhi",
+    title: "NhiVita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng",
     description:
       "Phòng khám Nhi Vita tại 522 Phạm Hùng, Hòa Xuân, Đà Nẵng. Khám và tư vấn sức khỏe trẻ em.",
     images: [{ url: absoluteUrl(SITE.ogImage), width: 1200, height: 630, alt: SITE.doctor }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bác sĩ Nhi Hòa Xuân, Đà Nẵng | Vita Nhi",
+    title: "NhiVita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng",
     description:
       "Khám Nhi tại Hòa Xuân, Cẩm Lệ, Đà Nẵng cùng ThS.BS. Nguyễn Thị Phương Thảo.",
     images: [absoluteUrl(SITE.ogImage)],

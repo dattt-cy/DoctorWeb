@@ -11,7 +11,7 @@ import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
 import { ClinicJsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
-  title: { absolute: "Bác sĩ Nhi Hòa Xuân, Đà Nẵng | Vita Nhi" },
+  title: { absolute: "NhiVita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng" },
   description:
     "Khám Nhi tại 522 Phạm Hùng, Hòa Xuân, Cẩm Lệ, Đà Nẵng cùng ThS.BS. Nguyễn Thị Phương Thảo. Đặt lịch tư vấn hô hấp, tiêu hóa, dinh dưỡng: 0919.083.332.",
   alternates: { canonical: "/" },
