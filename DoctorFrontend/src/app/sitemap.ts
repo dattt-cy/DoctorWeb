@@ -3,12 +3,12 @@ import { absoluteUrl } from "@/lib/site";
 import { API_BASE_URL } from "@/shared/api/config";
 import { SERVICES } from "@/constants/services";
 
-type SitemapPost = { slug: string; publishedAt?: string; updatedAt?: string };
+type SitemapPost = { slug: string; coverImage?: string; publishedAt?: string; updatedAt?: string };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1, lastModified: new Date() },
-    { url: absoluteUrl("/blog"), changeFrequency: "weekly", priority: 0.8, lastModified: new Date() },
+    { url: absoluteUrl("/"), images: [absoluteUrl("/images/bac-si.jpg")], changeFrequency: "weekly", priority: 1, lastModified: new Date() },
+    { url: absoluteUrl("/blog"), images: [absoluteUrl("/hero-illustration.png")], changeFrequency: "weekly", priority: 0.8, lastModified: new Date() },
   ];
 
   let posts: SitemapPost[] = [];
@@ -23,6 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
     url: absoluteUrl(`/blog/${post.slug}`),
+    images: post.coverImage ? [absoluteUrl(post.coverImage)] : undefined,
     lastModified: new Date(post.updatedAt || post.publishedAt || Date.now()),
     changeFrequency: "monthly",
     priority: 0.6,
@@ -30,6 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const serviceRoutes: MetadataRoute.Sitemap = SERVICES.map((service) => ({
     url: absoluteUrl(`/dich-vu/${service.id}`),
+    images: [absoluteUrl("/images/bac-si.jpg")],
     changeFrequency: "monthly",
     priority: 0.7,
     lastModified: new Date(),

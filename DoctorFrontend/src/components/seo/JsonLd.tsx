@@ -94,10 +94,41 @@ export function ClinicJsonLd() {
     publisher: { "@id": `${SITE_URL}/#clinic` },
   };
 
+  const doctorImage = {
+    "@type": "ImageObject",
+    "@id": `${SITE_URL}/#doctor-image`,
+    url: absoluteUrl("/images/bac-si.jpg"),
+    contentUrl: absoluteUrl("/images/bac-si.jpg"),
+    width: 865,
+    height: 863,
+    caption: `${SITE.doctor} – Bác sĩ Nhi khoa tại Hòa Xuân, Đà Nẵng`,
+  };
+
+  const homePage = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${SITE_URL}/#webpage`,
+    url: SITE_URL,
+    name: "Phòng khám Nhi Hòa Xuân, Cẩm Lệ | NhiVita",
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    about: { "@id": `${SITE_URL}/#clinic` },
+    primaryImageOfPage: { "@id": `${SITE_URL}/#doctor-image` },
+  };
+
+  const physician = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${SITE_URL}/#doctor`,
+    name: SITE.doctor,
+    jobTitle: "Bác sĩ Nhi khoa",
+    image: { "@id": `${SITE_URL}/#doctor-image` },
+    worksFor: { "@id": `${SITE_URL}/#clinic` },
+  };
+
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify([website, clinic]) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify([website, clinic, doctorImage, homePage, physician]) }}
     />
   );
 }
