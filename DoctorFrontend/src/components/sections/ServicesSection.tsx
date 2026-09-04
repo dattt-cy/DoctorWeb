@@ -125,8 +125,8 @@ export function ServicesSection() {
         <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <SectionTitle
             eyebrow="Chuyên môn"
-            title="Lĩnh vực tôi có thể giúp bé"
-            subtitle="Từ khám tổng quát đến các vấn đề chuyên sâu, tôi đồng hành cùng gia đình bạn ở mỗi bước."
+            title="Dịch vụ khám Nhi tại Hòa Xuân"
+            subtitle="Khám Nhi ngoài giờ tại Cẩm Lệ, Đà Nẵng cho các vấn đề hô hấp, tiêu hóa, da liễu, dị ứng, tai mũi họng và dinh dưỡng."
             className="max-w-lg"
           />
           <div className="hidden max-w-xs border-l-2 border-orange-500 pl-5 text-sm leading-6 text-slate-500 md:block">

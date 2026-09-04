@@ -11,10 +11,16 @@ import { ChatbotButton } from "@/components/chatbot/ChatbotButton";
 import { ClinicJsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
-  title: { absolute: "NhiVita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng" },
+  title: { absolute: "Phòng khám Nhi Hòa Xuân, Cẩm Lệ | NhiVita" },
   description:
-    "Khám Nhi tại 522 Phạm Hùng, Hòa Xuân, Cẩm Lệ, Đà Nẵng cùng ThS.BS. Nguyễn Thị Phương Thảo. Đặt lịch tư vấn hô hấp, tiêu hóa, dinh dưỡng: 0919.083.332.",
+    "Phòng khám Nhi ngoài giờ tại 522 Phạm Hùng, Hòa Xuân, Cẩm Lệ, Đà Nẵng. ThS.BS. Nguyễn Thị Phương Thảo khám hô hấp, tiêu hóa, da liễu, dị ứng, tai mũi họng và dinh dưỡng trẻ em.",
   alternates: { canonical: "/" },
+  openGraph: {
+    title: "Phòng khám Nhi Hòa Xuân, Cẩm Lệ | NhiVita",
+    description: "Khám Nhi ngoài giờ tại 522 Phạm Hùng, Hòa Xuân, Cẩm Lệ, Đà Nẵng cùng ThS.BS. Nguyễn Thị Phương Thảo.",
+    url: "/",
+    type: "website",
+  },
 };
 
 export default function HomePage() {

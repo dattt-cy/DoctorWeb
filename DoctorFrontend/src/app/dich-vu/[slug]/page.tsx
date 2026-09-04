@@ -13,6 +13,39 @@ import { absoluteUrl } from "@/lib/site";
 type ServicePageProps = { params: Promise<{ slug: string }> };
 const findService = (slug: string) => SERVICES.find((service) => service.id === slug);
 
+const SERVICE_SEO: Record<string, { title: string; description: string; keywords: string[] }> = {
+  "ho-hap": {
+    title: "Khám hô hấp cho trẻ tại Hòa Xuân, Đà Nẵng",
+    description: "Khám trẻ ho, khò khè, viêm họng, viêm phế quản và bệnh hô hấp tái diễn tại phòng khám Nhi Hòa Xuân, Cẩm Lệ, Đà Nẵng.",
+    keywords: ["khám hô hấp cho trẻ Đà Nẵng", "trẻ ho khò khè", "bác sĩ nhi Hòa Xuân"],
+  },
+  "tieu-hoa": {
+    title: "Khám tiêu hóa trẻ em tại Hòa Xuân, Đà Nẵng",
+    description: "Khám trẻ đau bụng, nôn ói, tiêu chảy, táo bón và rối loạn tiêu hóa tại phòng khám Nhi Hòa Xuân, Cẩm Lệ.",
+    keywords: ["khám tiêu hóa trẻ em Đà Nẵng", "trẻ tiêu chảy táo bón", "bác sĩ nhi Cẩm Lệ"],
+  },
+  "da-lieu": {
+    title: "Khám da liễu trẻ em tại Hòa Xuân, Đà Nẵng",
+    description: "Thăm khám chàm sữa, viêm da cơ địa, rôm sảy, hăm tã, mề đay và phát ban ở trẻ tại Hòa Xuân, Cẩm Lệ, Đà Nẵng.",
+    keywords: ["khám da liễu trẻ em Đà Nẵng", "trẻ bị chàm sữa", "trẻ nổi mẩn đỏ"],
+  },
+  "di-ung": {
+    title: "Khám dị ứng trẻ em tại Hòa Xuân, Đà Nẵng",
+    description: "Khám dị ứng thức ăn, mề đay, viêm mũi dị ứng và khò khè liên quan dị ứng ở trẻ tại Hòa Xuân, Cẩm Lệ.",
+    keywords: ["khám dị ứng trẻ em Đà Nẵng", "trẻ nổi mề đay", "dị ứng thức ăn ở trẻ"],
+  },
+  "tai-mui-hong": {
+    title: "Khám tai mũi họng trẻ em tại Hòa Xuân",
+    description: "Khám viêm tai giữa, viêm mũi họng, amidan, chảy mũi kéo dài và trẻ ngáy tại Hòa Xuân, Cẩm Lệ, Đà Nẵng.",
+    keywords: ["khám tai mũi họng trẻ em Đà Nẵng", "trẻ viêm tai giữa", "trẻ chảy mũi kéo dài"],
+  },
+  "dinh-duong": {
+    title: "Khám dinh dưỡng trẻ em tại Hòa Xuân, Đà Nẵng",
+    description: "Đánh giá tăng trưởng và tư vấn trẻ biếng ăn, chậm tăng cân, ăn dặm, suy dinh dưỡng hoặc thừa cân tại Cẩm Lệ, Đà Nẵng.",
+    keywords: ["khám dinh dưỡng trẻ em Đà Nẵng", "trẻ biếng ăn chậm tăng cân", "tư vấn ăn dặm"],
+  },
+};
+
 export function generateStaticParams() {
   return SERVICES.map((service) => ({ slug: service.id }));
 }
@@ -20,8 +53,10 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
   const service = findService((await params).slug);
   if (!service) return {};
-  const title = `Khám ${service.title} cho trẻ em`;
-  return { title, description: service.description, alternates: { canonical: `/dich-vu/${service.id}` }, openGraph: { title, description: service.description, url: absoluteUrl(`/dich-vu/${service.id}`), type: "website" } };
+  const seo = SERVICE_SEO[service.id];
+  const title = seo?.title ?? `Khám ${service.title} cho trẻ em tại Hòa Xuân`;
+  const description = seo?.description ?? service.description;
+  return { title, description, keywords: seo?.keywords, alternates: { canonical: `/dich-vu/${service.id}` }, openGraph: { title, description, url: absoluteUrl(`/dich-vu/${service.id}`), type: "website" } };
 }
 
 export default async function ServiceDetailPage({ params }: ServicePageProps) {
@@ -37,9 +72,26 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
       { "@type": "ListItem", position: 3, name: `Khám ${service.title}`, item: absoluteUrl(`/dich-vu/${service.id}`) },
     ],
   };
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    name: SERVICE_SEO[service.id]?.title ?? `Khám ${service.title} cho trẻ em`,
+    url: absoluteUrl(`/dich-vu/${service.id}`),
+    description: SERVICE_SEO[service.id]?.description ?? service.description,
+    about: { "@type": "MedicalSpecialty", name: service.title },
+    mainEntity: {
+      "@type": "FAQPage",
+      mainEntity: service.faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: { "@type": "Answer", text: faq.answer },
+      })),
+    },
+  };
 
   return <>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }} />
     <Navbar />
     <main className="bg-white">
       <section className="border-b border-stone-200 bg-[#faf7f4]">
@@ -48,7 +100,7 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
           <div className="mt-9 grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
             <div className="max-w-3xl">
               <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-orange-700"><span className="h-px w-7 bg-orange-600" /> Chuyên môn Nhi khoa</p>
-              <h1 className="mt-5 max-w-2xl text-[2.5rem] font-bold leading-[1.08] tracking-[-0.04em] text-slate-950 md:text-[3.35rem]">Khám {service.title} cho trẻ em</h1>
+              <h1 className="mt-5 max-w-2xl text-[2.5rem] font-bold leading-[1.08] tracking-[-0.04em] text-slate-950 md:text-[3.35rem]">Khám {service.title} cho trẻ em tại Hòa Xuân</h1>
               <p className="mt-5 max-w-2xl text-base leading-8 text-slate-600 md:text-lg">{service.introduction}</p>
             </div>
             <div className="border-l-2 border-orange-500 pl-5">
@@ -58,8 +110,8 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
           </div>
           <div className="mt-10 grid border-y border-stone-200 sm:grid-cols-3">
             <Fact icon={<Stethoscope size={18} />} label="Hình thức" value="Khám trực tiếp" />
-            <Fact icon={<Clock3 size={18} />} label="Thời gian khám" value="Theo lịch hẹn" />
-            <Fact icon={<MapPin size={18} />} label="Địa điểm" value="Hòa Xuân, Đà Nẵng" />
+            <Fact icon={<Clock3 size={18} />} label="Thời gian khám" value="Ngoài giờ · Theo lịch hẹn" />
+            <Fact icon={<MapPin size={18} />} label="Địa điểm" value="Hòa Xuân, Cẩm Lệ" />
           </div>
         </div>
       </section>

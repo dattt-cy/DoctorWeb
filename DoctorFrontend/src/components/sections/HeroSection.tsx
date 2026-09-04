@@ -148,8 +148,8 @@ export function HeroSection() {
             </p>
           </div>
 
-          <p className="max-w-[58ch] text-base leading-8 text-slate-600 sm:text-lg">
-            {DOCTOR_INFO.tagline}. Đồng hành cùng cha mẹ trong từng giai đoạn phát triển của con.
+          <p className="max-w-[62ch] text-base leading-8 text-slate-600 sm:text-lg">
+            Phòng khám Nhi ngoài giờ tại 522 Phạm Hùng, Hòa Xuân, Cẩm Lệ. Thăm khám hô hấp, tiêu hóa, da liễu, dị ứng, tai mũi họng và tư vấn dinh dưỡng trẻ em.
           </p>
 
           {/* Stats row */}
