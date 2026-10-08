@@ -17,23 +17,27 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  applicationName: SITE.name,
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
       { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
     ],
-    shortcut: "/favicon.ico",
+    shortcut: "/icon-48.png",
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   metadataBase: new URL(SITE_URL),
   verification: {
     google: "dDox9g1NOk31nSoGkKSdLFmIpptMm5MebN4QuILhTfE",
+    other: {
+      "msvalidate.01": "5A2FAC0BB7B5073061C9EAFA11C109BA",
+    },
   },
   title: {
-    default: "NhiVita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng",
-    template: "%s | NhiVita",
+    default: "Nhi Vita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng",
+    template: "%s | Nhi Vita",
   },
   description:
     "Phòng khám Nhi Vita tại 522 Phạm Hùng, Hòa Xuân, Đà Nẵng. ThS.BS. Nguyễn Thị Phương Thảo khám và tư vấn sức khỏe trẻ em.",
@@ -67,14 +71,14 @@ export const metadata: Metadata = {
     locale: SITE.locale,
     url: SITE_URL,
     siteName: SITE.name,
-    title: "NhiVita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng",
+    title: "Nhi Vita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng",
     description:
       "Phòng khám Nhi Vita tại 522 Phạm Hùng, Hòa Xuân, Đà Nẵng. Khám và tư vấn sức khỏe trẻ em.",
     images: [{ url: absoluteUrl(SITE.ogImage), width: 1200, height: 630, alt: SITE.doctor }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "NhiVita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng",
+    title: "Nhi Vita – Bác sĩ Nhi Hòa Xuân, Đà Nẵng",
     description:
       "Khám Nhi tại Hòa Xuân, Cẩm Lệ, Đà Nẵng cùng ThS.BS. Nguyễn Thị Phương Thảo.",
     images: [absoluteUrl(SITE.ogImage)],
